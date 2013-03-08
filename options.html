@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tab to Window Options</title>
+		<link href='http://fonts.googleapis.com/css?family=Oxygen:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="chrome.css">
+		<link rel="stylesheet" type="text/css" href="options.css">
+	</head>
+	<body>
+		<div id="container">
+			<h1>Tab To Window</h1>
+			<h2>Default Command:</h2>
+			<p id="default">Alt + Shift + W</p>
+			<form id="options">
+				<h3>New window size</h3>
+				<label for="width">Width:</label>
+				<input id="width" class="option" name="width" type="number" value="50" min="1" max="100">%
+				<br>
+				<label for="height">Height:</label>
+				<input id="height" class="option" name="height" type="number" value="50" min="1" max="100">%
+				<h3>New window position</h3>
+				<label for="left">Left:</label>
+				<input id="left" class="option" name="left" type="number" value="50" min="0" max="100">%
+				<br>
+				<label for="top">Top:</label>
+				<input id="top" class="option" name="top" type="number" value="0" min="0" max="100">%
+				<input id="sub" type="submit" value="Save">
+			</form>
+		</div>
+		<div id="note">
+			<h4>Changing the key command:</h4>
+			<ol>
+				<li>Go to  <a id="extensions" href="chrome://extensions">chrome://extensions</a></li>
+				<li>Scroll to the bottom of the page</li>
+				<li>Click 'Configure commands'</li>
+			</ol>
+		</div>
+		<div id="credit">
+			by <a target="_blank" href="http://www.arthurcarabott.com">Arthur Carabott</a>
+			<br>
+			source code: <a target="_blank" href="http://www.github.com/acarabott/tabToWindow">http://www.github.com/acarabott/tabToWindow</a>
+		</div>
+	</body>
+	<script src="options.js" type="text/javascript"></script>
+</html>

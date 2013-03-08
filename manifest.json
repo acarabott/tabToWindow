@@ -1,0 +1,27 @@
+{
+	"name": "Tab to Window",
+	"description": "Use a key command to move the current tab to a new window.",
+	"version": "2.0.2",
+	"manifest_version": 2,
+	"minimum_chrome_version": "25",
+
+	"icons": {
+		"16": "ttw16.png",
+		"48": "ttw48.png",
+		"128": "ttw128.png"
+	},
+
+	"background": {
+		"scripts": ["ttw.js"],
+		"persistent": false
+	},
+
+	"commands": {
+		"toggle-feature": {
+			"suggested_key": { "default": "Alt+Shift+W" },
+			"description": "Open current tab in new window"
+		}
+	},
+	"permissions": ["tabs"],
+	"options_page": "options.html"
+}
