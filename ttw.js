@@ -16,15 +16,26 @@ function tab_to_window() {
 
 				if (typeof width === "undefined") {
 					width = 0.5;
+				} else {
+					width = width / 100;
 				}
+
 				if (typeof height === "undefined") {
 					height = 0.5;
+				} else {
+					height = height / 100;
 				}
+
 				if (typeof left === "undefined") {
-					width = 0.5;
+					left = 0.5;
+				} else {
+					left = left / 100;
 				}
+
 				if (typeof top === "undefined") {
-					width = 0;
+					top = 0;
+				} else {
+					top = top / 100;
 				}
 
 				// Move it to a new window
