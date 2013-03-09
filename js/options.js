@@ -86,7 +86,22 @@
 		}
 	}
 
+	function resize_screen() {
+		var userScreen = document.getElementById('screen'),
+			width = userScreen.clientWidth,
+			ratio = screen.height / screen.width,
+			borderWidth = Math.ceil(width * 0.01, 10);
+
+		userScreen.style.height = (width * ratio) + "px";
+		userScreen.style.width = (width - (borderWidth * 2)) + "px";
+		userScreen.style.borderTopWidth = borderWidth + "px";
+		userScreen.style.borderLeftWidth = borderWidth + "px";
+		userScreen.style.borderRightWidth = borderWidth + "px";
+	}
+
+
 	function init() {
+		resize_screen();
 		restore_options();
 		add_handlers();
 	}
@@ -96,6 +111,6 @@
 	document.getElementById('extensions').addEventListener('click', function () {
 		chrome.tabs.update({
 			url: 'chrome://extensions/'
-		})
+		});
 	});
 }());
