@@ -76,7 +76,7 @@
 		};
 	}
 
-	function add_handlers() {
+	function add_input_handlers() {
 		var inputs = document.getElementsByClassName('option'),
 			i;
 
@@ -87,7 +87,7 @@
 	}
 
 	function resize_screen() {
-		var userScreen = document.getElementById('screen'),
+		var userScreen = document.getElementById('monitor'),
 			width = userScreen.clientWidth,
 			ratio = screen.height / screen.width,
 			borderWidth = Math.ceil(width * 0.01, 10);
@@ -99,18 +99,31 @@
 		userScreen.style.borderRightWidth = borderWidth + "px";
 	}
 
-
-	function init() {
-		resize_screen();
-		restore_options();
-		add_handlers();
-	}
-
-	document.addEventListener('DOMContentLoaded', init);
-	document.querySelector('#sub').addEventListener('click', save_options);
-	document.getElementById('extensions').addEventListener('click', function () {
+	function open_extensions() {
 		chrome.tabs.update({
 			url: 'chrome://extensions/'
 		});
+	}
+
+	function setup_windows() {
+		var $windows = $('.window');
+
+		$windows.draggable({
+			containment: "parent"
+		});
+
+		$windows.resizable({
+			containment: "parent"
+		});
+	}
+
+	jQuery(document).ready(function($) {
+		resize_screen();
+		restore_options();
+		add_input_handlers();
+		setup_windows();
+
+		$('#extensions').click(open_extensions);
+		$('#sub').click(save_options);
 	});
 }());
