@@ -26,24 +26,30 @@
 	}
 
 	function save_options(event) {
-		event.preventDefault();
-
 		var inputs = document.getElementsByClassName('option'),
 			submit = document.getElementById('sub'),
+			valid = true,
 			i;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
-			localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
+			if (inputs[i].checkValidity()) {
+				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
+			} else {
+				valid = false;
+			}
 		}
 
-		// Update Status
-		submit.value = 'Saved';
-		submit.style.opacity = '0.5';
-		setTimeout(function () {
-			submit.value = 'Save';
-			submit.style.opacity = '1';
-		}, 1000);
+		if (valid) {
+			event.preventDefault();
+			// Update Status
+			submit.value = 'Saved';
+			submit.style.opacity = '0.5';
+			setTimeout(function () {
+				submit.value = 'Save';
+				submit.style.opacity = '1';
+			}, 1000);
+		}
 	}
 
 	function make_oninput_handler() {
