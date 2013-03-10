@@ -3,6 +3,8 @@
 (function () {
 	'use strict';
 
+	var winGrid = 10; // px to use for window grid
+
 	function restore_options() {
 		var inputs = document.getElementsByClassName('option'),
 			value,
@@ -89,14 +91,9 @@
 	function resize_screen() {
 		var userScreen = document.getElementById('monitor'),
 			width = userScreen.clientWidth,
-			ratio = screen.height / screen.width,
-			borderWidth = Math.ceil(width * 0.01, 10);
+			ratio = screen.height / screen.width;
 
-		userScreen.style.height = (width * ratio) + "px";
-		userScreen.style.width = (width - (borderWidth * 2)) + "px";
-		userScreen.style.borderTopWidth = borderWidth + "px";
-		userScreen.style.borderLeftWidth = borderWidth + "px";
-		userScreen.style.borderRightWidth = borderWidth + "px";
+		userScreen.style.height = (Math.round(width * ratio / winGrid) * winGrid) + "px";
 	}
 
 	function open_extensions() {
@@ -105,15 +102,64 @@
 		});
 	}
 
+	function update_window_size(win, ui) {
+		var $userScreen = $('#screen'),
+			$win = $(win),
+			$inner = $('.inner-window', $win),
+			screenWidth = $userScreen.width(),
+			screenHeight = $userScreen.height(),
+			width = Math.floor(($(win).width() / screenWidth) * 100),
+			height = Math.floor(($(win).height() / screenHeight) * 100),
+
+			innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
+				parseInt($inner.css('border-right-width'), 10),
+			innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
+				parseInt($inner.css('border-bottom-width'), 10);
+
+		// update inner-window for borders
+		$inner.width($win.width() - innerHorizWidth);
+		$inner.height($win.height() - innerVertWidth);
+
+		// update form
+		$('#' + $win.attr('id') + '-width').val(width);
+		$('#' + $win.attr('id') + '-height').val(height);
+	}
+
+	function update_window_position(win, ui) {
+		var $userScreen = $('#screen'),
+			$win = $(win),
+			screenWidth = $userScreen.width(),
+			screenHeight = $userScreen.height(),
+			left = Math.floor((ui.position.left / screenWidth) * 100),
+			top = Math.floor((ui.position.top / screenHeight) * 100);
+
+		$('#' + $win.attr('id') + '-left').val(left);
+		$('#' + $win.attr('id') + '-top').val(top);
+	}
+
 	function setup_windows() {
-		var $windows = $('.window');
+		var $windows = $('.window'),
+			$userScreen = $('#screen'),
+			screenWidth = $userScreen.width(),
+			screenHeight = $userScreen.height();
 
 		$windows.draggable({
-			containment: "parent"
+			containment: "parent",
+			grid: [screenWidth / winGrid, screenHeight / winGrid]
 		});
 
 		$windows.resizable({
-			containment: "parent"
+			containment: "parent",
+			handles: "all",
+			grid: [screenWidth / winGrid, screenHeight / winGrid]
+		});
+
+		$windows.resize(function(event, ui) {
+			update_window_size(this, ui);
+		});
+
+		$windows.on('drag', function(event, ui) {
+			update_window_position(this, ui);
 		});
 	}
 
@@ -123,6 +169,7 @@
 		add_input_handlers();
 		setup_windows();
 
+		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
 		$('#sub').click(save_options);
 	});

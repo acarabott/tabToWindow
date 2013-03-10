@@ -13,25 +13,51 @@
 			<p id="default">Alt + Shift + W</p>
 			<div id="monitor">
 				<div id="screen">
-					<div id="original" class="window ui-widget-content">Original Window</div>
-					<div id="new" class="window ui-widget-content">New Window</div>
+					<div id="original" class="window ui-widget-content">
+						<div class="button red"></div>
+						<div class="button yellow"></div>
+						<div class="button green"></div>
+						<div class="inner-window">Original Window</div>
+					</div>
+					<div id="new" class="window ui-widget-content">
+						<div class="inner-window">New Window</div>
+						<div class="button red"></div>
+						<div class="button yellow"></div>
+						<div class="button green"></div>
+					</div>
 					<div id="icon"></div>
 				</div>
 			</div>
 			<form id="options">
-				<h3>New window size</h3>
-				<label for="width">Width:</label>
-				<input id="width" class="option" name="width" type="number" value="50" min="1" max="100">%
-				<br>
-				<label for="height">Height:</label>
-				<input id="height" class="option" name="height" type="number" value="50" min="1" max="100">%
-				<h3>New window position</h3>
-				<label for="left">Left:</label>
-				<input id="left" class="option" name="left" type="number" value="50" min="0" max="100">%
-				<br>
-				<label for="top">Top:</label>
-				<input id="top" class="option" name="top" type="number" value="0" min="0" max="100">%
-				<input id="sub" type="submit" value="Save">
+				<div class="options-section">
+					<h3>Original window size</h3>
+					<label for="original-width">Width:</label>
+					<input id="original-width" class="option" name="original-width" type="number" value="50" min="1" max="100">%
+					<br>
+					<label for="original-height">Height:</label>
+					<input id="original-height" class="option" name="original-height" type="number" value="50" min="1" max="100">%
+					<h3>Original window position</h3>
+					<label for="original-left">Left:</label>
+					<input id="original-left" class="option" name="original-left" type="number" value="50" min="0" max="100">%
+					<br>
+					<label for="original-top">Top:</label>
+					<input id="original-top" class="option" name="original-top" type="number" value="0" min="0" max="100">%
+				</div>
+				<div class="options-section">
+					<h3>New window size</h3>
+					<label for="new-width">Width:</label>
+					<input id="new-width" class="option" name="new-width" type="number" value="50" min="1" max="100">%
+					<br>
+					<label for="new-height">Height:</label>
+					<input id="new-height" class="option" name="new-height" type="number" value="50" min="1" max="100">%
+					<h3>New window position</h3>
+					<label for="new-left">Left:</label>
+					<input id="new-left" class="option" name="new-left" type="number" value="50" min="0" max="100">%
+					<br>
+					<label for="new-top">Top:</label>
+					<input id="new-top" class="option" name="new-top" type="number" value="0" min="0" max="100">%
+					<input id="sub" type="submit" value="Save">
+				</div>
 			</form>
 		</div>
 		<div id="note">
