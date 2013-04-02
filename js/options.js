@@ -1,4 +1,4 @@
-/*jslint plusplus: true, passfail: true, browser: true, devel: true, indent: 4, maxlen: 100 */
+/*jslint plusplus: true, passfail: true, browser: true, devel: true, indent: 4, maxlen: 80 */
 /*global chrome*/
 (function () {
 	'use strict';
@@ -85,9 +85,10 @@
 	function resize_screen() {
 		var userScreen = document.getElementById('monitor'),
 			width = userScreen.clientWidth,
-			ratio = screen.height / screen.width;
+			ratio = screen.height / screen.width,
+			height = Math.round(width * ratio / winGrid) * winGrid;
 
-		userScreen.style.height = (Math.round(width * ratio / winGrid) * winGrid) + "px";
+		userScreen.style.height =  height+ "px";
 	}
 
 	function open_extensions() {
