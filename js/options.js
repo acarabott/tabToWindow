@@ -46,9 +46,16 @@
 			var input = event.target,
 				val = Number(input.value),
 				max = Number(input.max),
-				min = Number(input.min);
+				min = Number(input.min),
+				split = input.id.split('-'),
+				$win = $('#' + split[0]);
 
-			input.checkValidity();
+			$win.css(split[1], val + '%');
+			$win.resize();
+
+			if (input.checkValidity()) {
+				save_options();
+			}
 		};
 	}
 
@@ -130,24 +137,38 @@
 			screenWidth = $userScreen.width(),
 			screenHeight = $userScreen.height();
 
-		$windows.draggable({
-			containment: "parent",
-			grid: [screenWidth / winGrid, screenHeight / winGrid]
+		// Restore positions from options
+		$('.window').each(function () {
+			var $this = $(this);
+			$this.width($('#' + $this.attr('id') + '-width').val() + "%");
+			$this.height($('#' + $this.attr('id') + '-height').val() + "%");
+			$this.css('left', $('#' + $this.attr('id') + '-left').val() + "%");
+			$this.css('top', $('#' + $this.attr('id') + '-top').val() + "%");
+
+			$this.draggable({
+				containment: "parent",
+				grid: [screenWidth / winGrid, screenHeight / winGrid]
+			});
+
+			$this.resizable({
+				containment: "parent",
+				handles: "all",
+				grid: [screenWidth / winGrid, screenHeight / winGrid],
+				minWidth: $this.parent().width() * 0.2,
+				minHeight: $this.parent().height() * 0.2
+			});
+
+			$this.resize(function(event, ui) {
+				update_window_size(this, ui);
+				save_options();
+			});
+
+			$this.on('drag', function(event, ui) {
+				update_window_position(this, ui);
+				save_options();
+			});
 		});
 
-		$windows.resizable({
-			containment: "parent",
-			handles: "all",
-			grid: [screenWidth / winGrid, screenHeight / winGrid]
-		});
-
-		$windows.resize(function(event, ui) {
-			update_window_size(this, ui);
-		});
-
-		$windows.on('drag', function(event, ui) {
-			update_window_position(this, ui);
-		});
 	}
 
 	jQuery(document).ready(function($) {
