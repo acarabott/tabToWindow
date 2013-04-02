@@ -84,8 +84,9 @@ ul {
 	font-size: 15px;
 	margin: 0;
 }
-#sub{
-	margin-left: 66px;
+
+#sub {
+	/*display:none;*/
 }
 
 #credit {
