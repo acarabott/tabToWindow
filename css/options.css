@@ -109,6 +109,7 @@ ul {
 #screen {
 	height: 100%;
 	width: 100%;
+	background-image: -webkit-repeating-linear-gradient(0deg, #6E6E6E, #6E6E6E 2px, transparent 2px, transparent 25%), -webkit-repeating-linear-gradient(-90deg, #6E6E6E, #6E6E6E 2px, transparent 2px, transparent 25%);
 }
 
 .window {
