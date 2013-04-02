@@ -37,20 +37,7 @@
 		for (i = 0; i < inputs.length; i++) {
 			if (inputs[i].checkValidity()) {
 				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
-			} else {
-				valid = false;
 			}
-		}
-
-		if (valid) {
-			event.preventDefault();
-			// Update Status
-			submit.value = 'Saved';
-			submit.style.opacity = '0.5';
-			setTimeout(function () {
-				submit.value = 'Save';
-				submit.style.opacity = '1';
-			}, 1000);
 		}
 	}
 
