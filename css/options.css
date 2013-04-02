@@ -67,7 +67,7 @@ form {
 	margin: 0 auto;
 	overflow: auto;
 	width: 100%;
-	/*display:none;*/
+	display:none;
 }
 
 .options-section {
