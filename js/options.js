@@ -3,7 +3,7 @@
 (function () {
 	'use strict';
 
-	var winGrid = 10; // px to use for window grid
+	var winGrid = 20; // px to use for window grid
 
 	function restore_options() {
 		var inputs = document.getElementsByClassName('option'),
