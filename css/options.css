@@ -65,6 +65,19 @@ h3 {
 
 form {
 	margin: 0 auto;
+	overflow: auto;
+	width: 100%;
+	/*display:none;*/
+}
+
+.options-section {
+	width:50%;
+	float:left;
+	margin:0 auto;
+}
+
+.options-section:last-child {
+	clear:right;
 }
 
 label, input {
