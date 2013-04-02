@@ -96,19 +96,21 @@
 		});
 	}
 
-	function update_window_size(win, ui) {
-		var $userScreen = $('#screen'),
-			$win = $(win),
-			$inner = $('.inner-window', $win),
-			screenWidth = $userScreen.width(),
-			screenHeight = $userScreen.height(),
-			width = Math.floor(($(win).width() / screenWidth) * 100),
-			height = Math.floor(($(win).height() / screenHeight) * 100),
+	function update_window_size_and_position(win, ui) {
+		var $userScreen, $win, $inner, screenWidth, screenHeight, width, height,
+			left, top, innerHorizWidth, innerVertWidth;
 
-			innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
-				parseInt($inner.css('border-right-width'), 10),
-			innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
-				parseInt($inner.css('border-bottom-width'), 10);
+		$userScreen = $('#screen');
+		$win = $(win);
+		$inner = $('.inner-window', $win);
+		screenWidth = $userScreen.width();
+		screenHeight = $userScreen.height();
+		width = Math.floor(($(win).width() / screenWidth) * 100);
+		height = Math.floor(($(win).height() / screenHeight) * 100);
+		innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
+			parseInt($inner.css('border-right-width'), 10);
+		innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
+			parseInt($inner.css('border-bottom-width'), 10);
 
 		// update inner-window for borders
 		$inner.width($win.width() - innerHorizWidth);
@@ -117,18 +119,13 @@
 		// update form
 		$('#' + $win.attr('id') + '-width').val(width);
 		$('#' + $win.attr('id') + '-height').val(height);
-	}
 
-	function update_window_position(win, ui) {
-		var $userScreen = $('#screen'),
-			$win = $(win),
-			screenWidth = $userScreen.width(),
-			screenHeight = $userScreen.height(),
-			left = Math.floor((ui.position.left / screenWidth) * 100),
+		if (typeof ui !== 'undefined') {
+			left = Math.floor((ui.position.left / screenWidth) * 100);
 			top = Math.floor((ui.position.top / screenHeight) * 100);
-
-		$('#' + $win.attr('id') + '-left').val(left);
-		$('#' + $win.attr('id') + '-top').val(top);
+			$('#' + $win.attr('id') + '-left').val(left);
+			$('#' + $win.attr('id') + '-top').val(top);
+		}
 	}
 
 	function setup_windows() {
@@ -158,13 +155,13 @@
 				minHeight: $this.parent().height() * 0.2
 			});
 
-			$this.resize(function(event, ui) {
-				update_window_size(this, ui);
+			$this.on('resize', function(event, ui) {
+				update_window_size_and_position(this, ui);
 				save_options();
 			});
 
 			$this.on('drag', function(event, ui) {
-				update_window_position(this, ui);
+				update_window_size_and_position(this, ui);
 				save_options();
 			});
 		});
