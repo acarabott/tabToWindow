@@ -1,43 +1,51 @@
 function get_size_and_pos(key) {
-	var width = parseInt(localStorage['ttw_' + key + '-width'], 10),
-		height = parseInt(localStorage['ttw_' + key + '-height'], 10),
-		left = parseInt(localStorage['ttw_' + key + '-left'], 10),
-		top = parseInt(localStorage['ttw_' + key + '-top'], 10);
-
-	if (typeof width === "undefined") {
-		width = 0.5;
-	} else {
-		width = width / 100;
-	}
-
-	if (typeof height === "undefined") {
-		height = 1;
-	} else {
-		height = height / 100;
-	}
-
-	if (typeof left === "undefined") {
-		if (key === "original") {
-			left = 0;
-		} else {
-			left = 0.5;
-		}
-	} else {
-		left = left / 100;
-	}
-
-	if (typeof top === "undefined") {
-		top = 0;
-	} else {
-		top = top / 100;
-	}
-
-	return {
-		width: screen.width * width,
-		height: screen.height * height,
-		left: screen.width * left,
-		top: screen.height * top
+	var defaults = {
+		"original": {width: 0.5, height: 1, left: 0, top: 0, min_top: 0},
+		"new": {width: 0.5, height: 1, left: 0.5, top: 0, min_top: 0}
 	};
+	var properties = {
+		width : localStorage['ttw_' + key + '-width'],
+		height : localStorage['ttw_' + key + '-height'],
+		left : localStorage['ttw_' + key + '-left'],
+		top : localStorage['ttw_' + key + '-top'],
+		min_top : localStorage['ttw_min_top']
+	};
+	var pKey;
+
+	for (pKey in properties) {
+		if (properties.hasOwnProperty(pKey)) {
+			if (typeof properties[pKey] === "undefined") {
+				// Use default
+				properties[pKey] = defaults[key][pKey];
+			} else {
+				// Use options value
+				properties[pKey] = parseInt(properties[pKey], 10);
+
+				// Convert to percentages
+				// min_top is already a pixel value
+				if (pKey !== 'min_top') {
+					properties[pKey] *= 0.01;
+				}
+			}
+
+			// Convert percentages to pixel values
+			// min_top will already be a pixel value
+			if (pKey !== 'min_top') {
+				if (pKey === "width" || pKey === "left") {
+					properties[pKey] *= screen.availWidth;
+				} else if (pKey === "height" || pKey === "top") {
+					properties[pKey] *= screen.availHeight;
+				}
+
+				properties[pKey] = Math.round(properties[pKey]);
+			}
+		}
+	}
+
+	// Account for possible OS menus
+	properties[top] += properties['min_top'];
+
+	return properties;
 }
 
 function position_original(id) {
