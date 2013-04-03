@@ -40,6 +40,42 @@ function get_size_and_pos(key) {
 	};
 }
 
+function position_original(id) {
+	var vals = get_size_and_pos('original');
+
+	// Move original window
+	chrome.windows.update(id, {
+		width: vals['width'],
+		height: vals['height'],
+		left: vals['left'],
+		top: vals['top']
+	});
+}
+
+function create_new_window(original_id) {
+	// Get active tab
+	chrome.tabs.query({
+		currentWindow: true,
+		active:true
+	}, function (tabs) {
+		var vals = get_size_and_pos('new');
+
+		// Move it to a new window
+		chrome.windows.create({
+			tabId: tabs[0].id,
+			width: vals['width'],
+			height: vals['height'],
+			left: vals['left'],
+			top: vals['top']
+		}, function () {
+			chrome.windows.update(original_id, {
+				focused: true
+			});
+		});
+	});
+}
+
+
 function tab_to_window() {
 	// Check there are more than 1 tabs in current window
 	chrome.tabs.query({
@@ -47,32 +83,8 @@ function tab_to_window() {
 	}, function (tabs) {
 		if (tabs.length > 1) {
 			chrome.windows.getCurrent({}, function (window) {
-				var vals = get_size_and_pos('original');
-
-				chrome.windows.update(window.id, {
-					width: vals['width'],
-					height: vals['height'],
-					left: vals['left'],
-					top: vals['top'],
-					focused: true
-				});
-			});
-
-			// Get active tab
-			chrome.tabs.query({
-				currentWindow: true,
-				active:true
-			}, function(tabs) {
-				var vals = get_size_and_pos('new');
-
-				// Move it to a new window
-				chrome.windows.create({
-					tabId: tabs[0].id,
-					width: vals['width'],
-					height: vals['height'],
-					left: vals['left'],
-					top: vals['top']
-				}, function () {});
+				position_original(window.id);
+				create_new_window(window.id);
 			});
 		}
 	});
