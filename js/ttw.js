@@ -1,51 +1,77 @@
+function get_size_and_pos(key) {
+	var width = parseInt(localStorage['ttw_' + key + '-width'], 10),
+		height = parseInt(localStorage['ttw_' + key + '-height'], 10),
+		left = parseInt(localStorage['ttw_' + key + '-left'], 10),
+		top = parseInt(localStorage['ttw_' + key + '-top'], 10);
+
+	if (typeof width === "undefined") {
+		width = 0.5;
+	} else {
+		width = width / 100;
+	}
+
+	if (typeof height === "undefined") {
+		height = 1;
+	} else {
+		height = height / 100;
+	}
+
+	if (typeof left === "undefined") {
+		if (key === "original") {
+			left = 0;
+		} else {
+			left = 0.5;
+		}
+	} else {
+		left = left / 100;
+	}
+
+	if (typeof top === "undefined") {
+		top = 0;
+	} else {
+		top = top / 100;
+	}
+
+	return {
+		width: screen.width * width,
+		height: screen.height * height,
+		left: screen.width * left,
+		top: screen.height * top
+	};
+}
+
 function tab_to_window() {
 	// Check there are more than 1 tabs in current window
 	chrome.tabs.query({
 		currentWindow: true
 	}, function (tabs) {
 		if (tabs.length > 1) {
+			chrome.windows.getCurrent({}, function (window) {
+				var vals = get_size_and_pos('original');
+
+				chrome.windows.update(window.id, {
+					width: vals['width'],
+					height: vals['height'],
+					left: vals['left'],
+					top: vals['top'],
+					focused: true
+				});
+			});
+
 			// Get active tab
 			chrome.tabs.query({
 				currentWindow: true,
 				active:true
 			}, function(tabs) {
-				var width = localStorage['ttw_width'],
-					height = localStorage['ttw_height'],
-					left = localStorage['ttw_left'],
-					top = localStorage['ttw_top'];
-
-				if (typeof width === "undefined") {
-					width = 0.5;
-				} else {
-					width = width / 100;
-				}
-
-				if (typeof height === "undefined") {
-					height = 0.5;
-				} else {
-					height = height / 100;
-				}
-
-				if (typeof left === "undefined") {
-					left = 0.5;
-				} else {
-					left = left / 100;
-				}
-
-				if (typeof top === "undefined") {
-					top = 0;
-				} else {
-					top = top / 100;
-				}
+				var vals = get_size_and_pos('new');
 
 				// Move it to a new window
 				chrome.windows.create({
 					tabId: tabs[0].id,
-					width: screen.width * width,
-					height: screen.height * height,
-					left: screen.width * left,
-					top: screen.width * top,
-					focused: true
+					width: vals['width'],
+					height: vals['height'],
+					left: vals['left'],
+					top: vals['top']
 				}, function () {});
 			});
 		}
