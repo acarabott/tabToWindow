@@ -7,7 +7,5 @@ Position of window can be changed via options
 Key command can be changed via chrome://extensions 'Configure commands'
 
 ## TODO
-
-	* Restore focus to original window (option?)
-	* Restoring options updates GUI
-	* GUI affects controls and vice versa
+* Account for OS X Menu Bar in window height.
+* Check other OS menu bars
