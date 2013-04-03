@@ -75,6 +75,13 @@ function create_new_window(original_id) {
 	});
 }
 
+function move_windows() {
+	chrome.windows.getCurrent({}, function (window) {
+		position_original(window.id);
+		create_new_window(window.id);
+	});
+}
+
 
 function tab_to_window() {
 	// Check there are more than 1 tabs in current window
@@ -82,10 +89,17 @@ function tab_to_window() {
 		currentWindow: true
 	}, function (tabs) {
 		if (tabs.length > 1) {
-			chrome.windows.getCurrent({}, function (window) {
-				position_original(window.id);
-				create_new_window(window.id);
-			});
+			if (typeof localStorage['ttw_min_top'] === "undefined") {
+				chrome.windows.create({
+					top:0,
+					focused: false
+				}, function(window) {
+					localStorage['ttw_min_top'] = window.top;
+					chrome.windows.remove(window.id, move_windows);
+				});
+			} else {
+				move_windows();
+			}
 		}
 	});
 }
