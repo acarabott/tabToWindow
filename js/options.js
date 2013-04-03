@@ -4,25 +4,29 @@
 	'use strict';
 
 	var winGrid = 20; // px to use for window grid
+	var defaults = {
+		"original": {width: 50, height: 100, left: 0, top: 0},
+		"new": {width: 50, height: 100, left: 50, top: 0}
+	};
 
 	function restore_options() {
-		var inputs = document.getElementsByClassName('option'),
-			value,
-			def,
-			i;
+		var wKey, pKey, id, input, value;
 
-		for (i = 0; i < inputs.length; i++) {
-			value = localStorage['ttw_' + inputs[i].id];
-			if (inputs[i].id === "top") {
-				def = 0;
-			} else {
-				def = 50;
-			}
+		for (wKey in defaults) {
+			if (defaults.hasOwnProperty(wKey)) {
+				for (pKey in defaults[wKey]) {
+					if (defaults[wKey].hasOwnProperty(pKey)) {
+						id = wKey + "-" + pKey;
+						input = document.getElementById(id);
+						value = localStorage['ttw_' + id];
 
-			if (typeof value === "undefined") {
-				inputs[i].value = def;
-			} else {
-				inputs[i].value = value;
+						if (typeof value === "undefined") {
+							value = defaults[wKey][pKey];
+						}
+
+						input.value = value;
+					}
+				}
 			}
 		}
 	}
