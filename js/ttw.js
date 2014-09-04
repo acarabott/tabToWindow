@@ -74,7 +74,8 @@ function create_new_window(original_id) {
 			width: vals['width'],
 			height: vals['height'],
 			left: vals['left'],
-			top: vals['top']
+			top: vals['top'],
+			incognito: tabs[0].incognito
 		}, function () {
 			chrome.windows.update(original_id, {
 				focused: true
