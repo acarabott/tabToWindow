@@ -93,9 +93,10 @@ ul {
 	list-style-type: none;
 }
 
-#default {
-	font-size: 15px;
-	margin: 0;
+#shortcut {
+	font-size: 18px;
+	margin-top: 0px;
+	margin-bottom: 8px;
 }
 
 #sub {

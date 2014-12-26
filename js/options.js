@@ -191,6 +191,16 @@
 		add_input_handlers();
 		setup_windows();
 
+		chrome.commands.getAll(function(cmds) {
+			var shortcut = "";
+			if (cmds.length > 0) {
+				shortcut = cmds[0].shortcut;
+			}
+			if (shortcut != "") {
+				$('#shortcut').html("Current Shortcut: " + shortcut);
+			}
+		});
+
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
 		$('#sub').click(save_options);
