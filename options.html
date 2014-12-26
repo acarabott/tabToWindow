@@ -9,8 +9,7 @@
 	<body>
 		<div id="container">
 			<h1>Tab To Window Keyboard Shortcut</h1>
-			<h2>Default Command:</h2>
-			<p id="default">Alt + Shift + W</p>
+			<p id="shortcut">Default Command: Alt + Shift + W</p>
 			<div id="monitor">
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
@@ -32,34 +31,45 @@
 				<div class="options-section">
 					<h3>Original window size</h3>
 					<label for="original-width">Width:</label>
-					<input id="original-width" class="option" name="original-width" type="number" value="50" min="20" max="100" step="5">%
+					<input id="original-width" class="option number" name="original-width" type="number" value="50" min="20" max="100" step="5">%
 					<br>
 					<label for="original-height">Height:</label>
-					<input id="original-height" class="option" name="original-height" type="number" value="50" min="20" max="100" step="5">%
+					<input id="original-height" class="option number" name="original-height" type="number" value="50" min="20" max="100" step="5">%
 					<h3>Original window position</h3>
 					<label for="original-left">Left:</label>
-					<input id="original-left" class="option" name="original-left" type="number" value="50" min="0" max="100" step="5">%
+					<input id="original-left" class="option number" name="original-left" type="number" value="50" min="0" max="100" step="5">%
 					<br>
 					<label for="original-top">Top:</label>
-					<input id="original-top" class="option" name="original-top" type="number" value="0" min="0" max="100" step="5">%
+					<input id="original-top" class="option number" name="original-top" type="number" value="0" min="0" max="100" step="5">%
 				</div>
 				<div class="options-section">
 					<h3>New window size</h3>
 					<label for="new-width">Width:</label>
-					<input id="new-width" class="option" name="new-width" type="number" value="50" min="1" max="100">%
+					<input id="new-width" class="option number" name="new-width" type="number" value="50" min="1" max="100">%
 					<br>
 					<label for="new-height">Height:</label>
-					<input id="new-height" class="option" name="new-height" type="number" value="50" min="1" max="100">%
+					<input id="new-height" class="option number" name="new-height" type="number" value="50" min="1" max="100">%
 					<h3>New window position</h3>
 					<label for="new-left">Left:</label>
-					<input id="new-left" class="option" name="new-left" type="number" value="50" min="0" max="100">%
+					<input id="new-left" class="option number" name="new-left" type="number" value="50" min="0" max="100">%
 					<br>
 					<label for="new-top">Top:</label>
-					<input id="new-top" class="option" name="new-top" type="number" value="0" min="0" max="100">%
+					<input id="new-top" class="option number" name="new-top" type="number" value="0" min="0" max="100">%
 				</div>
 				<input id="sub" type="submit" value="Save">
 			</form>
 			<p id="resize-note">Windows are resizable from all sides.</p>
+			<br>
+			<div class="options-section">
+				<label for="original-resize">Move and resize original window:</label>
+				<input id="original-resize" class="option checkbox" name="original-resize" type="checkbox" checked="false">
+				<br>
+				<label for="new-resize">Move and resize new window:</label>
+				<input id="new-resize" class="option checkbox" name="new-resize" type="checkbox" checked="false">
+				<br>
+				<label for="original-focus">Keep focus on original window:</label>
+				<input id="original-focus" class="option checkbox" name="original-focus" type="checkbox" checked="false">
+			</div>
 		</div>
 		<div id="note">
 			<h4>Changing the key command:</h4>

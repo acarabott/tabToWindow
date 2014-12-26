@@ -5,8 +5,8 @@
 
 	var winGrid = 20; // px to use for window grid
 	var defaults = {
-		"original": {width: 50, height: 100, left: 0, top: 0},
-		"new": {width: 50, height: 100, left: 50, top: 0}
+		"original": {resize: false, focus: false, width: 50, height: 100, left: 0, top: 0},
+		"new": {resize: false, width: 50, height: 100, left: 50, top: 0}
 	};
 
 	function restore_options() {
@@ -24,7 +24,12 @@
 							value = defaults[wKey][pKey];
 						}
 
-						input.value = value;
+						// Set checkbox state or parameter value
+						if (value == "true" || value == "false") {
+							input.checked = (value == "true");
+						} else {
+							input.value = value;
+						}
 					}
 				}
 			}
@@ -32,15 +37,21 @@
 	}
 
 	function save_options(event) {
-		var inputs = document.getElementsByClassName('option'),
+		var numericInputs = document.getElementsByClassName('option number'),
+			checkboxInputs = document.getElementsByClassName('option checkbox'),
 			submit = document.getElementById('sub'),
 			valid = true,
 			i;
 
 		// Save to Local Storage
-		for (i = 0; i < inputs.length; i++) {
-			if (inputs[i].checkValidity()) {
-				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
+		for (i = 0; i < numericInputs.length; i++) {
+			if (numericInputs[i].checkValidity()) {
+				localStorage['ttw_' + numericInputs[i].id] = numericInputs[i].valueAsNumber;
+			}
+		}
+		for (i = 0; i < checkboxInputs.length; i++) {
+			if (checkboxInputs[i].checkValidity()) {
+				localStorage['ttw_' + checkboxInputs[i].id] = checkboxInputs[i].checked;
 			}
 		}
 	}
@@ -82,6 +93,7 @@
 
 		for (i = 0; i < inputs.length; i++) {
 			inputs[i].oninput = make_oninput_handler();
+			inputs[i].onchange = make_oninput_handler();
 			inputs[i].oninvalid = make_oninvalid_handler();
 		}
 	}
@@ -179,8 +191,19 @@
 		add_input_handlers();
 		setup_windows();
 
+		chrome.commands.getAll(function(cmds) {
+			var shortcut = "";
+			if (cmds.length > 0) {
+				shortcut = cmds[0].shortcut;
+			}
+			if (shortcut != "") {
+				$('#shortcut').html("Current Shortcut: " + shortcut);
+			}
+		});
+
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
 		$('#sub').click(save_options);
+
 	});
 }());
