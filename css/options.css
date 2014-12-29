@@ -27,7 +27,7 @@ body {
 	font-family:'Oxygen', sans-serif;
 }
 
-#container, #note, #credit {
+#container, #note, #credit, #optcheckbox {
 	width: 408px;
 	margin: 0 auto;
 }
@@ -105,6 +105,14 @@ ul {
 #credit {
 	font-size: 14px;
 	margin-top: 10px;
+}
+
+#optcheckbox {
+	/* TODO: learn css :) */
+	font-size: 14px;
+	font-weight: bold;
+	margin-top: 20px;
+	width: 37%;
 }
 
 #monitor, .inner-window {
