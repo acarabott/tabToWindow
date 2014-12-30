@@ -12,11 +12,10 @@
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
-		input = document.getElementById("popupTab");
-		input.checked = localStorage['ttw_popupTab'] == 'true';
-
-		input = document.getElementById("focusNew");
-		input.checked = localStorage['ttw_focusNew'] == 'true';
+		// popupTab and focusNew directly from dom
+		// ...works, but should I be doing document.getElementById ?
+		popupTab.checked = localStorage['ttw_popupTab'] == 'true';
+		focusNew.checked = localStorage['ttw_focusNew'] == 'true';
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -43,11 +42,9 @@
 			valid = true,
 			i;
 
-		var popupCheck = document.getElementById('popupTab');
+		// popupTab and focusNew directly from dom
 		localStorage['ttw_popupTab'] = popupTab.checked;
-
-		var focusCheck = document.getElementById('focusNew');
-		localStorage['ttw_focusNew'] = focusCheck.checked;
+		localStorage['ttw_focusNew'] = focusNew.checked;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
