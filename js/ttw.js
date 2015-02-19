@@ -113,4 +113,13 @@ function tab_to_window() {
 	});
 }
 
+//same as previous function but instead of the current tab, 
+function new_tab_to_window() {
+	//create a new tab
+	chrome.tabs.create();
+	//then call the normal function with this new tab open
+	tab_to_window();
+}
+
+//calls the main tab to new window function when the user hits the shortcut keys
 chrome.commands.onCommand.addListener(tab_to_window);
