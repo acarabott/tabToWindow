@@ -21,6 +21,10 @@
 			"suggested_key": { "default": "Alt+Shift+W" },
 			"description": "Open current tab in new window"
 		}
+		"New-tab-First": {
+			"suggested_key": { "default": "Alt+Shift+T" },
+			"description": "Open a NEW tab in new window"
+		}
 	},
 	"permissions": ["tabs"],
 	"options_page": "options.html"
