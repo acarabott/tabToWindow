@@ -77,9 +77,10 @@ function create_new_window(original_id) {
 			top: vals['top'],
 			incognito: tabs[0].incognito
 		}, function () {
-			chrome.windows.update(original_id, {
-				focused: true
-			});
+			//chrome.windows.update(original_id, {
+			//	focused: true
+			//});
+			console.log("orig id: " + original_id);
 		});
 	});
 }
