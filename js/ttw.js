@@ -122,4 +122,12 @@ function new_tab_to_window() {
 }
 
 //calls the main tab to new window function when the user hits the shortcut keys
-chrome.commands.onCommand.addListener(tab_to_window);
+chrome.commands.onCommand.addListener(function(command)
+{
+	//if the command for the new tab first was called, call that
+	if(command_string == "New-tab-First") {
+		new_tab_to_window();
+	} else { //otherwise call the primary action function
+		tab_to_window();
+	}
+});
