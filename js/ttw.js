@@ -116,16 +116,18 @@ function tab_to_window() {
 //same as previous function but instead of the current tab, 
 function new_tab_to_window() {
 	//create a new tab
-	chrome.tabs.create();
+	chrome.tabs.create({url:"chrome://newtab/"});
 	//then call the normal function with this new tab open
 	tab_to_window();
 }
 
-//calls the main tab to new window function when the user hits the shortcut keys
-chrome.commands.onCommand.addListener(function(command)
+//sets up the listener for the shortcut key
+chrome.commands.onCommand.addListener(function(command_string)
 {
+	console.log("Command triggered: " + command_string);
+
 	//if the command for the new tab first was called, call that
-	if(command_string == "New-tab-First") {
+	if(command_string == "new-tab-first") {
 		new_tab_to_window();
 	} else { //otherwise call the primary action function
 		tab_to_window();
