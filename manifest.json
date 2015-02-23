@@ -1,7 +1,7 @@
 {
 	"name": "Tab to Window Keyboard Shortcut",
-	"description": "Add a keyboard shortcut to move the current tab to a new window (default: Alt + Shift + W).",
-	"version": "2.1.1",
+	"description": "Add a keyboard shortcut to move the current tab (or a new tab) to a new window (default: Alt + Shift + W).",
+	"version": "2.2.1",
 	"manifest_version": 2,
 	"minimum_chrome_version": "25",
 
@@ -20,6 +20,10 @@
 		"toggle-feature": {
 			"suggested_key": { "default": "Alt+Shift+W" },
 			"description": "Open current tab in new window"
+		},
+		"new-tab-first": {
+			"suggested_key": { "default": "Alt+Shift+T" },
+			"description": "Open a NEW tab in new window"
 		}
 	},
 	"permissions": ["tabs"],

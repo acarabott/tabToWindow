@@ -77,9 +77,10 @@ function create_new_window(original_id) {
 			top: vals['top'],
 			incognito: tabs[0].incognito
 		}, function () {
-			chrome.windows.update(original_id, {
-				focused: true
-			});
+			//chrome.windows.update(original_id, {
+			//	focused: true
+			//});
+			console.log("orig id: " + original_id);
 		});
 	});
 }
@@ -113,4 +114,23 @@ function tab_to_window() {
 	});
 }
 
-chrome.commands.onCommand.addListener(tab_to_window);
+//same as previous function but instead of the current tab, 
+function new_tab_to_window() {
+	//create a new tab
+	chrome.tabs.create({url:"chrome://newtab/"});
+	//then call the normal function with this new tab open
+	tab_to_window();
+}
+
+//sets up the listener for the shortcut key
+chrome.commands.onCommand.addListener(function(command_string)
+{
+	console.log("Command triggered: " + command_string);
+
+	//if the command for the new tab first was called, call that
+	if(command_string == "new-tab-first") {
+		new_tab_to_window();
+	} else { //otherwise call the primary action function
+		tab_to_window();
+	}
+});
