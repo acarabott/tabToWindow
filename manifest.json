@@ -5,7 +5,7 @@
 	"version": "2.2.0",
 	"author": "Arthur Carabott",
 
-	"description": "Add a keyboard shortcut to move the current tab to a new window (default: Alt + Shift + W).",
+	"description": "Add a keyboard shortcut to move the current tab to a new window (default: Alt + Shift + X).",
 	"minimum_chrome_version": "25",
 
 	"icons": {
@@ -22,15 +22,15 @@
 
 	"commands": {
 		"tab-to-window-normal": {
-			"suggested_key": { "default": "Alt+Shift+W" },
+			"suggested_key": { "default": "Alt+Shift+X" },
 			"description": "Open current tab in new window"
 		},
 		"tab-to-window-popup": {
-			"suggested_key": { "default": "Alt+Shift+E" },
+			"suggested_key": { "default": "Alt+Shift+C" },
 			"description": "Open current tab in new popup window"
 		},
 		"window-to-tab": {
-			"suggested_key": { "default": "Alt+Shift+B" },
+			"suggested_key": { "default": "Alt+Shift+Z" },
 			"description": "Move popped tab back to original window"
 		}
 	},
