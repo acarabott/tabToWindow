@@ -13,13 +13,13 @@
 			<div id="monitor">
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
+						<div class="inner-window">Original Window<span class="hidden-info"> - Resizing disabled</span></div>
 						<div class="button red"></div>
 						<div class="button yellow"></div>
 						<div class="button green"></div>
-						<div class="inner-window">Original Window</div>
 					</div>
 					<div id="new" class="window ui-widget-content">
-						<div class="inner-window">New Window</div>
+						<div class="inner-window">New Window<span class="hidden-info"> - Clone enabled</span></div>
 						<div class="button red"></div>
 						<div class="button yellow"></div>
 						<div class="button green"></div>
@@ -67,7 +67,7 @@
 				<label for="resize-original">Resize original window</label>
 				<input type="checkbox" id="resize-original">
 				<br>
-				<label for="clone-original">Clone original window</label>
+				<label for="clone-original">New window clones original window</label>
 				<input type="checkbox" id="clone-original">
 				<br>
 				<label for="clone-position">Clone Position:</label>

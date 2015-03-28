@@ -113,8 +113,9 @@
 
 	function update_window_handling (input_id, window_id, enable_if_checked) {
 		var $input =  $(input_id);
-		var checked = $input.prop('checked');
 		var $win =    $(window_id);
+		var $hidden = $('.hidden-info', $win);
+		var checked = $input.prop('checked');
 		var enable =  enable_if_checked ? checked : !checked;
 		var action =  enable ? 'enable' : 'disable';
 		var opacity = enable ? 1.0 : 0.5;
@@ -122,6 +123,12 @@
 		$win.draggable(action);
 		$win.resizable(action);
 		$win.css('opacity', opacity);
+
+		if (enable) {
+			$hidden.hide();
+		} else {
+			$hidden.show();
+		}
 	}
 
 	function update_resize_original () {
