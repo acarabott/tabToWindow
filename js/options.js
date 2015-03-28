@@ -235,12 +235,7 @@
 		update_clone_original();
 	}
 
-	jQuery(document).ready(function($) {
-		resize_screen();
-		restore_options();
-		add_input_handlers();
-		setup_windows();
-
+	function display_shortcuts () {
 		chrome.commands.getAll(function(cmds) {
 			if (cmds.length === 0) {
 				return;
@@ -262,6 +257,14 @@
 			});
 			$shortcuts.append($ul);
 		});
+	}
+
+	jQuery(document).ready(function($) {
+		resize_screen();
+		restore_options();
+		add_input_handlers();
+		setup_windows();
+		display_shortcuts();
 
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
