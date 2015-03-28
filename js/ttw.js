@@ -8,7 +8,7 @@ function get_size_and_pos(key) {
 		height : localStorage['ttw_' + key + '-height'],
 		left : localStorage['ttw_' + key + '-left'],
 		top : localStorage['ttw_' + key + '-top'],
-		min_top : localStorage['ttw_min_top']
+		min_top : localStorage.ttw_min_top
 	};
 	var pKey;
 
@@ -43,7 +43,7 @@ function get_size_and_pos(key) {
 	}
 
 	// Account for possible OS menus
-	properties[top] += properties['min_top'];
+	properties[top] += properties.min_top;
 
 	return properties;
 }
@@ -53,10 +53,10 @@ function position_original(id) {
 
 	// Move original window
 	chrome.windows.update(id, {
-		width: vals['width'],
-		height: vals['height'],
-		left: vals['left'],
-		top: vals['top']
+		width: vals.width,
+		height: vals.height,
+		left: vals.left,
+		top: vals.top
 	});
 }
 
@@ -78,12 +78,12 @@ function create_new_window(window_type, original_id) {
 		// Move it to a new window
 		chrome.windows.create({
 			tabId: 		tab.id,
-			width: 		vals['width'],
-			height: 	vals['height'],
-			left: 		vals['left'],
-			top: 		vals['top'],
+			width: 		vals.width,
+			height: 	vals.height,
+			left: 		vals.left,
+			top: 		vals.top,
 			type: 		window_type,
-			focused: 	localStorage['ttw_focus-new'] === "true",
+			focused: 	localStorage.ttw_focus_new === "true",
 			incognito: 	tabs[0].incognito
 		}, function (window) {
 			// save parent id in case we want to pop_in
@@ -110,12 +110,12 @@ function tab_to_window(window_type) {
 		}
 
 		// store the minimum top value: create window at 0 and check screenTop
-		if (localStorage['ttw_min_top'] === undefined) {
+		if (localStorage.ttw_min_top === undefined) {
 			chrome.windows.create({
 				top: 	 0,
 				focused: false
 			}, function(window) {
-				localStorage['ttw_min_top'] = window.screenTop;
+				localStorage.ttw_min_top = window.screenTop;
 				chrome.windows.remove(window.id, function() {
 					move_tab_out(window_type);
 				});

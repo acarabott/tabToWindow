@@ -24,7 +24,7 @@
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
-		focusInput.checked = localStorage['ttw_focus-new'] === 'true';
+		focusInput.checked = localStorage.ttw_focus_new === 'true';
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -51,7 +51,7 @@
 			valid = true,
 			i;
 
-		localStorage['ttw_focus-new'] = focusInput.checked;
+		localStorage.ttw_focus_new = focusInput.checked;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
