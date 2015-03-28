@@ -5,17 +5,26 @@
 
 	var winGrid = 20; // px to use for window grid
 	var defaults = {
-		"original": {width: 50, height: 100, left: 0, top: 0},
-		"new": {width: 50, height: 100, left: 50, top: 0}
+		"original": {
+			width:  50,
+			height: 100,
+			left:   0,
+			top:    0,
+
+		},
+		"new": {
+			width:  50,
+			height: 100,
+			left:   50,
+			top:    0
+		}
 	};
+	var focusInput = document.getElementById('focus-new');
 
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
-		// popupTab and focusNew directly from dom
-		// ...works, but should I be doing document.getElementById ?
-		popupTab.checked = localStorage['ttw_popupTab'] == 'true';
-		focusNew.checked = localStorage['ttw_focusNew'] == 'true';
+		focusInput.checked = localStorage['ttw_focus-new'] === 'true';
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -42,9 +51,7 @@
 			valid = true,
 			i;
 
-		// popupTab and focusNew directly from dom
-		localStorage['ttw_popupTab'] = popupTab.checked;
-		localStorage['ttw_focusNew'] = focusNew.checked;
+		localStorage['ttw_focus-new'] = focusInput.checked;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
@@ -189,19 +196,30 @@
 		setup_windows();
 
 		chrome.commands.getAll(function(cmds) {
-			var shortcut = "";
-			if (cmds.length > 0) {
-				shortcut = cmds[0].shortcut;
+			if (cmds.length === 0) {
+				return;
 			}
-			if (shortcut != "") {
-				$('#shortcut').html("Current Shortcut: " + shortcut);
-			}
+			var $shortcuts = $('#shortcuts');
+			var $ul = $('<ul>');
+			$shortcuts.html($('<h2>').text("Current shortcuts:"));
+
+			cmds.forEach(function(cmd, i) {
+				var $li = $('<li>');
+				var desc = cmd.description;
+				var $shortcuts = $('<span>');
+				$shortcuts.addClass('shortcut');
+				$shortcuts.text(cmd.shortcut);
+				$li.append(desc);
+				$li.append(' - ');
+				$li.append($shortcuts);
+				$ul.append($li);
+			});
+			$shortcuts.append($ul);
 		});
 
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
-		$('#sub').click(save_options);
-		$('#popupTab').click(save_options);
-		$('#focusNew').click(save_options);
+
+		$('#sub, #focus-new').click(save_options);
 	});
 }());

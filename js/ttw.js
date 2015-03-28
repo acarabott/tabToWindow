@@ -60,94 +60,119 @@ function position_original(id) {
 	});
 }
 
-function create_new_window(original_id) {
+function get_origin_id(id) {
+	return 'ttw_pop_origin_' + id;
+}
+
+function create_new_window(window_type, original_id) {
 	// Get active tab
 	chrome.tabs.query({
 		currentWindow: true,
-		active:true
+		active: true
 	}, function (tabs) {
-		var vals = get_size_and_pos('new');
+		var tab, vals;
 
-		var wintype = 'normal';
-		if (localStorage['ttw_popupTab'] == "true") {
-			wintype = 'popup';
-		}
+		tab = tabs[0];
+		vals = get_size_and_pos('new');
 
 		// Move it to a new window
 		chrome.windows.create({
-			tabId: tabs[0].id,
-			width: vals['width'],
-			height: vals['height'],
-			left: vals['left'],
-			top: vals['top'],
-			type: wintype,
-			incognito: tabs[0].incognito
-		}, function (newwin) {
-		   if (localStorage['ttw_focusNew'] !== 'true') {
-				chrome.windows.update(original_id, {
-					focused: true
-				});
-			}
+			tabId: 		tab.id,
+			width: 		vals['width'],
+			height: 	vals['height'],
+			left: 		vals['left'],
+			top: 		vals['top'],
+			type: 		window_type,
+			focused: 	localStorage['ttw_focus-new'] === "true",
+			incognito: 	tabs[0].incognito
+		}, function (window) {
 			// save parent id in case we want to pop_in
-			sessionStorage[newwin.id]=original_id;
+			sessionStorage[get_origin_id(tab.id)] = original_id;
 		});
 	});
 }
 
-function move_windows() {
+function move_tab_out(window_type) {
 	chrome.windows.getCurrent({}, function (window) {
 		position_original(window.id);
-		create_new_window(window.id);
+		create_new_window(window_type, window.id);
 	});
 }
 
-function pop_in(outtab, orig_id) {
-	chrome.windows.get(orig_id,{},function(orig_win) {
-		if ( typeof orig_win === "undefined" ) {
-			// not sure this check is required.
-			return;
-		}
-		// Previous window exists
-		// It may be necessary to update current window to "normal" before
-		// move will work.
-		chrome.tabs.move(outtab.id,{
-			windowId: orig_id,
-			index: -1
-			});
-	});
-}
 
-function tab_to_window() {
+function tab_to_window(window_type) {
 	// Check there are more than 1 tabs in current window
 	chrome.tabs.query({
 		currentWindow: true
 	}, function (tabs) {
-		if (tabs.length > 1) {
-			if (typeof localStorage['ttw_min_top'] === "undefined") {
-				chrome.windows.create({
-					top:0,
-					focused: false
-				}, function(window) {
-					localStorage['ttw_min_top'] = window.top;
-					chrome.windows.remove(window.id, move_windows);
-				});
-			} else {
-				move_windows();
-			}
+		if (tabs.length <= 1) {
+			return;
 		}
-		else {
-			chrome.windows.getCurrent({}, function(curwin) {
-				// If windows was previously popped-out, try and put it back.
-				var orig_id = sessionStorage[curwin.id];
-				if ( typeof orig_id === "undefined" ) {
-					return;
-				}
-				pop_in(tabs[0], +orig_id);
+
+		// store the minimum top value: create window at 0 and check screenTop
+		if (localStorage['ttw_min_top'] === undefined) {
+			chrome.windows.create({
+				top: 	 0,
+				focused: false
+			}, function(window) {
+				localStorage['ttw_min_top'] = window.screenTop;
+				chrome.windows.remove(window.id, function() {
+					move_tab_out(window_type);
+				});
 			});
+		} else {
+			move_tab_out(window_type);
 		}
 	});
 }
 
-chrome.commands.onCommand.addListener(tab_to_window);
+function tab_to_normal_window () {
+	tab_to_window('normal');
+}
 
-// vim: tabstop=3 shiftwidth=3
+function tab_to_popup_window () {
+	tab_to_window('popup');
+}
+
+function window_to_tab() {
+	chrome.tabs.query({
+		currentWindow: true,
+		active: 	   true
+	}, function(tabs) {
+		var tab = tabs[0];
+
+		var popped_key = get_origin_id(tab.id);
+		if (!sessionStorage.hasOwnProperty(popped_key)) {
+			return;
+		}
+
+		var origin_window_id = parseInt(sessionStorage[popped_key]);
+
+		// check original window still exists
+		chrome.windows.get(origin_window_id, {}, function(originWindow) {
+			if (chrome.runtime.lastError) {
+				return;
+			}
+
+			// move the current tab
+			chrome.tabs.move(tab.id, {
+				windowId: origin_window_id,
+				index:    -1
+			}, function() {
+				sessionStorage.removeItem(popped_key);
+			});
+		});
+	});
+}
+
+chrome.commands.onCommand.addListener(function(command) {
+	var lookup = {
+		'tab-to-window-normal': tab_to_normal_window,
+		'tab-to-window-popup':  tab_to_popup_window,
+		'window-to-tab': 		window_to_tab
+	};
+
+	if (lookup.hasOwnProperty(command)) {
+		lookup[command]();
+	}
+});

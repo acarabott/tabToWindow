@@ -93,10 +93,20 @@ ul {
 	list-style-type: none;
 }
 
-#shortcut {
+#shortcuts {
 	font-size: 18px;
 	margin-top: 0px;
 	margin-bottom: 8px;
+}
+
+#shortcuts ul {
+	font-size: 14px;
+	margin: 0;
+	padding: 0;
+}
+
+#shortcuts .shortcut {
+	font-weight: bold;
 }
 
 #sub {
@@ -108,12 +118,9 @@ ul {
 	margin-top: 10px;
 }
 
-#optcheckbox {
-	/* TODO: learn css :) */
-	font-size: 14px;
-	font-weight: bold;
-	margin-top: 20px;
-	width: 37%;
+#checkboxes label {
+	width: auto;
+	margin-right: 5px;
 }
 
 #monitor, .inner-window {

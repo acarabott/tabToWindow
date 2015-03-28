@@ -17,9 +17,17 @@
 	},
 
 	"commands": {
-		"toggle-feature": {
+		"tab-to-window-normal": {
 			"suggested_key": { "default": "Alt+Shift+W" },
 			"description": "Open current tab in new window"
+		},
+		"tab-to-window-popup": {
+			"suggested_key": { "default": "Alt+Shift+E" },
+			"description": "Open current tab in new popup window"
+		},
+		"window-to-tab": {
+			"suggested_key": { "default": "Alt+Shift+B" },
+			"description": "Move popped tab back to original window"
 		}
 	},
 	"permissions": ["tabs"],
