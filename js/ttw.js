@@ -94,11 +94,12 @@ function create_new_window(window_type, original_id) {
 
 function move_tab_out(window_type) {
 	chrome.windows.getCurrent({}, function (window) {
-		position_original(window.id);
+		if (localStorage.ttw_resize_original === 'true') {
+			position_original(window.id);
+		}
 		create_new_window(window_type, window.id);
 	});
 }
-
 
 function tab_to_window(window_type) {
 	// Check there are more than 1 tabs in current window

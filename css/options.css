@@ -27,7 +27,7 @@ body {
 	font-family:'Oxygen', sans-serif;
 }
 
-#container, #note, #credit, #optcheckbox {
+#container, #note, #credit, #checkboxes {
 	width: 408px;
 	margin: 0 auto;
 }
@@ -116,6 +116,14 @@ ul {
 #credit {
 	font-size: 14px;
 	margin-top: 10px;
+}
+
+#checkboxes {
+	margin-top: 10px;
+}
+
+#checkboxes h2 {
+	margin-bottom: 10px;
 }
 
 #checkboxes label {

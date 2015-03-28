@@ -10,7 +10,6 @@
 			height: 100,
 			left:   0,
 			top:    0,
-
 		},
 		"new": {
 			width:  50,
@@ -19,12 +18,15 @@
 			top:    0
 		}
 	};
+
 	var focusInput = document.getElementById('focus-new');
+	var resizeOriginal = document.getElementById('resize-original');
 
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
 		focusInput.checked = localStorage.ttw_focus_new === 'true';
+		resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -52,6 +54,7 @@
 			i;
 
 		localStorage.ttw_focus_new = focusInput.checked;
+		localStorage.ttw_resize_original = resizeOriginal.checked;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
@@ -92,14 +95,28 @@
 		};
 	}
 
-	function add_input_handlers() {
-		var inputs = document.getElementsByClassName('option'),
-			i;
+	function update_resize_original () {
+		var $input = $('#resize-original');
+		var checked = $input.prop('checked');
+		var action = checked ? 'enable' : 'disable';
+		var opacity = checked ? 1.0 : 0.5;
+		var $original = $('#original');
 
-		for (i = 0; i < inputs.length; i++) {
-			inputs[i].oninput = make_oninput_handler();
-			inputs[i].oninvalid = make_oninvalid_handler();
-		}
+		$original.draggable(action);
+		$original.resizable(action);
+		$original.css('opacity', opacity);
+	}
+
+	function add_input_handlers() {
+		$('.option').each(function(i, input) {
+			input.oninput = make_oninput_handler();
+			input.oninvalid = make_oninvalid_handler();
+		});
+
+		$('#resize-original').change(function(event) {
+			update_resize_original();
+		});
+
 	}
 
 	function resize_screen() {
@@ -187,6 +204,7 @@
 			});
 		});
 
+		update_resize_original();
 	}
 
 	jQuery(document).ready(function($) {
@@ -220,6 +238,6 @@
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
 
-		$('#sub, #focus-new').click(save_options);
+		$('#sub, #focus-new, #resize-original').click(save_options);
 	});
 }());
