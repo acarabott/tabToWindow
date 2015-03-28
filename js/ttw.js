@@ -3,6 +3,7 @@ function get_size_and_pos(key) {
 		"original": {width: 0.5, height: 1, left: 0, top: 0, min_top: 0},
 		"new": {width: 0.5, height: 1, left: 0.5, top: 0, min_top: 0}
 	};
+
 	var properties = {
 		width : localStorage['ttw_' + key + '-width'],
 		height : localStorage['ttw_' + key + '-height'],
@@ -10,9 +11,8 @@ function get_size_and_pos(key) {
 		top : localStorage['ttw_' + key + '-top'],
 		min_top : localStorage.ttw_min_top
 	};
-	var pKey;
 
-	for (pKey in properties) {
+	for (var pKey in properties) {
 		if (properties.hasOwnProperty(pKey)) {
 			if (typeof properties[pKey] === "undefined") {
 				// Use default
@@ -64,7 +64,54 @@ function get_origin_id(id) {
 	return 'ttw_pop_origin_' + id;
 }
 
-function create_new_window(window_type, original_id) {
+function get_clone_vals(orig) {
+	var pos = localStorage.ttw_clone_position;
+	var vals = {};
+
+	if (pos === 'clone-position-same') {
+		vals.width = orig.width;
+		vals.height = orig.height;
+		vals.left = orig.left;
+		vals.top = orig.top;
+
+	} else if (pos === 'clone-position-horizontal') {
+		var right = orig.left + orig.width;
+		var hgap = screen.width - right;
+		vals.height = orig.height;
+		vals.top = orig.top;
+
+		// position on right
+		if (orig.left < hgap) {
+			vals.width = Math.min(orig.width, hgap);
+			vals.left = right;
+		} else { // position on left
+			var width = Math.min(orig.width, orig.left);
+			vals.width = width;
+			vals.left = orig.left - width;
+		}
+
+	} else if (pos === 'clone-position-vertical') {
+		var bottom = orig.top + orig.height;
+		var vgap = screen.height - bottom;
+
+		vals.left = orig.left;
+		vals.width = orig.width;
+
+		// position below
+		if (orig.top < vgap) {
+			vals.top = bottom;
+			vals.height = Math.min(orig.height, vgap);
+		} else { // position above
+			var height = Math.min(orig.height, orig.top);
+			vals.height = height;
+			vals.top = orig.top - height;
+		}
+	}
+
+	return vals;
+}
+
+function create_new_window(window_type, original_window) {
 	// Get active tab
 	chrome.tabs.query({
 		currentWindow: true,
@@ -73,7 +120,13 @@ function create_new_window(window_type, original_id) {
 		var tab, vals;
 
 		tab = tabs[0];
-		vals = get_size_and_pos('new');
+
+		// If we are cloning the origin window, use the origin window values
+		if (localStorage.ttw_clone_original === 'true') {
+			vals = get_clone_vals(original_window);
+		} else {
+			vals = get_size_and_pos('new');
+		}
 
 		// Move it to a new window
 		chrome.windows.create({
@@ -87,7 +140,7 @@ function create_new_window(window_type, original_id) {
 			incognito: 	tabs[0].incognito
 		}, function (window) {
 			// save parent id in case we want to pop_in
-			sessionStorage[get_origin_id(tab.id)] = original_id;
+			sessionStorage[get_origin_id(tab.id)] = original_window.id;
 		});
 	});
 }
@@ -97,7 +150,7 @@ function move_tab_out(window_type) {
 		if (localStorage.ttw_resize_original === 'true') {
 			position_original(window.id);
 		}
-		create_new_window(window_type, window.id);
+		create_new_window(window_type, window);
 	});
 }
 

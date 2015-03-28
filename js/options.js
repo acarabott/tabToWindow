@@ -21,12 +21,21 @@
 
 	var focusInput = document.getElementById('focus-new');
 	var resizeOriginal = document.getElementById('resize-original');
+	var cloneOriginal = document.getElementById('clone-original');
+	var clonePositions = document.getElementsByName('clone-position');
 
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
 		focusInput.checked = localStorage.ttw_focus_new === 'true';
 		resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
+		cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
+
+		for (var i = 0; i < clonePositions.length; i++) {
+			if (localStorage.ttw_clone_position === clonePositions[i].id) {
+				clonePositions[i].checked = true;
+			}
+		}
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -36,7 +45,7 @@
 						input = document.getElementById(id);
 						value = localStorage['ttw_' + id];
 
-						if (typeof value === "undefined") {
+						if (value === undefined) {
 							value = defaults[wKey][pKey];
 						}
 
@@ -47,7 +56,7 @@
 		}
 	}
 
-	function save_options(event) {
+	function save(event) {
 		var inputs = document.getElementsByClassName('option'),
 			submit = document.getElementById('sub'),
 			valid = true,
@@ -55,11 +64,18 @@
 
 		localStorage.ttw_focus_new = focusInput.checked;
 		localStorage.ttw_resize_original = resizeOriginal.checked;
+		localStorage.ttw_clone_original = cloneOriginal.checked;
 
 		// Save to Local Storage
 		for (i = 0; i < inputs.length; i++) {
 			if (inputs[i].checkValidity()) {
 				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
+			}
+		}
+
+		for (i = 0; i < clonePositions.length; i++) {
+			if (clonePositions[i].checked) {
+				localStorage.ttw_clone_position = clonePositions[i].id;
 			}
 		}
 	}
@@ -77,7 +93,7 @@
 			$win.resize();
 
 			if (input.checkValidity()) {
-				save_options();
+				save();
 			}
 		};
 	}
@@ -95,16 +111,25 @@
 		};
 	}
 
-	function update_resize_original () {
-		var $input = $('#resize-original');
+	function update_window_handling (input_id, window_id, enable_if_checked) {
+		var $input =  $(input_id);
 		var checked = $input.prop('checked');
-		var action = checked ? 'enable' : 'disable';
-		var opacity = checked ? 1.0 : 0.5;
-		var $original = $('#original');
+		var $win =    $(window_id);
+		var enable =  enable_if_checked ? checked : !checked;
+		var action =  enable ? 'enable' : 'disable';
+		var opacity = enable ? 1.0 : 0.5;
 
-		$original.draggable(action);
-		$original.resizable(action);
-		$original.css('opacity', opacity);
+		$win.draggable(action);
+		$win.resizable(action);
+		$win.css('opacity', opacity);
+	}
+
+	function update_resize_original () {
+		update_window_handling('#resize-original', '#original', true);
+	}
+
+	function update_clone_original () {
+		update_window_handling('#clone-original', '#new', false);
 	}
 
 	function add_input_handlers() {
@@ -113,10 +138,12 @@
 			input.oninvalid = make_oninvalid_handler();
 		});
 
-		$('#resize-original').change(function(event) {
-			update_resize_original();
+		[
+			[$('#resize-original'), update_resize_original],
+			[$('#clone-original'), update_clone_original],
+		].forEach(function(pair, i) {
+		    pair[0].change(pair[1]);
 		});
-
 	}
 
 	function resize_screen() {
@@ -195,16 +222,17 @@
 
 			$this.on('resize', function(event, ui) {
 				update_window_size_and_position(this, ui);
-				save_options();
+				save();
 			});
 
 			$this.on('drag', function(event, ui) {
 				update_window_size_and_position(this, ui);
-				save_options();
+				save();
 			});
 		});
 
 		update_resize_original();
+		update_clone_original();
 	}
 
 	jQuery(document).ready(function($) {
@@ -238,6 +266,12 @@
 		$('.window').trigger('resize');
 		$('#extensions').click(open_extensions);
 
-		$('#sub, #focus-new, #resize-original').click(save_options);
+		[
+		'#sub', '#focus-new', '#resize-original', '#clone-original',
+		 '#clone-position-same', '#clone-position-horizontal',
+		 '#clone-position-vertical'
+		].forEach(function(item, i) {
+		    $(item).click(save);
+		});
 	});
 }());
