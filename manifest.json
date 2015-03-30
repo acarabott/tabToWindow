@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Tab to Window Keyboard Shortcut",
 	"short_name": "Tab 2 Window",
-	"version": "2.2.1",
+	"version": "2.2.2",
 	"author": "Arthur Carabott",
 
 	"description": "Add a keyboard shortcut to move the current tab to a new window (default: Alt + Shift + X).",
