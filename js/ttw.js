@@ -141,6 +141,12 @@ function create_new_window(window_type, original_window) {
 		}, function (window) {
 			// save parent id in case we want to pop_in
 			sessionStorage[get_origin_id(tab.id)] = original_window.id;
+
+			if (localStorage.ttw_focus_new === "false") {
+				chrome.windows.update(original_id, {
+					focused: true
+				});
+			}
 		});
 	});
 }
