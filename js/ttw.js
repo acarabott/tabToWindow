@@ -220,6 +220,9 @@ function window_to_tab() {
 				index:    -1
 			}, function() {
 				sessionStorage.removeItem(popped_key);
+				chrome.tabs.update(tab.id, {
+					active: true
+				});
 			});
 		});
 	});
