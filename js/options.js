@@ -5,13 +5,13 @@
 
 	var winGrid = 20; // px to use for window grid
 	var defaults = {
-		"original": {
+		'original': {
 			width:  50,
 			height: 100,
 			left:   0,
 			top:    0,
 		},
-		"new": {
+		'new': {
 			width:  50,
 			height: 100,
 			left:   50,
@@ -41,7 +41,7 @@
 			if (defaults.hasOwnProperty(wKey)) {
 				for (pKey in defaults[wKey]) {
 					if (defaults[wKey].hasOwnProperty(pKey)) {
-						id = wKey + "-" + pKey;
+						id = wKey + '-' + pKey;
 						input = document.getElementById(id);
 						value = localStorage['ttw_' + id];
 
@@ -159,7 +159,7 @@
 			ratio = screen.height / screen.width,
 			height = Math.round(width * ratio / winGrid) * winGrid;
 
-		userScreen.style.height =  height+ "px";
+		userScreen.style.height =  height+ 'px';
 	}
 
 	function open_extensions() {
@@ -209,19 +209,19 @@
 		// Restore positions from options
 		$('.window').each(function () {
 			var $this = $(this);
-			$this.width($('#' + $this.attr('id') + '-width').val() + "%");
-			$this.height($('#' + $this.attr('id') + '-height').val() + "%");
-			$this.css('left', $('#' + $this.attr('id') + '-left').val() + "%");
-			$this.css('top', $('#' + $this.attr('id') + '-top').val() + "%");
+			$this.width($('#' + $this.attr('id') + '-width').val() + '%');
+			$this.height($('#' + $this.attr('id') + '-height').val() + '%');
+			$this.css('left', $('#' + $this.attr('id') + '-left').val() + '%');
+			$this.css('top', $('#' + $this.attr('id') + '-top').val() + '%');
 
 			$this.draggable({
-				containment: "parent",
+				containment: 'parent',
 				grid: [screenWidth / winGrid, screenHeight / winGrid]
 			});
 
 			$this.resizable({
-				containment: "parent",
-				handles: "all",
+				containment: 'parent',
+				handles: 'all',
 				grid: [screenWidth / winGrid, screenHeight / winGrid],
 				minWidth: $this.parent().width() * 0.2,
 				minHeight: $this.parent().height() * 0.2
@@ -249,7 +249,7 @@
 			}
 			var $shortcuts = $('#shortcuts');
 			var $ul = $('<ul>');
-			$shortcuts.html($('<h2>').text("Current shortcuts:"));
+			$shortcuts.html($('<h2>').text('Current shortcuts:'));
 
 			cmds.forEach(function(cmd, i) {
 				var $li = $('<li>');
