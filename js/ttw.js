@@ -1,7 +1,9 @@
 function get_size_and_pos(key) {
+	// TODO If we convert these -> percentages -> pixel values, why do these
+	// start so low?
 	var defaults = {
-		"original": {width: 0.5, height: 1, left: 0, top: 0, min_top: 0},
-		"new": {width: 0.5, height: 1, left: 0.5, top: 0, min_top: 0}
+		'original': {width: 0.5, height: 1, left: 0, top: 0, min_top: 0},
+		'new': {width: 0.5, height: 1, left: 0.5, top: 0, min_top: 0}
 	};
 
 	var properties = {
@@ -13,32 +15,30 @@ function get_size_and_pos(key) {
 	};
 
 	for (var pKey in properties) {
-		if (properties.hasOwnProperty(pKey)) {
-			if (typeof properties[pKey] === "undefined") {
-				// Use default
-				properties[pKey] = defaults[key][pKey];
-			} else {
-				// Use options value
-				properties[pKey] = parseInt(properties[pKey], 10);
+		if (typeof properties[pKey] === 'undefined') {
+			// Use default
+			properties[pKey] = defaults[key][pKey];
+		} else {
+			// Use options value
+			properties[pKey] = parseInt(properties[pKey], 10);
 
-				// Convert to percentages
-				// min_top is already a pixel value
-				if (pKey !== 'min_top') {
-					properties[pKey] *= 0.01;
-				}
-			}
-
-			// Convert percentages to pixel values
-			// min_top will already be a pixel value
+			// Convert to percentages
+			// min_top is already a pixel value
 			if (pKey !== 'min_top') {
-				if (pKey === "width" || pKey === "left") {
-					properties[pKey] *= screen.availWidth;
-				} else if (pKey === "height" || pKey === "top") {
-					properties[pKey] *= screen.availHeight;
-				}
-
-				properties[pKey] = Math.round(properties[pKey]);
+				properties[pKey] *= 0.01;
 			}
+		}
+
+		// Convert percentages to pixel values
+		// min_top will already be a pixel value
+		if (pKey !== 'min_top') {
+			if (pKey === "width" || pKey === "left") {
+				properties[pKey] *= screen.availWidth;
+			} else if (pKey === "height" || pKey === "top") {
+				properties[pKey] *= screen.availHeight;
+			}
+
+			properties[pKey] = Math.round(properties[pKey]);
 		}
 	}
 
@@ -60,10 +60,6 @@ function position_original(id) {
 	});
 }
 
-function get_origin_id(id) {
-	return 'ttw_pop_origin_' + id;
-}
-
 function get_clone_vals(orig) {
 	var pos = localStorage.ttw_clone_position;
 	var vals = {};
@@ -75,33 +71,41 @@ function get_clone_vals(orig) {
 		vals.top = orig.top;
 
 	} else if (pos === 'clone-position-horizontal') {
-		var right = orig.left + orig.width;
-		var hgap = screen.width - right;
+		// Position windows left and right of each other
 		vals.height = orig.height;
 		vals.top = orig.top;
 
-		// position on right
-		if (orig.left < hgap) {
-			vals.width = Math.min(orig.width, hgap);
+		// Find which side has more space
+		var orig_right = orig.left + orig.width;
+		var right_space = screen.width - orig_right;
+
+		console.log(orig_right, right_space);
+		if (orig.left < right_space) {
+			// position new window on right of original window
+			vals.width = Math.min(orig.width, right_space);
 			vals.left = right;
-		} else { // position on left
+		} else {
+			// position new window on left of original window
 			var width = Math.min(orig.width, orig.left);
 			vals.width = width;
 			vals.left = orig.left - width;
 		}
+		console.log(vals.width, vals.left);
 
 	} else if (pos === 'clone-position-vertical') {
-		var bottom = orig.top + orig.height;
-		var vgap = screen.height - bottom;
-
+		// Position windows above and below of each other
 		vals.left = orig.left;
 		vals.width = orig.width;
 
-		// position below
-		if (orig.top < vgap) {
-			vals.top = bottom;
-			vals.height = Math.min(orig.height, vgap);
-		} else { // position above
+		var orig_bot = orig.top + orig.height;
+		var bottom_space = screen.height - orig_bot;
+
+		if (orig.top < bottom_space) {
+			// position new window below original window
+			vals.height = Math.min(orig.height, bottom_space);
+			vals.top = orig_bot;
+		} else {
+			// position new window above original window
 			var height = Math.min(orig.height, orig.top);
 			vals.height = height;
 			vals.top = orig.top - height;
@@ -111,6 +115,7 @@ function get_clone_vals(orig) {
 	return vals;
 }
 
+// The tab needs a home!
 function create_new_window(window_type, original_window) {
 	// Get active tab
 	chrome.tabs.query({
@@ -128,7 +133,7 @@ function create_new_window(window_type, original_window) {
 			vals = get_size_and_pos('new');
 		}
 
-		// Move it to a new window
+		// Move the tab to a new window
 		chrome.windows.create({
 			tabId: 		tab.id,
 			width: 		vals.width,
@@ -136,14 +141,15 @@ function create_new_window(window_type, original_window) {
 			left: 		vals.left,
 			top: 		vals.top,
 			type: 		window_type,
-			focused: 	localStorage.ttw_focus_new === "true",
-			incognito: 	tabs[0].incognito
+			focused: 	localStorage.ttw_focus_new === 'true',
+			incognito: 	tab.incognito
 		}, function (window) {
 			// save parent id in case we want to pop_in
-			sessionStorage[get_origin_id(tab.id)] = original_window.id;
+			sessionStorage['ttw_pop_origin_' + tab.id] = original_window.id;
 
-			if (localStorage.ttw_focus_new === "false") {
-				chrome.windows.update(original_id, {
+			// Focus on original window if designated
+			if (localStorage.ttw_focus_new === 'false') {
+				chrome.windows.update(original_window.id, {
 					focused: true
 				});
 			}
@@ -151,6 +157,7 @@ function create_new_window(window_type, original_window) {
 	});
 }
 
+// Take tab out of window
 function move_tab_out(window_type) {
 	chrome.windows.getCurrent({}, function (window) {
 		if (localStorage.ttw_resize_original === 'true') {
@@ -160,11 +167,13 @@ function move_tab_out(window_type) {
 	});
 }
 
+// Create window to store in
 function tab_to_window(window_type) {
 	// Check there are more than 1 tabs in current window
 	chrome.tabs.query({
 		currentWindow: true
 	}, function (tabs) {
+		// Only 1 tab, do nothing
 		if (tabs.length <= 1) {
 			return;
 		}
@@ -181,6 +190,7 @@ function tab_to_window(window_type) {
 				});
 			});
 		} else {
+			// TODO Simplify to just use default value
 			move_tab_out(window_type);
 		}
 	});
@@ -194,6 +204,7 @@ function tab_to_popup_window () {
 	tab_to_window('popup');
 }
 
+// Return a tab to the window from whence it came
 function window_to_tab() {
 	chrome.tabs.query({
 		currentWindow: true,
@@ -201,12 +212,13 @@ function window_to_tab() {
 	}, function(tabs) {
 		var tab = tabs[0];
 
-		var popped_key = get_origin_id(tab.id);
-		if (!sessionStorage.hasOwnProperty(popped_key)) {
+		var origin_key = 'ttw_pop_origin_' + tab.id;
+		// Check if original window exists
+		if (!sessionStorage.hasOwnProperty(origin_key)) {
 			return;
 		}
 
-		var origin_window_id = parseInt(sessionStorage[popped_key]);
+		var origin_window_id = parseInt(sessionStorage[origin_key]);
 
 		// check original window still exists
 		chrome.windows.get(origin_window_id, {}, function(originWindow) {
@@ -219,7 +231,7 @@ function window_to_tab() {
 				windowId: origin_window_id,
 				index:    -1
 			}, function() {
-				sessionStorage.removeItem(popped_key);
+				sessionStorage.removeItem(origin_key);
 				chrome.tabs.update(tab.id, {
 					active: true
 				});
@@ -228,6 +240,7 @@ function window_to_tab() {
 	});
 }
 
+// Listen for hotkey command
 chrome.commands.onCommand.addListener(function(command) {
 	var lookup = {
 		'tab-to-window-normal': tab_to_normal_window,
