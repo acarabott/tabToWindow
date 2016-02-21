@@ -164,7 +164,7 @@
 
 	function open_extensions() {
 		chrome.tabs.update({
-			url: 'chrome://extensions/'
+			url: 'chrome://extensions/configureCommands'
 		});
 	}
 
@@ -248,8 +248,7 @@
 				return;
 			}
 			var $shortcuts = $('#shortcuts');
-			var $ul = $('<ul>');
-			$shortcuts.html($('<h2>').text("Current shortcuts:"));
+			var $ul = $('#shortcut-list');
 
 			cmds.forEach(function(cmd, i) {
 				var $li = $('<li>');
@@ -258,11 +257,10 @@
 				$shortcuts.addClass('shortcut');
 				$shortcuts.text(cmd.shortcut);
 				$li.append(desc);
-				$li.append(' - ');
+				$li.append(': ');
 				$li.append($shortcuts);
 				$ul.append($li);
 			});
-			$shortcuts.append($ul);
 		});
 	}
 

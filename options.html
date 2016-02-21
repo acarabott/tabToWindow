@@ -9,7 +9,11 @@
 	<body>
 		<div id="container">
 			<h1>Tab To Window Keyboard Shortcut</h1>
-			<p id="shortcuts">Default shortcut: Alt + Shift + W</p>
+			<div id="shortcuts">
+				<h2>Current shortcuts</h2>
+				<ul id="shortcut-list"></ul>
+				<a id="extensions" href="chrome://extensions/configureCommands">Change shortcuts</a>
+			</div>
 			<div id="monitor">
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
@@ -79,14 +83,6 @@
 				<input type="radio" id="clone-position-vertical" name="clone-position">
 				<label for="clone-position-vertical">Vertical</label>
 			</div>
-		</div>
-		<div id="note">
-			<h4>Changing the key command:</h4>
-			<ol>
-				<li>Go to  <a id="extensions" href="chrome://extensions">chrome://extensions</a></li>
-				<li>Scroll to the bottom of the page</li>
-				<li>Click 'Configure commands'</li>
-			</ol>
 		</div>
 		<div id="credit">
 			by <a target="_blank" href="http://www.arthurcarabott.com">Arthur Carabott</a>

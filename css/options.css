@@ -95,15 +95,23 @@ ul {
 }
 
 #shortcuts {
-	font-size: 18px;
+	font-size: 16px;
 	margin-top: 0px;
-	margin-bottom: 8px;
+	margin-bottom: 12px;
+}
+
+#shortcuts h2 {
+	margin: 10px 0 5px;
 }
 
 #shortcuts ul {
 	font-size: 14px;
 	margin: 0;
 	padding: 0;
+}
+
+#shortcuts li {
+	margin: 2px 0;
 }
 
 #shortcuts .shortcut {
