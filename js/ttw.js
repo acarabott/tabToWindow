@@ -143,7 +143,7 @@ function create_new_window(window_type, original_window) {
 			sessionStorage[get_origin_id(tab.id)] = original_window.id;
 
 			if (localStorage.ttw_focus_new === "false") {
-				chrome.windows.update(original_id, {
+				chrome.windows.update(original_window.id, {
 					focused: true
 				});
 			}
