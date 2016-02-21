@@ -18,10 +18,13 @@
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
 						<div class="inner-window">
-							<div>Original Window<span class="hidden-info"> - Resizing disabled</span></div>
-							<div class=focus-wrap>
+							<h4>Original Window</h4>
+							<div class="inner-window-controls">
 								<label for="focus-original">Focus</label>
 								<input name="focus" type="radio" id="focus-original" class="focus-option">
+								<br>
+								<label for="resize-original">Resize?</label>
+								<input type="checkbox" id="resize-original">
 							</div>
 						</div>
 						<div class="button red"></div>
@@ -30,13 +33,13 @@
 					</div>
 					<div id="new" class="window ui-widget-content">
 						<div class="inner-window">
-							<div>New Window<span class="hidden-info"> - Clone enabled</span></div>
-							<div class=focus-wrap>
+							<h4>New Window</h4>
+							<div class="inner-window-controls">
 								<label for="focus-new">Focus</label>
 								<input name="focus" type="radio" id="focus-new" class="focus-option">
 							</div>
+							<div class="hidden-info">Cloning size</div>
 						</div>
-
 						<div class="button red"></div>
 						<div class="button yellow"></div>
 						<div class="button green"></div>
@@ -78,9 +81,6 @@
 			<p id="resize-note">Windows are resizable from all sides.</p>
 			<div id="checkboxes">
 				<h2>Options</h2>
-				<label for="resize-original">Resize original window</label>
-				<input type="checkbox" id="resize-original">
-				<br>
 				<label for="clone-original">New window clones original window size</label>
 				<input type="checkbox" id="clone-original">
 				<br>

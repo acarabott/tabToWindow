@@ -136,11 +136,9 @@
 		var checked = $input.prop('checked');
 		var enable =  enable_if_checked ? checked : !checked;
 		var action =  enable ? 'enable' : 'disable';
-		var opacity = enable ? 1.0 : 0.5;
 
 		$win.draggable(action);
 		$win.resizable(action);
-		$win.css('opacity', opacity);
 
 		if (enable) {
 			$hidden.hide();
@@ -171,7 +169,7 @@
 		var border_color = $('.inner-window').css('border-color');
 
 		$('.inner-window', $focused).css('opacity', 1.0);
-		$('.inner-window', $unfocused).css('opacity', 0.8);
+		$('.inner-window', $unfocused).css('opacity', 0.85);
 		$('.button', $focused).css('opacity', 1.0);
 		$('.button', $unfocused).css('opacity', 0.1);
 	}

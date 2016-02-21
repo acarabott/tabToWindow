@@ -172,11 +172,11 @@ ul {
 	border-radius:3px;
 }
 
-.focus-wrap {
-	margin-top: 20px;
+.inner-window h4 {
+	margin: 0 0 5px;
 }
 
-.focus-wrap label {
+.inner-window-controls label {
 	width: auto;
 }
 
