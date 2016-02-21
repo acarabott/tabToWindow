@@ -17,13 +17,22 @@
 			<div id="monitor">
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
-						<div class="inner-window">Original Window<span class="hidden-info"> - Resizing disabled</span></div>
+						<div class="inner-window">
+							<div>Original Window<span class="hidden-info"> - Resizing disabled</span></div>
+							<label for="focus-original">Focus</label>
+							<input name="focus" type="radio" id="focus-original">
+						</div>
 						<div class="button red"></div>
 						<div class="button yellow"></div>
 						<div class="button green"></div>
 					</div>
 					<div id="new" class="window ui-widget-content">
-						<div class="inner-window">New Window<span class="hidden-info"> - Clone enabled</span></div>
+						<div class="inner-window">
+							<div>New Window<span class="hidden-info"> - Clone enabled</span></div>
+							<label for="focus-new">Focus</label>
+							<input name="focus" type="radio" id="focus-new">
+						</div>
+
 						<div class="button red"></div>
 						<div class="button yellow"></div>
 						<div class="button green"></div>
@@ -65,9 +74,6 @@
 			<p id="resize-note">Windows are resizable from all sides.</p>
 			<div id="checkboxes">
 				<h2>Options</h2>
-				<label for="focus-new">Focus on new tab</label>
-				<input type="checkbox" id="focus-new">
-				<br>
 				<label for="resize-original">Resize original window</label>
 				<input type="checkbox" id="resize-original">
 				<br>
