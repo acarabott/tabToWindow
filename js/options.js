@@ -184,8 +184,9 @@
 	}
 
 	function open_extensions() {
+
 		chrome.tabs.update({
-			url: 'chrome://extensions/configureCommands'
+			url: $(this).attr('href')
 		});
 	}
 
