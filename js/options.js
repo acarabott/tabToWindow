@@ -144,6 +144,21 @@
 		$('.clone-position-option').prop('disabled', !checked);
 	}
 
+	function update_focus() {
+		var $focus_input = $('#focus-new');
+		var checked = $focus_input.prop('checked');
+		var $original = $('#original');
+		var $new = $('#new');
+		var $focused = checked ? $new : $original;
+		var $unfocused = checked ? $original : $new;
+		var border_color = $('.inner-window').css('border-color');
+
+		$('.inner-window', $focused).css('opacity', 1.0)
+		$('.inner-window', $unfocused).css('opacity', 0.8)
+		$('.button', $focused).css('opacity', 1.0);
+		$('.button', $unfocused).css('opacity', 0.1);
+	}
+
 	function add_input_handlers() {
 		$('.option').each(function(i, input) {
 			input.oninput = make_oninput_handler();
@@ -152,6 +167,7 @@
 
 		[
 			[$('#resize-original'), update_resize_original],
+			[$('#focus-new'), update_focus],
 			[$('#clone-original'), update_clone_original],
 		].forEach(function(pair, i) {
 		    pair[0].change(pair[1]);
@@ -245,6 +261,7 @@
 
 		update_resize_original();
 		update_clone_original();
+		update_focus();
 	}
 
 	function display_shortcuts () {
