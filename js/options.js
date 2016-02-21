@@ -132,19 +132,12 @@
 	function update_window_handling (input_id, window_id, enable_if_checked) {
 		var $input =  $(input_id);
 		var $win =    $(window_id);
-		var $hidden = $('.hidden-info', $win);
 		var checked = $input.prop('checked');
 		var enable =  enable_if_checked ? checked : !checked;
 		var action =  enable ? 'enable' : 'disable';
 
 		$win.draggable(action);
 		$win.resizable(action);
-
-		if (enable) {
-			$hidden.hide();
-		} else {
-			$hidden.show();
-		}
 	}
 
 	function update_resize_original () {
@@ -155,9 +148,17 @@
 		var input_id = '#clone-original';
 		update_window_handling(input_id, '#new', false);
 
+
 		// toggle clone position controls if cloning enabled/disabled
 		var checked = $(input_id).prop('checked');
 		$('.clone-position-option').prop('disabled', !checked);
+
+		var $options = $('#clone-position-options');
+		if (checked) {
+			$options.show();
+		} else {
+			$options.hide();
+		}
 	}
 
 	function update_focus() {
@@ -169,7 +170,7 @@
 		var border_color = $('.inner-window').css('border-color');
 
 		$('.inner-window', $focused).css('opacity', 1.0);
-		$('.inner-window', $unfocused).css('opacity', 0.85);
+		$('.inner-window', $unfocused).css('opacity', 0.92);
 		$('.button', $focused).css('opacity', 1.0);
 		$('.button', $unfocused).css('opacity', 0.1);
 	}

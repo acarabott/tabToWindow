@@ -83,7 +83,7 @@ form {
 
 label, input {
 	display: inline-block;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
 }
 
 label {
@@ -118,26 +118,26 @@ ul {
 	font-weight: bold;
 }
 
-#sub {
-	/*display:none;*/
-}
-
 #credit {
 	font-size: 14px;
 	margin-top: 10px;
 }
 
-#checkboxes {
+#clone-position-options {
 	margin-top: 10px;
 }
 
-#checkboxes h2 {
+#clone-position-options h2 {
 	margin-bottom: 10px;
 }
 
-#checkboxes label {
+#clone-position-options label {
 	width: auto;
 	margin-right: 5px;
+}
+
+#clone-position-options p {
+	margin-top: 0px;
 }
 
 #monitor {

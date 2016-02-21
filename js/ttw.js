@@ -232,7 +232,7 @@ chrome.commands.onCommand.addListener(function(command) {
 	var lookup = {
 		'tab-to-window-normal': tab_to_normal_window,
 		'tab-to-window-popup':  tab_to_popup_window,
-		'window-to-tab': 		window_to_tab
+		'window-to-tab': 				window_to_tab
 	};
 
 	if (lookup.hasOwnProperty(command)) {

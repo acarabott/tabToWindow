@@ -14,6 +14,7 @@
 				<ul id="shortcut-list"></ul>
 				<a id="extensions" href="chrome://extensions/configureCommands">Change shortcuts</a>
 			</div>
+			<p id="resize-note">Windows are resizable from all sides.</p>
 			<div id="monitor">
 				<div id="screen">
 					<div id="original" class="window ui-widget-content">
@@ -37,8 +38,10 @@
 							<div class="inner-window-controls">
 								<label for="focus-new">Focus</label>
 								<input name="focus" type="radio" id="focus-new" class="focus-option">
+								<br>
+								<label for="clone-original">Clone original window size</label>
+								<input type="checkbox" id="clone-original">
 							</div>
-							<div class="hidden-info">Cloning size</div>
 						</div>
 						<div class="button red"></div>
 						<div class="button yellow"></div>
@@ -78,19 +81,15 @@
 				</div>
 				<input id="sub" type="submit" value="Save">
 			</form>
-			<p id="resize-note">Windows are resizable from all sides.</p>
-			<div id="checkboxes">
-				<h2>Options</h2>
-				<label for="clone-original">New window clones original window size</label>
-				<input type="checkbox" id="clone-original">
-				<br>
+			<div id="clone-position-options">
 				<label for="clone-position">Clone Position:</label>
 				<input class="clone-position-option" type="radio" id="clone-position-same" name="clone-position">
-				<label for="clone-position-same">On top</label>
+				<label for="clone-position-same">Offset</label>
 				<input class="clone-position-option" type="radio" id="clone-position-horizontal" name="clone-position"
 				<label for="clone-position-horizontal">Horizontal</label>
 				<input class="clone-position-option" type="radio" id="clone-position-vertical" name="clone-position">
 				<label for="clone-position-vertical">Vertical</label>
+				<p>The cloned window can be positioned offset from the original window, or next to it horizontally or vertically.</p>
 			</div>
 		</div>
 		<div id="credit">
