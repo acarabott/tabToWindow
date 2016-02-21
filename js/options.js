@@ -136,7 +136,12 @@
 	}
 
 	function update_clone_original () {
-		update_window_handling('#clone-original', '#new', false);
+		var input_id = '#clone-original';
+		update_window_handling(input_id, '#new', false);
+
+		// toggle clone position controls if cloning enabled/disabled
+		var checked = $(input_id).prop('checked');
+		$('.clone-position-option').prop('disabled', !checked);
 	}
 
 	function add_input_handlers() {
