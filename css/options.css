@@ -140,10 +140,6 @@ ul {
 	margin-right: 5px;
 }
 
-#monitor, .inner-window {
-
-}
-
 #monitor {
 	position: relative;
 	width: 400px;
@@ -174,6 +170,14 @@ ul {
 	border:1px solid rgb(200, 200, 200);
 	border-top-width:10px;
 	border-radius:3px;
+}
+
+.focus-wrap {
+	margin-top: 20px;
+}
+
+.focus-wrap label {
+	width: auto;
 }
 
 .button {
