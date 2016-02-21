@@ -153,8 +153,8 @@
 		var $unfocused = checked ? $original : $new;
 		var border_color = $('.inner-window').css('border-color');
 
-		$('.inner-window', $focused).css('opacity', 1.0)
-		$('.inner-window', $unfocused).css('opacity', 0.8)
+		$('.inner-window', $focused).css('opacity', 1.0);
+		$('.inner-window', $unfocused).css('opacity', 0.8);
 		$('.button', $focused).css('opacity', 1.0);
 		$('.button', $unfocused).css('opacity', 0.1);
 	}
@@ -184,27 +184,23 @@
 	}
 
 	function open_extensions() {
-
 		chrome.tabs.update({
 			url: $(this).attr('href')
 		});
 	}
 
 	function update_window_size_and_position(win, ui) {
-		var $userScreen, $win, $inner, screenWidth, screenHeight, width, height,
-			left, top, innerHorizWidth, innerVertWidth;
-
-		$userScreen = $('#screen');
-		$win = $(win);
-		$inner = $('.inner-window', $win);
-		screenWidth = $userScreen.width();
-		screenHeight = $userScreen.height();
-		width = Math.floor(($(win).width() / screenWidth) * 100);
-		height = Math.floor(($(win).height() / screenHeight) * 100);
-		innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
-			parseInt($inner.css('border-right-width'), 10);
-		innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
-			parseInt($inner.css('border-bottom-width'), 10);
+		var $userScreen = $('#screen');
+		var $win = $(win);
+		var $inner = $('.inner-window', $win);
+		var screenWidth = $userScreen.width();
+		var screenHeight = $userScreen.height();
+		var width = Math.floor(($(win).width() / screenWidth) * 100);
+		var height = Math.floor(($(win).height() / screenHeight) * 100);
+		var innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
+													parseInt($inner.css('border-right-width'), 10);
+		var innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
+												 parseInt($inner.css('border-bottom-width'), 10);
 
 		// update inner-window for borders
 		$inner.width($win.width() - innerHorizWidth);
@@ -214,9 +210,9 @@
 		$('#' + $win.attr('id') + '-width').val(width);
 		$('#' + $win.attr('id') + '-height').val(height);
 
-		if (typeof ui !== 'undefined') {
-			left = Math.floor((ui.position.left / screenWidth) * 100);
-			top = Math.floor((ui.position.top / screenHeight) * 100);
+		if (ui !== undefined) {
+			var left = Math.floor((ui.position.left / screenWidth) * 100);
+			var top = Math.floor((ui.position.top / screenHeight) * 100);
 			$('#' + $win.attr('id') + '-left').val(left);
 			$('#' + $win.attr('id') + '-top').val(top);
 		}

@@ -14,7 +14,7 @@ function get_size_and_pos(key) {
 
 	for (var pKey in properties) {
 		if (properties.hasOwnProperty(pKey)) {
-			if (typeof properties[pKey] === "undefined") {
+			if (properties[pKey] === undefined) {
 				// Use default
 				properties[pKey] = defaults[key][pKey];
 			} else {
@@ -134,7 +134,7 @@ function create_new_window(window_type, original_window) {
 			width: 		vals.width,
 			height: 	vals.height,
 			left: 		vals.left,
-			top: 		vals.top,
+			top: 			vals.top,
 			type: 		window_type,
 			focused: 	localStorage.ttw_focus_new === "true",
 			incognito: 	tabs[0].incognito
