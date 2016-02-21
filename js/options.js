@@ -19,7 +19,7 @@
 		}
 	};
 
-	var focusInput = document.getElementById('focus-new');
+	var $focusInputs = $('.focus-option');
 	var resizeOriginal = document.getElementById('resize-original');
 	var cloneOriginal = document.getElementById('clone-original');
 	var clonePositions = document.getElementsByName('clone-position');
@@ -27,7 +27,13 @@
 	function restore_options() {
 		var wKey, pKey, id, input, value;
 
-		focusInput.checked = localStorage.ttw_focus_new === 'true';
+		$focusInputs.each(function(index, el) {
+			var $el = $(el);
+			var id = $el.attr('id');
+			var checked = id.indexOf(localStorage.ttw_focus) !== -1;
+			$el.prop('checked', checked);
+		});
+
 		resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
 		cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
 
@@ -56,13 +62,25 @@
 		}
 	}
 
+	function get_focus_name() {
+		var $focused = $focusInputs.filter(function(i, el) {
+			return $(el).prop('checked');
+		});
+
+		if ($focused.length === 0) {
+			return 'original';
+		}
+
+		return $focused.attr('id').replace('focus-', '');
+	}
+
 	function save(event) {
 		var inputs = document.getElementsByClassName('option'),
 			submit = document.getElementById('sub'),
 			valid = true,
 			i;
 
-		localStorage.ttw_focus_new = focusInput.checked;
+		localStorage.ttw_focus = get_focus_name();
 		localStorage.ttw_resize_original = resizeOriginal.checked;
 		localStorage.ttw_clone_original = cloneOriginal.checked;
 
@@ -145,12 +163,11 @@
 	}
 
 	function update_focus() {
-		var $focus_input = $('#focus-new');
-		var checked = $focus_input.prop('checked');
+		var focus = get_focus_name();
 		var $original = $('#original');
 		var $new = $('#new');
-		var $focused = checked ? $new : $original;
-		var $unfocused = checked ? $original : $new;
+		var $focused = focus === 'original' ? $original : $new;
+		var $unfocused = focus === 'original' ? $new : $original;
 		var border_color = $('.inner-window').css('border-color');
 
 		$('.inner-window', $focused).css('opacity', 1.0);
@@ -167,7 +184,7 @@
 
 		[
 			[$('#resize-original'), update_resize_original],
-			[$('#focus-new'), update_focus],
+			[$('.focus-option'), update_focus],
 			[$('#clone-original'), update_clone_original],
 		].forEach(function(pair, i) {
 		    pair[0].change(pair[1]);
@@ -294,7 +311,7 @@
 		$('#extensions').click(open_extensions);
 
 		[
-		'#sub', '#focus-new', '#resize-original', '#clone-original',
+		'#sub', '.focus-option', '#resize-original', '#clone-original',
 		 '#clone-position-same', '#clone-position-horizontal',
 		 '#clone-position-vertical'
 		].forEach(function(item, i) {

@@ -136,13 +136,13 @@ function create_new_window(window_type, original_window) {
 			left: 		vals.left,
 			top: 			vals.top,
 			type: 		window_type,
-			focused: 	localStorage.ttw_focus_new === "true",
+			focused: 	localStorage.ttw_focus === "new",
 			incognito: 	tabs[0].incognito
 		}, function (window) {
 			// save parent id in case we want to pop_in
 			sessionStorage[get_origin_id(tab.id)] = original_window.id;
 
-			if (localStorage.ttw_focus_new === "false") {
+			if (localStorage.ttw_focus === "original") {
 				chrome.windows.update(original_window.id, {
 					focused: true
 				});
