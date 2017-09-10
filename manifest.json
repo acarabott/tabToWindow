@@ -16,7 +16,7 @@
 
 
 	"background": {
-		"scripts": ["js/ttw.js"],
+		"scripts": ["js/defaults.js", "js/ttw.js"],
 		"persistent": false
 	},
 
