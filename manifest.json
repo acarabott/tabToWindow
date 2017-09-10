@@ -5,7 +5,7 @@
 	"version": "2.2.6",
 	"author": "Arthur Carabott",
 
-	"description": "Add a keyboard shortcut to move the current tab to a new window or popup (default: Alt + Shift + X).",
+	"description": "Add a keyboard shortcut to move the current tab to a new window or popup.",
 	"minimum_chrome_version": "25",
 
 	"icons": {
@@ -22,15 +22,24 @@
 
 	"commands": {
 		"tab-to-window-normal": {
-			"suggested_key": { "default": "Alt+Shift+X" },
+			"suggested_key": {
+				"default": "Alt+X",
+				"linux": "Alt+Shift+X"
+			},
 			"description": "Tab to window"
 		},
 		"tab-to-window-popup": {
-			"suggested_key": { "default": "Alt+Shift+C" },
+			"suggested_key": {
+				"default": "Alt+C",
+				"linux": "Alt+Shift+C"
+			},
 			"description": "Tab to popup window"
 		},
 		"window-to-tab": {
-			"suggested_key": { "default": "Alt+Shift+Z" },
+			"suggested_key": {
+				"default": "Alt+Z",
+				"linux": "Alt+Shift+Z"
+			},
 			"description": "Undo tab to window"
 		}
 	},
