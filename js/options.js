@@ -23,6 +23,7 @@
 	var resizeOriginal = document.getElementById('resize-original');
 	var cloneOriginal = document.getElementById('clone-original');
 	var clonePositions = document.getElementsByName('clone-position');
+	var copyFullscreen = document.getElementById('copy-fullscreen');
 
 	function restore_options() {
 		var wKey, pKey, id, input, value;
@@ -42,6 +43,8 @@
 				clonePositions[i].checked = true;
 			}
 		}
+
+		copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
 
 		for (wKey in defaults) {
 			if (defaults.hasOwnProperty(wKey)) {
@@ -85,17 +88,23 @@
 		localStorage.ttw_clone_original = cloneOriginal.checked;
 
 		// Save to Local Storage
+
+		// dimensions
 		for (i = 0; i < inputs.length; i++) {
 			if (inputs[i].checkValidity()) {
 				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
 			}
 		}
 
+		// close position options
 		for (i = 0; i < clonePositions.length; i++) {
 			if (clonePositions[i].checked) {
 				localStorage.ttw_clone_position = clonePositions[i].id;
 			}
 		}
+
+		// fullscreen status
+		localStorage.ttw_copy_fullscreen = copyFullscreen.checked;
 	}
 
 	function make_oninput_handler() {
@@ -312,7 +321,7 @@
 		[
 		'#sub', '.focus-option', '#resize-original', '#clone-original',
 		 '#clone-position-same', '#clone-position-horizontal',
-		 '#clone-position-vertical'
+		 '#clone-position-vertical', '#copy-fullscreen'
 		].forEach(function(item, i) {
 		    $(item).click(save);
 		});

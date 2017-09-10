@@ -118,6 +118,10 @@ ul {
 	font-weight: bold;
 }
 
+#global-options label {
+	width: auto;
+}
+
 #credit {
 	font-size: 14px;
 	margin-top: 10px;

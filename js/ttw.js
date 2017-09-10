@@ -50,7 +50,6 @@ function get_size_and_pos(key) {
 
 function position_original(id) {
 	var vals = get_size_and_pos('original');
-
 	// Move original window
 	chrome.windows.update(id, {
 		width: vals.width,
@@ -66,6 +65,7 @@ function get_origin_id(id) {
 
 function get_clone_vals(orig) {
 	var pos = localStorage.ttw_clone_position;
+	var copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
 	var vals = {};
 
 	if (pos === 'clone-position-same') {
@@ -108,6 +108,19 @@ function get_clone_vals(orig) {
 		}
 	}
 
+	vals.maximized = copyFullscreen && orig.state === 'maximized';
+	vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
+
+	return vals;
+}
+
+function get_new_vals(orig) {
+	var vals = get_size_and_pos('new');
+	var copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
+
+	vals.maximized = copyFullscreen && orig.state === 'maximized';
+	vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
+
 	return vals;
 }
 
@@ -117,7 +130,7 @@ function create_new_window(window_type, original_window) {
 		currentWindow: true,
 		active: true
 	}, function (tabs) {
-		var tab, vals;
+		var tab, vals, createData;
 
 		tab = tabs[0];
 
@@ -125,20 +138,29 @@ function create_new_window(window_type, original_window) {
 		if (localStorage.ttw_clone_original === 'true') {
 			vals = get_clone_vals(original_window);
 		} else {
-			vals = get_size_and_pos('new');
+			vals = get_new_vals(original_window);
+		}
+
+		createData = {
+			tabId: tab.id,
+			type: window_type,
+			focused: localStorage.ttw_focus === 'new',
+			incognito: tab.incognito
+		};
+
+		if (vals.maximized || vals.fullscreen) {
+			createData.state = vals.maximized
+				? 'maximized'
+				: vals.fullscreen
+					? 'fullscreen'
+					: 'normal';
+		}
+		else {
+			['width', 'height', 'left', 'top'].forEach(key => createData[key] = vals[key]);
 		}
 
 		// Move it to a new window
-		chrome.windows.create({
-			tabId: 		tab.id,
-			width: 		vals.width,
-			height: 	vals.height,
-			left: 		vals.left,
-			top: 			vals.top,
-			type: 		window_type,
-			focused: 	localStorage.ttw_focus === "new",
-			incognito: 	tabs[0].incognito
-		}, function (window) {
+		chrome.windows.create(createData, function (window) {
 			// save parent id in case we want to pop_in
 			sessionStorage[get_origin_id(tab.id)] = original_window.id;
 
@@ -153,7 +175,11 @@ function create_new_window(window_type, original_window) {
 
 function move_tab_out(window_type) {
 	chrome.windows.getCurrent({}, function (window) {
-		if (localStorage.ttw_resize_original === 'true') {
+		var resizeOriginal = localStorage.ttw_resize_original === 'true';
+		var copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
+		var originalIsFullscreen = window.state === 'fullscreen' ||
+															 window.state === 'maximized';
+		if (resizeOriginal && !(copyFullscreen && originalIsFullscreen)) {
 			position_original(window.id);
 		}
 		create_new_window(window_type, window);
