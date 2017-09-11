@@ -3,8 +3,8 @@
 (function () {
 	'use strict';
 
-	var winGrid = 20; // px to use for window grid
-	var defaults = {
+	const winGrid = 20; // px to use for window grid
+	const defaults = {
 		"original": {
 			width:  50,
 			height: 100,
@@ -19,70 +19,42 @@
 		}
 	};
 
-	var $focusInputs = $('.focus-option');
-	var resizeOriginal = document.getElementById('resize-original');
-	var cloneOriginal = document.getElementById('clone-original');
-	var clonePositions = document.getElementsByName('clone-position');
-	var copyFullscreen = document.getElementById('copy-fullscreen');
+	const focusOptions = Array.from(document.getElementsByClassName('focus-option'));
+	const resizeOriginal = document.getElementById('resize-original');
+	const cloneOriginal = document.getElementById('clone-original');
+	const clonePositions = Array.from(document.getElementsByName('clone-position'));
+	const copyFullscreen = document.getElementById('copy-fullscreen');
 
 	function restore_options() {
-		var wKey, pKey, id, input, value;
-
-		$focusInputs.each(function(index, el) {
-			var $el = $(el);
-			var id = $el.attr('id');
-			var checked = id.indexOf(localStorage.ttw_focus) !== -1;
-			$el.prop('checked', checked);
+		focusOptions.forEach(option => {
+			option.checked = option.id.includes(localStorage.ttw_focus);
 		});
 
 		resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
 		cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
 
-		for (var i = 0; i < clonePositions.length; i++) {
-			if (localStorage.ttw_clone_position === clonePositions[i].id) {
-				clonePositions[i].checked = true;
-			}
-		}
+		clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
 
 		copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
 
-		for (wKey in defaults) {
-			if (defaults.hasOwnProperty(wKey)) {
-				for (pKey in defaults[wKey]) {
-					if (defaults[wKey].hasOwnProperty(pKey)) {
-						id = wKey + "-" + pKey;
-						input = document.getElementById(id);
-						value = localStorage['ttw_' + id];
+		Object.keys(defaults).forEach(wKey => {
+			Object.keys(defaults[wKey]).forEach(pKey => {
+				const id = `${wKey}-${pKey}`;
+				const localId = `ttw_${id}`;
 
-						if (value === undefined) {
-							value = defaults[wKey][pKey];
-						}
-
-						input.value = value;
-					}
-				}
-			}
-		}
+				document.getElementById(id).value = localStorage.hasOwnProperty(localId)
+					? localStorage[localId]
+					: defaults[wKey][pKey];
+			});
+		});
 	}
 
 	function get_focus_name() {
-		var $focused = $focusInputs.filter(function(i, el) {
-			return $(el).prop('checked');
-		});
-
-		if ($focused.length === 0) {
-			return 'original';
-		}
-
-		return $focused.attr('id').replace('focus-', '');
+		const focused = focusOptions.find(option => option.checked);
+		return focused === undefined ? 'original' : focused.id.replace('focus-', '');
 	}
 
 	function save(event) {
-		var inputs = document.getElementsByClassName('option'),
-			submit = document.getElementById('sub'),
-			valid = true,
-			i;
-
 		localStorage.ttw_focus = get_focus_name();
 		localStorage.ttw_resize_original = resizeOriginal.checked;
 		localStorage.ttw_clone_original = cloneOriginal.checked;
@@ -90,18 +62,12 @@
 		// Save to Local Storage
 
 		// dimensions
-		for (i = 0; i < inputs.length; i++) {
-			if (inputs[i].checkValidity()) {
-				localStorage['ttw_' + inputs[i].id] = inputs[i].valueAsNumber;
-			}
-		}
+		Array.from(document.getElementsByClassName('option')).forEach(input => {
+			localStorage[`ttw_${input.id}`] = input.valueAsNumber;
+		});
 
 		// close position options
-		for (i = 0; i < clonePositions.length; i++) {
-			if (clonePositions[i].checked) {
-				localStorage.ttw_clone_position = clonePositions[i].id;
-			}
-		}
+		localStorage.ttw_clone_position = clonePositions.find(cp => cp.checked).id;
 
 		// fullscreen status
 		localStorage.ttw_copy_fullscreen = copyFullscreen.checked;
@@ -109,14 +75,14 @@
 
 	function make_oninput_handler() {
 		return function (event) {
-			var input = event.target,
+			const input = event.target,
 				val = Number(input.value),
 				max = Number(input.max),
 				min = Number(input.min),
 				split = input.id.split('-'),
 				$win = $('#' + split[0]);
 
-			$win.css(split[1], val + '%');
+			$win.css(split[1], `${val}%`);
 			$win.resize();
 
 			if (input.checkValidity()) {
@@ -126,10 +92,10 @@
 	}
 
 	function make_oninvalid_handler() {
-		var submit = document.getElementById('sub');
+		const submit = document.getElementById('sub');
 
 		return function (event) {
-			var input = event.target,
+			const input = event.target,
 				val = Number(input.value),
 				max = Number(input.max),
 				min = Number(input.min);
@@ -139,11 +105,11 @@
 	}
 
 	function update_window_handling (input_id, window_id, enable_if_checked) {
-		var $input =  $(input_id);
-		var $win =    $(window_id);
-		var checked = $input.prop('checked');
-		var enable =  enable_if_checked ? checked : !checked;
-		var action =  enable ? 'enable' : 'disable';
+		const $input =  $(input_id);
+		const $win =    $(window_id);
+		const checked = $input.prop('checked');
+		const enable =  enable_if_checked ? checked : !checked;
+		const action =  enable ? 'enable' : 'disable';
 
 		$win.draggable(action);
 		$win.resizable(action);
@@ -154,15 +120,15 @@
 	}
 
 	function update_clone_original () {
-		var input_id = '#clone-original';
+		const input_id = '#clone-original';
 		update_window_handling(input_id, '#new', false);
 
 
 		// toggle clone position controls if cloning enabled/disabled
-		var checked = $(input_id).prop('checked');
+		const checked = $(input_id).prop('checked');
 		$('.clone-position-option').prop('disabled', !checked);
 
-		var $options = $('#clone-position-options');
+		const $options = $('#clone-position-options');
 		if (checked) {
 			$options.show();
 		} else {
@@ -171,12 +137,12 @@
 	}
 
 	function update_focus() {
-		var focus = get_focus_name();
-		var $original = $('#original');
-		var $new = $('#new');
-		var $focused = focus === 'original' ? $original : $new;
-		var $unfocused = focus === 'original' ? $new : $original;
-		var border_color = $('.inner-window').css('border-color');
+		const focus = get_focus_name();
+		const $original = $('#original');
+		const $new = $('#new');
+		const $focused = focus === 'original' ? $original : $new;
+		const $unfocused = focus === 'original' ? $new : $original;
+		const border_color = $('.inner-window').css('border-color');
 
 		$('.inner-window', $focused).css('opacity', 1.0);
 		$('.inner-window', $unfocused).css('opacity', 0.92);
@@ -185,6 +151,7 @@
 	}
 
 	function add_input_handlers() {
+
 		$('.option').each(function(i, input) {
 			input.oninput = make_oninput_handler();
 			input.oninvalid = make_oninvalid_handler();
@@ -200,7 +167,7 @@
 	}
 
 	function resize_screen() {
-		var userScreen = document.getElementById('monitor'),
+		const userScreen = document.getElementById('monitor'),
 			width = userScreen.clientWidth,
 			ratio = screen.height / screen.width,
 			height = Math.round(width * ratio / winGrid) * winGrid;
@@ -215,16 +182,16 @@
 	}
 
 	function update_window_size_and_position(win, ui) {
-		var $userScreen = $('#screen');
-		var $win = $(win);
-		var $inner = $('.inner-window', $win);
-		var screenWidth = $userScreen.width();
-		var screenHeight = $userScreen.height();
-		var width = Math.floor(($(win).width() / screenWidth) * 100);
-		var height = Math.floor(($(win).height() / screenHeight) * 100);
-		var innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
+		const $userScreen = $('#screen');
+		const $win = $(win);
+		const $inner = $('.inner-window', $win);
+		const screenWidth = $userScreen.width();
+		const screenHeight = $userScreen.height();
+		const width = Math.floor(($(win).width() / screenWidth) * 100);
+		const height = Math.floor(($(win).height() / screenHeight) * 100);
+		const innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
 													parseInt($inner.css('border-right-width'), 10);
-		var innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
+		const innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
 												 parseInt($inner.css('border-bottom-width'), 10);
 
 		// update inner-window for borders
@@ -236,22 +203,22 @@
 		$('#' + $win.attr('id') + '-height').val(height);
 
 		if (ui !== undefined) {
-			var left = Math.floor((ui.position.left / screenWidth) * 100);
-			var top = Math.floor((ui.position.top / screenHeight) * 100);
+			const left = Math.floor((ui.position.left / screenWidth) * 100);
+			const top = Math.floor((ui.position.top / screenHeight) * 100);
 			$('#' + $win.attr('id') + '-left').val(left);
 			$('#' + $win.attr('id') + '-top').val(top);
 		}
 	}
 
 	function setup_windows() {
-		var $windows = $('.window'),
+		const $windows = $('.window'),
 			$userScreen = $('#screen'),
 			screenWidth = $userScreen.width(),
 			screenHeight = $userScreen.height();
 
 		// Restore positions from options
 		$('.window').each(function () {
-			var $this = $(this);
+			const $this = $(this);
 			$this.width($('#' + $this.attr('id') + '-width').val() + "%");
 			$this.height($('#' + $this.attr('id') + '-height').val() + "%");
 			$this.css('left', $('#' + $this.attr('id') + '-left').val() + "%");
@@ -291,13 +258,13 @@
 			if (cmds.length === 0) {
 				return;
 			}
-			var $shortcuts = $('#shortcuts');
-			var $ul = $('#shortcut-list');
+			const $shortcuts = $('#shortcuts');
+			const $ul = $('#shortcut-list');
 
 			cmds.forEach(function(cmd, i) {
-				var $li = $('<li>');
-				var desc = cmd.description;
-				var $shortcuts = $('<span>');
+				const $li = $('<li>');
+				const desc = cmd.description;
+				const $shortcuts = $('<span>');
 				$shortcuts.addClass('shortcut');
 				$shortcuts.text(cmd.shortcut);
 				$li.append(desc);
