@@ -108,7 +108,6 @@ function get_clone_vals(orig) {
 		}
 	}
 
-	vals.maximized = copyFullscreen && orig.state === 'maximized';
 	vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
 
 	return vals;
@@ -118,7 +117,6 @@ function get_new_vals(orig) {
 	var vals = get_size_and_pos('new');
 	var copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
 
-	vals.maximized = copyFullscreen && orig.state === 'maximized';
 	vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
 
 	return vals;
@@ -148,12 +146,8 @@ function create_new_window(window_type, original_window) {
 			incognito: tab.incognito
 		};
 
-		if (vals.maximized || vals.fullscreen) {
-			createData.state = vals.maximized
-				? 'maximized'
-				: vals.fullscreen
-					? 'fullscreen'
-					: 'normal';
+		if (vals.fullscreen) {
+			createData.state = vals.fullscreen ? 'fullscreen' : 'normal';
 		}
 		else {
 			['width', 'height', 'left', 'top'].forEach(key => createData[key] = vals[key]);
@@ -177,8 +171,7 @@ function move_tab_out(window_type) {
 	chrome.windows.getCurrent({}, function (window) {
 		var resizeOriginal = localStorage.ttw_resize_original === 'true';
 		var copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
-		var originalIsFullscreen = window.state === 'fullscreen' ||
-															 window.state === 'maximized';
+		var originalIsFullscreen = window.state === 'fullscreen';
 		if (resizeOriginal && !(copyFullscreen && originalIsFullscreen)) {
 			position_original(window.id);
 		}
