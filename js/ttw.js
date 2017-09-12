@@ -25,43 +25,27 @@ function getCloneVals(orig) {
   const vals = {};
 
   if (pos === 'clone-position-same') {
-    vals.width = orig.width;
-    vals.height = orig.height;
-    vals.left = orig.left;
-    vals.top = orig.top;
-
-  } else if (pos === 'clone-position-horizontal') {
+    ['width', 'height', 'left', 'top'].forEach(key => vals[key] = orig[key]);
+  }
+  else if (pos === 'clone-position-horizontal') {
     const right = orig.left + orig.width;
-    const hgap = screen.width - right;
+    const hgap = screen.availWidth - right;
+    const positionOnRight = orig.left < hgap;
+
+    vals.width = Math.min(orig.width, positionOnRight ? hgap : orig.left);
+    vals.left = positionOnRight ? right : orig.left - width;
     vals.height = orig.height;
     vals.top = orig.top;
-
-    // position on right
-    if (orig.left < hgap) {
-      vals.width = Math.min(orig.width, hgap);
-      vals.left = right;
-    } else { // position on left
-      const width = Math.min(orig.width, orig.left);
-      vals.width = width;
-      vals.left = orig.left - width;
-    }
-
-  } else if (pos === 'clone-position-vertical') {
+  }
+  else if (pos === 'clone-position-vertical') {
     const bottom = orig.top + orig.height;
-    const vgap = screen.height - bottom;
+    const vgap = screen.availHeight - bottom;
+    const positionBelow = orig.top < vgap;
 
+    vals.top = positionBelow ? bottom : orig.top - height;
+    vals.height = Math.min(orig.height, positionBelow ? vgap : orig.top);
     vals.left = orig.left;
     vals.width = orig.width;
-
-    // position below
-    if (orig.top < vgap) {
-      vals.top = bottom;
-      vals.height = Math.min(orig.height, vgap);
-    } else { // position above
-      const height = Math.min(orig.height, orig.top);
-      vals.height = height;
-      vals.top = orig.top - height;
-    }
   }
 
   vals.fullscreen = isFullscreen();
