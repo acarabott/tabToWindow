@@ -22,7 +22,7 @@ function isFullscreen(orig) {
 
 function getCloneVals(orig) {
   const pos = localStorage.ttw_clone_position;
-  const vals = {};
+  const vals = { fullscreen: isFullscreen(orig) };
   // this covers the case of clone-position-same
   ['width', 'height', 'left', 'top'].forEach(k => vals[k] = orig[k]);
 
@@ -42,8 +42,6 @@ function getCloneVals(orig) {
     vals.top = positionBelow ? bottom : orig.top - Math.min(orig.height, orig.top);
     vals.height = Math.min(orig.height, positionBelow ? vgap : orig.top);
   }
-
-  vals.fullscreen = isFullscreen(orig);
 
   return vals;
 }
