@@ -1,6 +1,4 @@
 (() => {
-  'use strict';
-
   const winGrid = 20; // px to use for window grid
   const defaults = {
     "original": {
@@ -87,20 +85,16 @@
   }
 
   function update_clone_original () {
-    const input_id = '#clone-original';
-    update_window_handling(input_id, '#new', false);
+    update_window_handling('#clone-original', '#new', false);
 
-
+    const input = document.getElementById('clone-original');
     // toggle clone position controls if cloning enabled/disabled
-    const checked = $(input_id).prop('checked');
-    $('.clone-position-option').prop('disabled', !checked);
+    Array.from(document.getElementsByClassName('clone-position-option')).forEach(opt => {
+      opt.disabled = !input.checked;
+    });
 
-    const $options = $('#clone-position-options');
-    if (checked) {
-      $options.show();
-    } else {
-      $options.hide();
-    }
+    const clonePositionOptions = document.getElementById('clone-position-options');
+    clonePositionOptions.style.display = input.checked ? '' : 'none';
   }
 
   function update_focus() {
