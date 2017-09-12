@@ -40,7 +40,7 @@
     $win.resizable(action);
   }
 
-  function update_window_size_and_position(win, ui) {
+  function update_window_size_and_position(win) {
     // update view
     const userScreen = document.getElementById('screen');
     const inner = win.getElementsByClassName('inner-window')[0];
@@ -56,19 +56,14 @@
     const newInnerHeight = win.clientHeight - getBorderWidth(['Top', 'Bottom']);
     inner.style.height = `${newInnerHeight}px`;
 
-    // update form fields
-    ['Width', 'Height'].forEach(dimension => {
-      const property = `offset${dimension}`;
-      const value = Math.floor((win[property] / userScreen[property]) * 100);
-      document.getElementById(`${win.id}-${dimension.toLowerCase()}`).value = value;
-    });
 
-    if (ui !== undefined) {
-      const left = Math.floor((ui.position.left / userScreen.offsetWidth) * 100);
-      document.getElementById(`${win.id}-left`).value = left;
-      const top = Math.floor((ui.position.top / userScreen.offsetHeight) * 100);
-      document.getElementById(`${win.id}-top`).value = top;
-    }
+    // update form fields
+    [['Width'], ['Height'], ['Left', 'Width'], ['Top', 'Height']].forEach(pair => {
+      const windowDimension = win[`offset${pair[0]}`];
+      const screenDimension = userScreen[`offset${pair[1 % pair.length]}`];
+      const value = Math.floor((windowDimension / screenDimension) * 100);
+      document.getElementById(`${win.id}-${pair[0].toLowerCase()}`).value = value;
+    });
   }
 
   function setup_windows(gridsize) {
@@ -97,15 +92,14 @@
         minHeight: $(win).parent().height() * 0.2
       });
 
-      $(win).on('resize', (event, ui) => {
-        update_window_size_and_position(win, ui);
-        save();
-      });
+      function onChange(event) {
+         update_window_size_and_position(win);
+         save();
+      }
 
-      $(win).on('drag', (event, ui) => {
-        update_window_size_and_position(win, ui);
-        save();
-      });
+      win.onresize = onChange;
+      win.ondrag = onChange;
+
     });
   }
 
