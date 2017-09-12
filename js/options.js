@@ -1,6 +1,4 @@
 (() => {
-  const winGrid = 20; // px to use for window grid
-
   const focusOptions = Array.from(document.getElementsByClassName('focus-option'));
   const resizeOriginal = document.getElementById('resize-original');
   const cloneOriginal = document.getElementById('clone-original');
@@ -73,41 +71,39 @@
     }
   }
 
-  function setup_windows() {
-    const $windows = $('.window'),
-      $userScreen = $('#screen'),
-      screenWidth = $userScreen.width(),
-      screenHeight = $userScreen.height();
+  function setup_windows(gridsize) {
+    const userScreen = document.getElementById('screen');
+    const screenHeight = userScreen.clientHeight;
 
-    // Restore positions from options
-    $('.window').each(function () {
-      const $this = $(this);
-      const id = $this.attr('id');
-      $this.width(`${$(`#${id}-width`).val()}%`);
-      $this.height(`${$(`#${id}-height`).val()}%`);
-      $this.css('left', `${$(`#${id}-left`).val()}%`);
-      $this.css('top', `${$(`#${id}-top`).val()}%`);
-
-      $this.draggable({
-        containment: "parent",
-        grid: [screenWidth / winGrid, screenHeight / winGrid]
+    Array.from(document.getElementsByClassName('window')).forEach(win => {
+      // Restore positions from options
+      ['width', 'height', 'left', 'top'].forEach(prop => {
+        win.style[prop] = `${document.getElementById(`${win.id}-${prop}`).value}%`;
       });
 
-      $this.resizable({
+      const grid = [userScreen.clientWidth / gridsize,
+                    userScreen.clientHeight / gridsize];
+
+      $(win).draggable({
+        containment: "parent",
+        grid: grid
+      });
+
+      $(win).resizable({
         containment: "parent",
         handles: "all",
-        grid: [screenWidth / winGrid, screenHeight / winGrid],
-        minWidth: $this.parent().width() * 0.2,
-        minHeight: $this.parent().height() * 0.2
+        grid: grid,
+        minWidth: $(win).parent().width() * 0.2,
+        minHeight: $(win).parent().height() * 0.2
       });
 
-      $this.on('resize', (event, ui) => {
-        update_window_size_and_position(this, ui);
+      $(win).on('resize', (event, ui) => {
+        update_window_size_and_position(win, ui);
         save();
       });
 
-      $this.on('drag', (event, ui) => {
-        update_window_size_and_position(this, ui);
+      $(win).on('drag', (event, ui) => {
+        update_window_size_and_position(win, ui);
         save();
       });
     });
@@ -148,11 +144,12 @@
 
 
   jQuery(document).ready(($) => {
+    const gridsize = 20; // px to use for window grid
     // resize screen
     {
       const userScreen = document.getElementById('monitor');
       const ratio = screen.height / screen.width;
-      const height = Math.round((userScreen.clientWidth * ratio) / winGrid) * winGrid;
+      const height = Math.round((userScreen.clientWidth * ratio) / gridsize) * gridsize;
       userScreen.style.height =  `${height}px`;
     }
 
@@ -186,7 +183,7 @@
 
 
     // setup windows
-    setup_windows();
+    setup_windows(gridsize);
     update_resize_original();
     update_clone_original();
     update_focus();
