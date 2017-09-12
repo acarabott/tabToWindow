@@ -98,17 +98,20 @@
   }
 
   function update_focus() {
-    const focus = get_focus_name();
-    const $original = $('#original');
-    const $new = $('#new');
-    const $focused = focus === 'original' ? $original : $new;
-    const $unfocused = focus === 'original' ? $new : $original;
-    const border_color = $('.inner-window').css('border-color');
+    function getElements(id) {
+      const parent = document.getElementById(id);
+      return ['inner-window', 'button'].reduce((accumulator, className) => {
+        return accumulator.concat(Array.from(parent.getElementsByClassName(className)));
+      }, []);
+    }
 
-    $('.inner-window', $focused).css('opacity', 1.0);
-    $('.inner-window', $unfocused).css('opacity', 0.92);
-    $('.button', $focused).css('opacity', 1.0);
-    $('.button', $unfocused).css('opacity', 0.1);
+    ['original', 'new'].forEach(id => {
+      getElements(id).forEach(element => {
+        element.style.opacity = get_focus_name() === id
+          ? 1.0
+          : element.classList.contains('inner-window') ? 0.92 : 0.1;
+      });
+    });
   }
 
   function add_input_handlers() {
