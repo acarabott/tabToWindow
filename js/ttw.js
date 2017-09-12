@@ -16,52 +16,16 @@ function getOriginId(id) {
   return `ttw_pop_origin_${id}`;
 }
 
-function isFullscreen(orig) {
-  return localStorage.ttw_copy_fullscreen === 'true' && orig.state === 'fullscreen';
-}
-
-function getCloneVals(orig) {
-  const pos = localStorage.ttw_clone_position;
-  const vals = { fullscreen: isFullscreen(orig) };
-  // this covers the case of clone-position-same
-  ['width', 'height', 'left', 'top'].forEach(k => vals[k] = orig[k]);
-
-  if (pos === 'clone-position-horizontal') {
-    const right = orig.left + orig.width;
-    const hgap = screen.availWidth - right;
-    const positionOnRight = orig.left < hgap;
-
-    vals.width = Math.min(orig.width, positionOnRight ? hgap : orig.left);
-    vals.left = positionOnRight ? right : orig.left - Math.min(orig.width, orig.left);
-  }
-  else if (pos === 'clone-position-vertical') {
-    const bottom = orig.top + orig.height;
-    const vgap = screen.availHeight - bottom;
-    const positionBelow = orig.top < vgap;
-
-    vals.top = positionBelow ? bottom : orig.top - Math.min(orig.height, orig.top);
-    vals.height = Math.min(orig.height, positionBelow ? vgap : orig.top);
-  }
-
-  return vals;
-}
-
-function getNewVals(orig) {
-  const vals = getSizeAndPos('new');
-  vals.fullscreen = isFullscreen(orig);
-  return vals;
-}
-
 function moveTabOut(windowType) {
-  chrome.windows.getCurrent({},  currentWindow => {
+  chrome.windows.getCurrent({},  curWin => {
     const resizeOriginal = localStorage.ttw_resize_original === 'true';
     const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
-    const originalIsFullscreen = currentWindow.state === 'fullscreen';
+    const originalIsFullscreen = curWin.state === 'fullscreen';
 
     // resize original window
     if (resizeOriginal && !(copyFullscreen && originalIsFullscreen)) {
       const vals = getSizeAndPos('original');
-      chrome.windows.update(currentWindow.id, {
+      chrome.windows.update(curWin.id, {
         width: vals.width,
         height: vals.height,
         left: vals.left,
@@ -69,39 +33,66 @@ function moveTabOut(windowType) {
       });
     }
 
-    // move out new window
+    // create new window
     chrome.tabs.query({
       currentWindow: true,
       active: true
     }, tabs => {
       const tab = tabs[0];
-
-      // If we are cloning the origin window, use the origin window values
-      const vals = localStorage.ttw_clone_original === 'true'
-        ? getCloneVals(currentWindow)
-        : getNewVals(currentWindow);
-
+      const fullscreen = localStorage.ttw_copy_fullscreen === 'true' &&
+                         curWin.state === 'fullscreen';
       const createData = {
         tabId: tab.id,
         type: windowType,
         focused: localStorage.ttw_focus === 'new',
+        focused: true,
         incognito: tab.incognito
       };
 
-      if (vals.fullscreen) {
-        createData.state = vals.fullscreen ? 'fullscreen' : 'normal';
-      }
-      else {
-        ['width', 'height', 'left', 'top'].forEach(key => createData[key] = vals[key]);
+      createData.state = fullscreen ? 'fullscreen' : 'normal';
+      if (!fullscreen) {
+        // cloning
+        if (localStorage.ttw_clone_original === 'true' && !fullscreen) {
+          // copying all values covers the case of clone-position-same
+          ['width', 'height', 'left', 'top'].forEach(k => createData[k] = curWin[k]);
+
+          const pos = localStorage.ttw_clone_position;
+          if (pos === 'clone-position-horizontal') {
+            const right = curWin.left + curWin.width;
+            const hgap = screen.availWidth - right;
+            const positionOnRight = curWin.left < hgap;
+
+            createData.width = Math.min(curWin.width, positionOnRight ? hgap : curWin.left);
+            createData.left = positionOnRight
+              ? right
+              : curWin.left - Math.min(curWin.width, curWin.left);
+          }
+          else if (pos === 'clone-position-vertical') {
+            const bottom = curWin.top + curWin.height;
+            const vgap = screen.availHeight - bottom;
+            const positionBelow = curWin.top < vgap;
+
+            createData.top = positionBelow
+              ? bottom
+              : curWin.top - Math.min(curWin.height, curWin.top);
+            createData.height = Math.min(curWin.height, positionBelow ? vgap : curWin.top);
+          }
+        }
+        else {
+          const vals = getSizeAndPos('new');
+          Object.keys(vals).forEach(k => createData[k] = vals[k]);
+        }
       }
 
+      console.log("createData:", createData);
       // Move it to a new window
       chrome.windows.create(createData, newWindow => {
         // save parent id in case we want to pop_in
-        sessionStorage[getOriginId(tab.id)] = currentWindow.id;
+        sessionStorage[getOriginId(tab.id)] = curWin.id;
 
+        // focus on original if needed
         if (localStorage.ttw_focus === "original") {
-          chrome.windows.update(currentWindow.id, { focused: true });
+          chrome.windows.update(curWin.id, { focused: true });
         }
       });
     });
