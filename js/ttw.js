@@ -23,29 +23,24 @@ function isFullscreen(orig) {
 function getCloneVals(orig) {
   const pos = localStorage.ttw_clone_position;
   const vals = {};
+  // this covers the case of clone-position-same
+  ['width', 'height', 'left', 'top'].forEach(k => vals[k] = orig[k]);
 
-  if (pos === 'clone-position-same') {
-    ['width', 'height', 'left', 'top'].forEach(key => vals[key] = orig[key]);
-  }
-  else if (pos === 'clone-position-horizontal') {
+  if (pos === 'clone-position-horizontal') {
     const right = orig.left + orig.width;
     const hgap = screen.availWidth - right;
     const positionOnRight = orig.left < hgap;
 
     vals.width = Math.min(orig.width, positionOnRight ? hgap : orig.left);
-    vals.left = positionOnRight ? right : orig.left - width;
-    vals.height = orig.height;
-    vals.top = orig.top;
+    vals.left = positionOnRight ? right : orig.left - Math.min(orig.width, orig.left);
   }
   else if (pos === 'clone-position-vertical') {
     const bottom = orig.top + orig.height;
     const vgap = screen.availHeight - bottom;
     const positionBelow = orig.top < vgap;
 
-    vals.top = positionBelow ? bottom : orig.top - height;
+    vals.top = positionBelow ? bottom : orig.top - Math.min(orig.height, orig.top);
     vals.height = Math.min(orig.height, positionBelow ? vgap : orig.top);
-    vals.left = orig.left;
-    vals.width = orig.width;
   }
 
   vals.fullscreen = isFullscreen(orig);
@@ -74,7 +69,6 @@ function moveTabOut(windowType) {
         left: vals.left,
         top: vals.top
       });
-
     }
 
     // move out new window
