@@ -1,6 +1,4 @@
-/*jslint plusplus: true, passfail: true, browser: true, devel: true, indent: 4, maxlen: 80 */
-/*global chrome*/
-(function () {
+(() => {
 	'use strict';
 
 	const winGrid = 20; // px to use for window grid
@@ -73,37 +71,6 @@
 		localStorage.ttw_copy_fullscreen = copyFullscreen.checked;
 	}
 
-	function make_oninput_handler() {
-		return function (event) {
-			const input = event.target,
-				val = Number(input.value),
-				max = Number(input.max),
-				min = Number(input.min),
-				split = input.id.split('-'),
-				$win = $('#' + split[0]);
-
-			$win.css(split[1], `${val}%`);
-			$win.resize();
-
-			if (input.checkValidity()) {
-				save();
-			}
-		};
-	}
-
-	function make_oninvalid_handler() {
-		const submit = document.getElementById('sub');
-
-		return function (event) {
-			const input = event.target,
-				val = Number(input.value),
-				max = Number(input.max),
-				min = Number(input.min);
-
-			submit.click();
-		};
-	}
-
 	function update_window_handling (input_id, window_id, enable_if_checked) {
 		const $input =  $(input_id);
 		const $win =    $(window_id);
@@ -151,19 +118,11 @@
 	}
 
 	function add_input_handlers() {
-
-		$('.option').each(function(i, input) {
-			input.oninput = make_oninput_handler();
-			input.oninvalid = make_oninvalid_handler();
-		});
-
 		[
 			[$('#resize-original'), update_resize_original],
 			[$('.focus-option'), update_focus],
 			[$('#clone-original'), update_clone_original],
-		].forEach(function(pair, i) {
-		    pair[0].change(pair[1]);
-		});
+		].forEach((pair, i) => pair[0].change(pair[1]));
 	}
 
 	function resize_screen() {
@@ -172,7 +131,7 @@
 			ratio = screen.height / screen.width,
 			height = Math.round(width * ratio / winGrid) * winGrid;
 
-		userScreen.style.height =  height+ "px";
+		userScreen.style.height =  `${height}`;
 	}
 
 	function open_extensions() {
@@ -199,14 +158,14 @@
 		$inner.height($win.height() - innerVertWidth);
 
 		// update form
-		$('#' + $win.attr('id') + '-width').val(width);
-		$('#' + $win.attr('id') + '-height').val(height);
+		$(`#${$win.attr('id')}-width`).val(width);
+		$(`#${$win.attr('id')}-height`).val(height);
 
 		if (ui !== undefined) {
 			const left = Math.floor((ui.position.left / screenWidth) * 100);
 			const top = Math.floor((ui.position.top / screenHeight) * 100);
-			$('#' + $win.attr('id') + '-left').val(left);
-			$('#' + $win.attr('id') + '-top').val(top);
+			$(`#${$win.attr('id')}-left`).val(left);
+			$(`#${$win.attr('id')}-top`).val(top);
 		}
 	}
 
@@ -219,10 +178,11 @@
 		// Restore positions from options
 		$('.window').each(function () {
 			const $this = $(this);
-			$this.width($('#' + $this.attr('id') + '-width').val() + "%");
-			$this.height($('#' + $this.attr('id') + '-height').val() + "%");
-			$this.css('left', $('#' + $this.attr('id') + '-left').val() + "%");
-			$this.css('top', $('#' + $this.attr('id') + '-top').val() + "%");
+			const id = $this.attr('id');
+			$this.width(`${$(`#${id}-width`).val()}%`);
+			$this.height(`${$(`#${id}-height`).val()}%`);
+			$this.css('left', `${$(`#${id}-left`).val()}%`);
+			$this.css('top', `${$(`#${id}-top`).val()}%`);
 
 			$this.draggable({
 				containment: "parent",
@@ -237,12 +197,12 @@
 				minHeight: $this.parent().height() * 0.2
 			});
 
-			$this.on('resize', function(event, ui) {
+			$this.on('resize', (event, ui) => {
 				update_window_size_and_position(this, ui);
 				save();
 			});
 
-			$this.on('drag', function(event, ui) {
+			$this.on('drag', (event, ui) => {
 				update_window_size_and_position(this, ui);
 				save();
 			});
@@ -254,14 +214,14 @@
 	}
 
 	function display_shortcuts () {
-		chrome.commands.getAll(function(cmds) {
+		chrome.commands.getAll(cmds => {
 			if (cmds.length === 0) {
 				return;
 			}
 			const $shortcuts = $('#shortcuts');
 			const $ul = $('#shortcut-list');
 
-			cmds.forEach(function(cmd, i) {
+			cmds.forEach((cmd, i) => {
 				const $li = $('<li>');
 				const desc = cmd.description;
 				const $shortcuts = $('<span>');
@@ -275,7 +235,7 @@
 		});
 	}
 
-	jQuery(document).ready(function($) {
+	jQuery(document).ready(($) => {
 		resize_screen();
 		restore_options();
 		add_input_handlers();
@@ -289,8 +249,6 @@
 		'#sub', '.focus-option', '#resize-original', '#clone-original',
 		 '#clone-position-same', '#clone-position-horizontal',
 		 '#clone-position-vertical', '#copy-fullscreen'
-		].forEach(function(item, i) {
-		    $(item).click(save);
-		});
+		].forEach((item, i) => $(item).click(save));
 	});
-}());
+})();
