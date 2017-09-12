@@ -105,6 +105,7 @@ function setup_windows(gridsize) {
     win.onresize = onChange;
     win.ondrag = onChange;
 
+    update_window_size_and_position(win);
   });
 }
 
@@ -206,6 +207,10 @@ const gridsize = 20; // px to use for window grid
   resizeOriginal.onchange = update_resize_original;
   cloneOriginal.onchange = update_clone_original;
   focusOptions.forEach(el => el.onchange = update_focus);
+  Array.from(document.getElementsByTagName('input')).forEach(el => el.onclick = save);
+  document.getElementById('commandsUrl').onclick = event => {
+    chrome.tabs.create({ url: event.target.href });
+  };
 }
 
 
@@ -216,6 +221,7 @@ const gridsize = 20; // px to use for window grid
   update_clone_original();
   update_focus();
 }
+
 
 // display_shortcuts
 {
@@ -238,19 +244,4 @@ const gridsize = 20; // px to use for window grid
       $ul.append($li);
     });
   });
-}
-
-{
-  $('.window').trigger('resize');
-  $('#extensions').click(event => {
-    chrome.tabs.update({
-      url: $(this).attr('href')
-    });
-  });
-
-  [
-  '#sub', '.focus-option', '#resize-original', '#clone-original',
-   '#clone-position-same', '#clone-position-horizontal',
-   '#clone-position-vertical', '#copy-fullscreen'
-  ].forEach((item, i) => $(item).click(save));
 }
