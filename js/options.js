@@ -167,6 +167,31 @@ function update_focus() {
 // and if it's more than one
 // -----------------------------------------------------------------------------
 
+// display_shortcuts
+{
+  chrome.commands.getAll(cmds => {
+    if (cmds.length === 0) {
+      return;
+    }
+
+    cmds.forEach(cmd => {
+      const name = document.createElement('span');
+      name.textContent = `${cmd.description}:`;
+      name.classList.add('shortcut-label');
+
+      const shortcut = document.createElement('span');
+      shortcut.classList.add('shortcut');
+      shortcut.textContent = cmd.shortcut;
+
+      const li = document.createElement('li');
+      [name, shortcut].forEach(el => li.appendChild(el));
+
+      document.getElementById('shortcut-list').appendChild(li);
+    });
+
+  });
+}
+
 const gridsize = 20; // px to use for window grid
 
 // Set monitor aspect ratio to match user's
@@ -202,6 +227,15 @@ const gridsize = 20; // px to use for window grid
 }
 
 
+// setup windows
+{
+  setup_windows(gridsize);
+  update_resize_original();
+  update_clone_original();
+  update_focus();
+}
+
+
 // add input handlers
 {
   resizeOriginal.onchange = update_resize_original;
@@ -214,36 +248,3 @@ const gridsize = 20; // px to use for window grid
 }
 
 
-// setup windows
-{
-  setup_windows(gridsize);
-  update_resize_original();
-  update_clone_original();
-  update_focus();
-}
-
-
-// display_shortcuts
-{
-  chrome.commands.getAll(cmds => {
-    if (cmds.length === 0) {
-      return;
-    }
-
-    cmds.forEach(cmd => {
-      const name = document.createElement('span');
-      name.textContent = `${cmd.description}:`;
-      name.classList.add('shortcut-label');
-
-      const shortcut = document.createElement('span');
-      shortcut.classList.add('shortcut');
-      shortcut.textContent = cmd.shortcut;
-
-      const li = document.createElement('li');
-      [name, shortcut].forEach(el => li.appendChild(el));
-
-      document.getElementById('shortcut-list').appendChild(li);
-    });
-
-  });
-}
