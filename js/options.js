@@ -229,19 +229,21 @@ const gridsize = 20; // px to use for window grid
     if (cmds.length === 0) {
       return;
     }
-    const $shortcuts = $('#shortcuts');
-    const $ul = $('#shortcut-list');
 
-    cmds.forEach((cmd, i) => {
-      const $li = $('<li>');
-      const desc = cmd.description;
-      const $shortcuts = $('<span>');
-      $shortcuts.addClass('shortcut');
-      $shortcuts.text(cmd.shortcut);
-      $li.append(desc);
-      $li.append(': ');
-      $li.append($shortcuts);
-      $ul.append($li);
+    cmds.forEach(cmd => {
+      const name = document.createElement('span');
+      name.textContent = `${cmd.description}:`;
+      name.classList.add('shortcut-label');
+
+      const shortcut = document.createElement('span');
+      shortcut.classList.add('shortcut');
+      shortcut.textContent = cmd.shortcut;
+
+      const li = document.createElement('li');
+      [name, shortcut].forEach(el => li.appendChild(el));
+
+      document.getElementById('shortcut-list').appendChild(li);
     });
+
   });
 }
