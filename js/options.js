@@ -167,81 +167,90 @@ function update_focus() {
 // -----------------------------------------------------------------------------
 
 const gridsize = 20; // px to use for window grid
-// resize screen
+
+// Set monitor aspect ratio to match user's
 {
-  const userScreen = document.getElementById('monitor');
+  const monitor = document.getElementById('monitor');
   const ratio = screen.height / screen.width;
-  const height = Math.round((userScreen.clientWidth * ratio) / gridsize) * gridsize;
-  userScreen.style.height =  `${height}px`;
+  const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
+  monitor.style.height =  `${height}px`;
 }
 
 
 // restore_options
-focusOptions.forEach(opt => opt.checked = opt.id.includes(localStorage.ttw_focus));
-resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
-cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
-clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
-copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
+{
+  focusOptions.forEach(opt => opt.checked = opt.id.includes(localStorage.ttw_focus));
+  resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
+  cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
+  clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
+  copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
 
-const defaults = {
-  "original": { width: 50, height: 100, left: 0, top: 0 },
-  "new": { width: 50, height: 100, left: 50, top: 0 }
-};
-Object.keys(defaults).forEach(wKey => {
-  Object.keys(defaults[wKey]).forEach(pKey => {
-    const id = `${wKey}-${pKey}`;
-    const localId = `ttw_${id}`;
-    document.getElementById(id).value = localStorage.hasOwnProperty(localId)
-      ? localStorage[localId]
-      : defaults[wKey][pKey];
+  const defaults = {
+    "original": { width: 50, height: 100, left: 0, top: 0 },
+    "new": { width: 50, height: 100, left: 50, top: 0 }
+  };
+  Object.keys(defaults).forEach(wKey => {
+    Object.keys(defaults[wKey]).forEach(pKey => {
+      const id = `${wKey}-${pKey}`;
+      const localId = `ttw_${id}`;
+      document.getElementById(id).value = localStorage.hasOwnProperty(localId)
+        ? localStorage[localId]
+        : defaults[wKey][pKey];
+    });
   });
-});
+}
 
 
 // add input handlers
-resizeOriginal.onchange = update_resize_original;
-cloneOriginal.onchange = update_clone_original;
-focusOptions.forEach(el => el.onchange = update_focus);
+{
+  resizeOriginal.onchange = update_resize_original;
+  cloneOriginal.onchange = update_clone_original;
+  focusOptions.forEach(el => el.onchange = update_focus);
+}
 
 
 // setup windows
-setup_windows(gridsize);
-update_resize_original();
-update_clone_original();
-update_focus();
-
+{
+  setup_windows(gridsize);
+  update_resize_original();
+  update_clone_original();
+  update_focus();
+}
 
 // display_shortcuts
-chrome.commands.getAll(cmds => {
-  if (cmds.length === 0) {
-    return;
-  }
-  const $shortcuts = $('#shortcuts');
-  const $ul = $('#shortcut-list');
+{
+  chrome.commands.getAll(cmds => {
+    if (cmds.length === 0) {
+      return;
+    }
+    const $shortcuts = $('#shortcuts');
+    const $ul = $('#shortcut-list');
 
-  cmds.forEach((cmd, i) => {
-    const $li = $('<li>');
-    const desc = cmd.description;
-    const $shortcuts = $('<span>');
-    $shortcuts.addClass('shortcut');
-    $shortcuts.text(cmd.shortcut);
-    $li.append(desc);
-    $li.append(': ');
-    $li.append($shortcuts);
-    $ul.append($li);
+    cmds.forEach((cmd, i) => {
+      const $li = $('<li>');
+      const desc = cmd.description;
+      const $shortcuts = $('<span>');
+      $shortcuts.addClass('shortcut');
+      $shortcuts.text(cmd.shortcut);
+      $li.append(desc);
+      $li.append(': ');
+      $li.append($shortcuts);
+      $ul.append($li);
+    });
   });
-});
+}
 
-
-$('.window').trigger('resize');
-$('#extensions').click(event => {
-  chrome.tabs.update({
-    url: $(this).attr('href')
+{
+  $('.window').trigger('resize');
+  $('#extensions').click(event => {
+    chrome.tabs.update({
+      url: $(this).attr('href')
+    });
   });
-});
 
-[
-'#sub', '.focus-option', '#resize-original', '#clone-original',
- '#clone-position-same', '#clone-position-horizontal',
- '#clone-position-vertical', '#copy-fullscreen'
-].forEach((item, i) => $(item).click(save));
+  [
+  '#sub', '.focus-option', '#resize-original', '#clone-original',
+   '#clone-position-same', '#clone-position-horizontal',
+   '#clone-position-vertical', '#copy-fullscreen'
+  ].forEach((item, i) => $(item).click(save));
+}
