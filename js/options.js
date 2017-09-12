@@ -114,14 +114,6 @@
     });
   }
 
-  function add_input_handlers() {
-    [
-      [$('#resize-original'), update_resize_original],
-      [$('.focus-option'), update_focus],
-      [$('#clone-original'), update_clone_original],
-    ].forEach((pair, i) => pair[0].change(pair[1]));
-  }
-
   function resize_screen() {
     const userScreen = document.getElementById('monitor'),
       width = userScreen.clientWidth,
@@ -235,7 +227,14 @@
   jQuery(document).ready(($) => {
     resize_screen();
     restore_options();
-    add_input_handlers();
+
+    // add input handlers
+    document.getElementById('resize-original').onchange = update_resize_original;
+    document.getElementById('clone-original').onchange = update_clone_original;
+    Array.from(document.getElementsByClassName('focus-option')).forEach(el => {
+      el.onchange = update_focus;
+    });
+
     setup_windows();
     display_shortcuts();
 
