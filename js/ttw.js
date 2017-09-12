@@ -16,9 +16,12 @@ function getOriginId(id) {
   return `ttw_pop_origin_${id}`;
 }
 
+function isFullscreen(orig) {
+  return localStorage.ttw_copy_fullscreen === 'true' && orig.state === 'fullscreen';
+}
+
 function getCloneVals(orig) {
   const pos = localStorage.ttw_clone_position;
-  const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
   const vals = {};
 
   if (pos === 'clone-position-same') {
@@ -61,17 +64,14 @@ function getCloneVals(orig) {
     }
   }
 
-  vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
+  vals.fullscreen = isFullscreen();
 
   return vals;
 }
 
 function getNewVals(orig) {
   const vals = getSizeAndPos('new');
-  const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
-
-  vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
-
+  vals.fullscreen = isFullscreen();
   return vals;
 }
 
