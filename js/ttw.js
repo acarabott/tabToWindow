@@ -1,4 +1,4 @@
-function get_size_and_pos(winKey) {
+function getSizeAndPos(winKey) {
   // Convert percentages to pixel values
   const properties = {};
   ['width', 'height', 'left', 'top'].forEach(pKey => {
@@ -12,11 +12,11 @@ function get_size_and_pos(winKey) {
   return properties;
 }
 
-function get_origin_id(id) {
+function getOriginId(id) {
   return `ttw_pop_origin_${id}`;
 }
 
-function get_clone_vals(orig) {
+function getCloneVals(orig) {
   const pos = localStorage.ttw_clone_position;
   const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
   const vals = {};
@@ -66,8 +66,8 @@ function get_clone_vals(orig) {
   return vals;
 }
 
-function get_new_vals(orig) {
-  const vals = get_size_and_pos('new');
+function getNewVals(orig) {
+  const vals = getSizeAndPos('new');
   const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
 
   vals.fullscreen = copyFullscreen && orig.state === 'fullscreen';
@@ -75,7 +75,7 @@ function get_new_vals(orig) {
   return vals;
 }
 
-function move_tab_out(window_type) {
+function moveTabOut(windowType) {
   chrome.windows.getCurrent({},  currentWindow => {
     const resizeOriginal = localStorage.ttw_resize_original === 'true';
     const copyFullscreen = localStorage.ttw_copy_fullscreen === 'true';
@@ -83,7 +83,7 @@ function move_tab_out(window_type) {
 
     // resize original window
     if (resizeOriginal && !(copyFullscreen && originalIsFullscreen)) {
-      const vals = get_size_and_pos('original');
+      const vals = getSizeAndPos('original');
       chrome.windows.update(currentWindow.id, {
         width: vals.width,
         height: vals.height,
@@ -102,12 +102,12 @@ function move_tab_out(window_type) {
 
       // If we are cloning the origin window, use the origin window values
       const vals = localStorage.ttw_clone_original === 'true'
-        ? get_clone_vals(currentWindow)
-        : get_new_vals(currentWindow);
+        ? getCloneVals(currentWindow)
+        : getNewVals(currentWindow);
 
       const createData = {
         tabId: tab.id,
-        type: window_type,
+        type: windowType,
         focused: localStorage.ttw_focus === 'new',
         incognito: tab.incognito
       };
@@ -122,7 +122,7 @@ function move_tab_out(window_type) {
       // Move it to a new window
       chrome.windows.create(createData, newWindow => {
         // save parent id in case we want to pop_in
-        sessionStorage[get_origin_id(tab.id)] = currentWindow.id;
+        sessionStorage[getOriginId(tab.id)] = currentWindow.id;
 
         if (localStorage.ttw_focus === "original") {
           chrome.windows.update(currentWindow.id, { focused: true });
@@ -133,24 +133,24 @@ function move_tab_out(window_type) {
   });
 }
 
-function tab_to_window(window_type) {
+function tabToWindow(windowType) {
   // Check there are more than 1 tabs in current window
   chrome.tabs.query({
     currentWindow: true
   }, tabs => {
     if (tabs.length <= 1) { return; }
-    move_tab_out(window_type);
+    moveTabOut(windowType);
   });
 }
 
-function window_to_tab() {
+function windowToTab() {
   chrome.tabs.query({
     currentWindow: true,
     active:      true
   }, tabs => {
     const tab = tabs[0];
 
-    const popped_key = get_origin_id(tab.id);
+    const popped_key = getOriginId(tab.id);
     if (!sessionStorage.hasOwnProperty(popped_key)) { return; }
 
     const origin_window_id = parseInt(sessionStorage[popped_key]);
@@ -175,9 +175,9 @@ function window_to_tab() {
 
 chrome.commands.onCommand.addListener(command => {
   const lookup = {
-    'tab-to-window-normal': () => tab_to_window('normal'),
-    'tab-to-window-popup':  () => tab_to_window('popup'),
-    'window-to-tab':        window_to_tab
+    'tab-to-window-normal': () => tabToWindow('normal'),
+    'tab-to-window-popup':  () => tabToWindow('popup'),
+    'window-to-tab':        windowToTab
   };
 
   if (lookup.hasOwnProperty(command)) {
