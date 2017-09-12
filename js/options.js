@@ -41,11 +41,7 @@ function save() {
 }
 
 
-
-// TODO refactor into two functions
-function update_window_size_and_position(win) {
-  // update view
-  const userScreen = document.getElementById('screen');
+function resizeInnerWindow(win) {
   const inner = win.getElementsByClassName('inner-window')[0];
 
   function getBorderWidth(keys) {
@@ -54,13 +50,16 @@ function update_window_size_and_position(win) {
       return accumulator + parseInt(computed[`border${key}Width`], 10);
     }, 0);
   }
+
   const newInnerWidth = win.clientWidth - getBorderWidth(['Left', 'Right']);
   inner.style.width = `${newInnerWidth}px`;
   const newInnerHeight = win.clientHeight - getBorderWidth(['Top', 'Bottom']);
   inner.style.height = `${newInnerHeight}px`;
+}
 
 
-  // update form fields
+function updateWindowForm(win) {
+  const userScreen = document.getElementById('screen');
   [['Width'], ['Height'], ['Left', 'Width'], ['Top', 'Height']].forEach(pair => {
     const windowDimension = win[`offset${pair[0]}`];
     const screenDimension = userScreen[`offset${pair[1 % pair.length]}`];
@@ -98,14 +97,16 @@ function setup_windows(gridsize) {
     });
 
     function onChange(event) {
-       update_window_size_and_position(win);
-       save();
+      resizeInnerWindow(win);
+      updateWindowForm(win);
+      save();
     }
 
     win.onresize = onChange;
     win.ondrag = onChange;
 
-    update_window_size_and_position(win);
+    resizeInnerWindow(win);
+    updateWindowForm(win);
   });
 }
 
@@ -246,5 +247,3 @@ const gridsize = 20; // px to use for window grid
     chrome.tabs.create({ url: event.target.href });
   };
 }
-
-
