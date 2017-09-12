@@ -48,14 +48,14 @@ function getCloneVals(orig) {
     vals.width = orig.width;
   }
 
-  vals.fullscreen = isFullscreen();
+  vals.fullscreen = isFullscreen(orig);
 
   return vals;
 }
 
 function getNewVals(orig) {
   const vals = getSizeAndPos('new');
-  vals.fullscreen = isFullscreen();
+  vals.fullscreen = isFullscreen(orig);
   return vals;
 }
 
