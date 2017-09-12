@@ -130,31 +130,33 @@
   }
 
   function update_window_size_and_position(win, ui) {
-    const $userScreen = $('#screen');
-    const $win = $(win);
-    const $inner = $('.inner-window', $win);
-    const screenWidth = $userScreen.width();
-    const screenHeight = $userScreen.height();
-    const width = Math.floor(($(win).width() / screenWidth) * 100);
-    const height = Math.floor(($(win).height() / screenHeight) * 100);
-    const innerHorizWidth = parseInt($inner.css('border-left-width'), 10) +
-                          parseInt($inner.css('border-right-width'), 10);
-    const innerVertWidth = parseInt($inner.css('border-top-width'), 10) +
-                         parseInt($inner.css('border-bottom-width'), 10);
+    // update view
+    const userScreen = document.getElementById('screen');
+    const inner = win.getElementsByClassName('inner-window')[0];
 
-    // update inner-window for borders
-    $inner.width($win.width() - innerHorizWidth);
-    $inner.height($win.height() - innerVertWidth);
+    function getBorderWidth(keys) {
+      const computed = getComputedStyle(inner);
+      return keys.reduce((accumulator, key) => {
+        return accumulator + parseInt(computed[`border${key}Width`], 10);
+      }, 0);
+    }
+    const newInnerWidth = win.clientWidth - getBorderWidth(['Left', 'Right']);
+    inner.style.width = `${newInnerWidth}px`;
+    const newInnerHeight = win.clientHeight - getBorderWidth(['Top', 'Bottom']);
+    inner.style.height = `${newInnerHeight}px`;
 
-    // update form
-    $(`#${$win.attr('id')}-width`).val(width);
-    $(`#${$win.attr('id')}-height`).val(height);
+    // update form fields
+    ['Width', 'Height'].forEach(dimension => {
+      const property = `offset${dimension}`;
+      const value = Math.floor((win[property] / userScreen[property]) * 100);
+      document.getElementById(`${win.id}-${dimension.toLowerCase()}`).value = value;
+    });
 
     if (ui !== undefined) {
-      const left = Math.floor((ui.position.left / screenWidth) * 100);
-      const top = Math.floor((ui.position.top / screenHeight) * 100);
-      $(`#${$win.attr('id')}-left`).val(left);
-      $(`#${$win.attr('id')}-top`).val(top);
+      const left = Math.floor((ui.position.left / userScreen.offsetWidth) * 100);
+      document.getElementById(`${win.id}-left`).value = left;
+      const top = Math.floor((ui.position.top / userScreen.offsetHeight) * 100);
+      document.getElementById(`${win.id}-top`).value = top;
     }
   }
 
