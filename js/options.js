@@ -42,7 +42,7 @@ function save() {
     [['Width'], ['Height'], ['Left', 'Width'], ['Top', 'Height']].forEach(pair => {
       const windowDimension = win[`offset${pair[0]}`];
       const screenDimension = userScreen[`offset${pair[1 % pair.length]}`];
-      const value = Math.floor((windowDimension / screenDimension) * 100);
+      const value = windowDimension / screenDimension;
       localStorage[getLocalStorageWindowPropKey(win.id, pair[0])] = value;
     });
   });
@@ -182,7 +182,7 @@ const gridsize = 20; // px to use for window grid
     // Restore positions from options
     ['width', 'height', 'left', 'top'].forEach(prop => {
       const key = getLocalStorageWindowPropKey(win.id, prop);
-      win.style[prop] = `${localStorage[key]}%`;
+      win.style[prop] = `${localStorage[key] * 100}%`;
     });
 
     const grid = [userScreen.clientWidth / gridsize, userScreen.clientHeight / gridsize];

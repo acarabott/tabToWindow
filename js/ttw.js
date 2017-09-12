@@ -1,48 +1,13 @@
-function get_size_and_pos(key) {
-  const defaults = {
-    "original": {width: 0.5, height: 1, left: 0, top: 0, min_top: 0},
-    "new": {width: 0.5, height: 1, left: 0.5, top: 0, min_top: 0}
-  };
-
-  const properties = {
-    width : localStorage[`ttw_${key}-width`],
-    height : localStorage[`ttw_${key}-height`],
-    left : localStorage[`ttw_${key}-left`],
-    top : localStorage[`ttw_${key}-top`],
-    min_top : localStorage.ttw_min_top
-  };
-
-  Object.keys(properties).forEach(pKey => {
-    if (properties[pKey] === undefined) {
-      // Use default
-      properties[pKey] = defaults[key][pKey];
-    } else {
-      // Use options value
-      properties[pKey] = parseInt(properties[pKey], 10);
-
-      // Convert to percentages
-      // min_top is already a pixel value
-      if (pKey !== 'min_top') {
-        properties[pKey] *= 0.01;
-      }
-    }
-
-    // Convert percentages to pixel values
-    // min_top will already be a pixel value
-    if (pKey !== 'min_top') {
-      if (pKey === "width" || pKey === "left") {
-        properties[pKey] *= screen.availWidth;
-      } else if (pKey === "height" || pKey === "top") {
-        properties[pKey] *= screen.availHeight;
-      }
-
-      properties[pKey] = Math.round(properties[pKey]);
-    }
-
+function get_size_and_pos(winKey) {
+  // Convert percentages to pixel values
+  const properties = {};
+  ['width', 'height', 'left', 'top'].forEach(pKey => {
+    const value = localStorage[`ttw_${winKey}-${pKey}`];
+    const screenDimension = pKey === 'width' || pKey === 'left'
+      ? screen.availWidth
+      : screen.availHeight;
+    properties[pKey] = Math.round(value * screenDimension);
   });
-
-  // Account for possible OS menus
-  properties[top] += properties.min_top;
 
   return properties;
 }
@@ -173,22 +138,8 @@ function tab_to_window(window_type) {
   chrome.tabs.query({
     currentWindow: true
   }, tabs => {
-    if (tabs.length <= 1) {
-      return;
-    }
-
-    // store the minimum top value: create window at 0 and check screenTop
-    if (localStorage.ttw_min_top === undefined) {
-      chrome.windows.create({
-        top:   0,
-        focused: false
-      }, window => {
-        localStorage.ttw_min_top = window.screenTop;
-        chrome.windows.remove(window.id, () => move_tab_out(window_type));
-      });
-    } else {
-      move_tab_out(window_type);
-    }
+    if (tabs.length <= 1) { return; }
+    move_tab_out(window_type);
   });
 }
 
