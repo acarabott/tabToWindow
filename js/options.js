@@ -1,15 +1,27 @@
+// keystroke saving variables
+// none of these are removed from the DOM, so can be relied on
+// so don't be dumb and remove them from the DOM
+// -----------------------------------------------------------------------------
 const focusOptions = Array.from(document.getElementsByClassName('focus-option'));
 const resizeOriginal = document.getElementById('resize-original');
 const cloneOriginal = document.getElementById('clone-original');
 const clonePositions = Array.from(document.getElementsByName('clone-position'));
 const copyFullscreen = document.getElementById('copy-fullscreen');
 
+
+// Helper functions
+// These should be functions that are called in more than one place
+// -----------------------------------------------------------------------------
+
+// window that will be focused on pop-out
 function get_focus_name() {
   const focused = focusOptions.find(option => option.checked);
   return focused === undefined ? 'original' : focused.id.replace('focus-', '');
 }
 
-function save(event) {
+
+// save current state
+function save() {
   localStorage.ttw_focus = get_focus_name();
   localStorage.ttw_resize_original = resizeOriginal.checked;
   localStorage.ttw_clone_original = cloneOriginal.checked;
@@ -28,17 +40,9 @@ function save(event) {
   localStorage.ttw_copy_fullscreen = copyFullscreen.checked;
 }
 
-function update_window_handling (input_id, window_id, enable_if_checked) {
-  const $input =  $(input_id);
-  const $win =    $(window_id);
-  const checked = $input.prop('checked');
-  const enable =  enable_if_checked ? checked : !checked;
-  const action =  enable ? 'enable' : 'disable';
 
-  $win.draggable(action);
-  $win.resizable(action);
-}
 
+// TODO refactor into two functions
 function update_window_size_and_position(win) {
   // update view
   const userScreen = document.getElementById('screen');
@@ -65,6 +69,8 @@ function update_window_size_and_position(win) {
   });
 }
 
+
+// initial setup of windows
 function setup_windows(gridsize) {
   const userScreen = document.getElementById('screen');
   const screenHeight = userScreen.clientHeight;
@@ -102,6 +108,20 @@ function setup_windows(gridsize) {
   });
 }
 
+
+// changing draggable/resizable windows, used when radio buttons override
+// resizing and positioning
+function update_window_handling (input_id, window_id, enable_if_checked) {
+  const $input =  $(input_id);
+  const $win =    $(window_id);
+  const checked = $input.prop('checked');
+  const enable =  enable_if_checked ? checked : !checked;
+  const action =  enable ? 'enable' : 'disable';
+
+  $win.draggable(action);
+  $win.resizable(action);
+}
+
 function update_resize_original() {
   update_window_handling('#resize-original', '#original', true);
 }
@@ -118,6 +138,8 @@ function update_clone_original () {
   clonePositionOptions.style.display = cloneOriginal.checked ? '' : 'none';
 }
 
+
+// update appearance of windows depending on if they are active or not
 function update_focus() {
   function getElements(id) {
     const parent = document.getElementById(id);
@@ -135,6 +157,14 @@ function update_focus() {
   });
 }
 
+
+
+
+// the "main function"
+// Each chunk has specifically *not* been broken out into a named function
+// as then it's more difficult to tell when / where they are being called
+// and if it's more than one
+// -----------------------------------------------------------------------------
 
 const gridsize = 20; // px to use for window grid
 // resize screen
