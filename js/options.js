@@ -1,3 +1,4 @@
+/* eslint browser: true */
 /* global getLocalStorageWindowPropKey, chrome, $ */
 
 // keystroke saving variables
@@ -120,107 +121,107 @@ function updateFocus() {
 
 
 
-
 // the "main function"
 // Each chunk has specifically *not* been broken out into a named function
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
 // -----------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  // display_shortcuts
+  {
+    chrome.commands.getAll(cmds => {
+      if (cmds.length === 0) {
+        return;
+      }
 
-// display_shortcuts
-{
-  chrome.commands.getAll(cmds => {
-    if (cmds.length === 0) {
-      return;
-    }
+      cmds.forEach(cmd => {
+        const name = document.createElement('span');
+        name.textContent = `${cmd.description}:`;
+        name.classList.add('shortcut-label');
 
-    cmds.forEach(cmd => {
-      const name = document.createElement('span');
-      name.textContent = `${cmd.description}:`;
-      name.classList.add('shortcut-label');
+        const shortcut = document.createElement('span');
+        shortcut.classList.add('shortcut');
+        shortcut.textContent = cmd.shortcut;
 
-      const shortcut = document.createElement('span');
-      shortcut.classList.add('shortcut');
-      shortcut.textContent = cmd.shortcut;
+        const li = document.createElement('li');
+        [name, shortcut].forEach(el => li.appendChild(el));
 
-      const li = document.createElement('li');
-      [name, shortcut].forEach(el => li.appendChild(el));
+        document.getElementById('shortcut-list').appendChild(li);
+      });
 
-      document.getElementById('shortcut-list').appendChild(li);
     });
+  }
 
-  });
-}
+  const gridsize = 20; // px to use for window grid
 
-const gridsize = 20; // px to use for window grid
-
-// Set monitor aspect ratio to match user's
-{
-  const monitor = document.getElementById('monitor');
-  const ratio = screen.height / screen.width;
-  const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
-  monitor.style.height =  `${height}px`;
-}
+  // Set monitor aspect ratio to match user's
+  {
+    const monitor = document.getElementById('monitor');
+    const ratio = screen.height / screen.width;
+    const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
+    monitor.style.height =  `${height}px`;
+  }
 
 
-// restore_options
-{
-  focusOptions.forEach(opt => opt.checked = opt.id.includes(localStorage.ttw_focus));
-  resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
-  cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
-  clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
-  copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
-}
+  // restore_options
+  {
+    focusOptions.forEach(opt => opt.checked = opt.id.includes(localStorage.ttw_focus));
+    resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
+    cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
+    clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
+    copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
+  }
 
 
-// setup windows
-{
-  windows.forEach(win => {
-    // Restore positions from options
-    ['width', 'height', 'left', 'top'].forEach(prop => {
-      const key = getLocalStorageWindowPropKey(win.id, prop);
-      win.style[prop] = `${localStorage[key] * 100}%`;
-    });
+  // setup windows
+  {
+    windows.forEach(win => {
+      // Restore positions from options
+      ['width', 'height', 'left', 'top'].forEach(prop => {
+        const key = getLocalStorageWindowPropKey(win.id, prop);
+        win.style[prop] = `${localStorage[key] * 100}%`;
+      });
 
-    const grid = [userScreen.clientWidth / gridsize, userScreen.clientHeight / gridsize];
+      const grid = [userScreen.clientWidth / gridsize, userScreen.clientHeight / gridsize];
 
-    $(win).draggable({
-      containment: "parent",
-      grid: grid
-    });
+      $(win).draggable({
+        containment: "parent",
+        grid: grid
+      });
 
-    $(win).resizable({
-      containment: "parent",
-      handles: "all",
-      grid: grid,
-      minWidth: $(win).parent().width() * 0.2,
-      minHeight: $(win).parent().height() * 0.2
-    });
+      $(win).resizable({
+        containment: "parent",
+        handles: "all",
+        grid: grid,
+        minWidth: $(win).parent().width() * 0.2,
+        minHeight: $(win).parent().height() * 0.2
+      });
 
-    function onChange() {
+      function onChange() {
+        resizeInnerWindow(win);
+        save();
+      }
+
+      win.onresize = onChange;
+      win.ondrag = onChange;
+
       resizeInnerWindow(win);
-      save();
-    }
+    });
 
-    win.onresize = onChange;
-    win.ondrag = onChange;
-
-    resizeInnerWindow(win);
-  });
-
-  updateResizeOriginal();
-  updateCloneOriginal();
-  updateFocus();
-}
+    updateResizeOriginal();
+    updateCloneOriginal();
+    updateFocus();
+  }
 
 
-// add input handlers
-{
-  resizeOriginal.onchange = updateResizeOriginal;
-  cloneOriginal.onchange = updateCloneOriginal;
-  focusOptions.forEach(el => el.onchange = updateFocus);
-  Array.from(document.getElementsByTagName('input')).forEach(el => el.onclick = save);
-  document.getElementById('commandsUrl').onclick = event => {
-    chrome.tabs.create({ url: event.target.href });
-  };
-}
+  // add input handlers
+  {
+    resizeOriginal.onchange = updateResizeOriginal;
+    cloneOriginal.onchange = updateCloneOriginal;
+    focusOptions.forEach(el => el.onchange = updateFocus);
+    Array.from(document.getElementsByTagName('input')).forEach(el => el.onclick = save);
+    document.getElementById('commandsUrl').onclick = event => {
+      chrome.tabs.create({ url: event.target.href });
+    };
+  }
+});

@@ -1,78 +1,78 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Tab to Window Keyboard Shortcut Options</title>
-		<link rel="stylesheet" type="text/css" href="css/jqueryui/jquery-ui-1.10.1.custom.min.css">
-		<link rel="stylesheet" type="text/css" href="css/chrome.css">
-		<link rel="stylesheet" type="text/css" href="css/options.css">
-	</head>
-	<body>
-		<div id="container">
-			<h1>Tab To Window Keyboard Shortcut</h1>
-			<div id="shortcuts">
-				<h2>Current shortcuts</h2>
-				<ul id="shortcut-list"></ul>
-				<a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
-			</div>
-			<p id="resize-note">Windows are resizable from all sides.</p>
-			<div id="global-options">
-				<label for="copy-fullscreen">Keep fullscreen status</label>
-				<input type="checkbox" id="copy-fullscreen">
-			</div>
-			<div id="monitor">
-				<div id="screen">
-					<div id="original" class="window ui-widget-content">
-						<div class="inner-window">
-							<h4>Original Window</h4>
-							<div class="inner-window-controls">
-								<label for="focus-original">Focus</label>
-								<input name="focus" type="radio" id="focus-original" class="focus-option">
-								<br>
-								<label for="resize-original">Resize?</label>
-								<input type="checkbox" id="resize-original">
-							</div>
-						</div>
-						<div class="button red"></div>
-						<div class="button yellow"></div>
-						<div class="button green"></div>
-					</div>
-					<div id="new" class="window ui-widget-content">
-						<div class="inner-window">
-							<h4>New Window</h4>
-							<div class="inner-window-controls">
-								<label for="focus-new">Focus</label>
-								<input name="focus" type="radio" id="focus-new" class="focus-option">
-								<br>
-								<label for="clone-original">Clone original window size</label>
-								<input type="checkbox" id="clone-original">
-							</div>
-						</div>
-						<div class="button red"></div>
-						<div class="button yellow"></div>
-						<div class="button green"></div>
-					</div>
-					<div id="icon"></div>
-				</div>
-			</div>
-			<div id="clone-position-options">
-				<label for="clone-position">Clone Position:</label>
-				<input class="clone-position-option" type="radio" id="clone-position-same" name="clone-position">
-				<label for="clone-position-same">On top</label>
-				<input class="clone-position-option" type="radio" id="clone-position-horizontal" name="clone-position"
-				<label for="clone-position-horizontal">Horizontal</label>
-				<input class="clone-position-option" type="radio" id="clone-position-vertical" name="clone-position">
-				<label for="clone-position-vertical">Vertical</label>
-				<p>The cloned window can be positioned on top off the original window, or next to it horizontally or vertically.</p>
-			</div>
-		</div>
-		<div id="credit">
-			by <a target="_blank" href="http://www.arthurcarabott.com">Arthur Carabott</a>
-			<br>
-			source code: <a target="_blank" href="http://www.github.com/acarabott/tabToWindow">http://www.github.com/acarabott/tabToWindow</a>
-		</div>
-	</body>
-	<script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
-	<script src="js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
-	<script src="js/storage.js" type="text/javascript"></script>
-	<script src="js/options.js" type="text/javascript"></script>
+  <head>
+    <title>Tab to Window Keyboard Shortcut Options</title>
+    <link rel="stylesheet" type="text/css" href="css/jqueryui/jquery-ui-1.10.1.custom.min.css">
+    <link rel="stylesheet" type="text/css" href="css/chrome.css">
+    <link rel="stylesheet" type="text/css" href="css/options.css">
+    <script src="js/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
+    <script src="js/storage.js" type="text/javascript"></script>
+    <script src="js/options.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Tab To Window Keyboard Shortcut</h1>
+      <div id="shortcuts">
+        <h2>Current shortcuts</h2>
+        <ul id="shortcut-list"></ul>
+        <a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
+      </div>
+      <p id="resize-note">Windows are resizable from all sides.</p>
+      <div id="global-options">
+        <label for="copy-fullscreen">Keep fullscreen status</label>
+        <input type="checkbox" id="copy-fullscreen">
+      </div>
+      <div id="monitor">
+        <div id="screen">
+          <div id="original" class="window ui-widget-content">
+            <div class="inner-window">
+              <h4>Original Window</h4>
+              <div class="inner-window-controls">
+                <label for="focus-original">Focus</label>
+                <input name="focus" type="radio" id="focus-original" class="focus-option">
+                <br>
+                <label for="resize-original">Resize?</label>
+                <input type="checkbox" id="resize-original">
+              </div>
+            </div>
+            <div class="button red"></div>
+            <div class="button yellow"></div>
+            <div class="button green"></div>
+          </div>
+          <div id="new" class="window ui-widget-content">
+            <div class="inner-window">
+              <h4>New Window</h4>
+              <div class="inner-window-controls">
+                <label for="focus-new">Focus</label>
+                <input name="focus" type="radio" id="focus-new" class="focus-option">
+                <br>
+                <label for="clone-original">Clone original window size</label>
+                <input type="checkbox" id="clone-original">
+              </div>
+            </div>
+            <div class="button red"></div>
+            <div class="button yellow"></div>
+            <div class="button green"></div>
+          </div>
+          <div id="icon"></div>
+        </div>
+      </div>
+      <div id="clone-position-options">
+        <label for="clone-position">Clone Position:</label>
+        <input class="clone-position-option" type="radio" id="clone-position-same" name="clone-position">
+        <label for="clone-position-same">On top</label>
+        <input class="clone-position-option" type="radio" id="clone-position-horizontal" name="clone-position">
+        <label for="clone-position-horizontal">Horizontal</label>
+        <input class="clone-position-option" type="radio" id="clone-position-vertical" name="clone-position">
+        <label for="clone-position-vertical">Vertical</label>
+        <p>The cloned window can be positioned on top off the original window, or next to it horizontally or vertically.</p>
+      </div>
+    </div>
+    <div id="credit">
+      by <a target="_blank" href="http://www.arthurcarabott.com">Arthur Carabott</a>
+      <br>
+      source code: <a target="_blank" href="http://www.github.com/acarabott/tabToWindow">http://www.github.com/acarabott/tabToWindow</a>
+    </div>
+  </body>
 </html>

@@ -1,3 +1,4 @@
+/* eslint browser: true */
 /* global getLocalStorageWindowPropKey, chrome */
 
 function getSizeAndPos(winKey) {
