@@ -156,3 +156,7 @@ chrome.commands.onCommand.addListener(command => {
 
   if (lookup.hasOwnProperty(command)) { lookup[command](); }
 });
+
+chrome.browserAction.onClicked.addListener(tabs => {
+  tabToWindow('normal');
+});
