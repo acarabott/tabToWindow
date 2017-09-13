@@ -6,7 +6,7 @@
     'ttw_resize_original': 'true',
     // 'true' or 'false'
     'ttw_clone_original': 'false',
-    // 'clone_position-same', 'clone-position-horizontal', 'clone-position-vertical'
+    // 'clone-position-same', 'clone-position-horizontal', 'clone-position-vertical'
     'ttw_clone_position': 'clone-position-horizontal',
     // 'true' or 'false'
     'ttw_copy_fullscreen': 'true',
