@@ -1,60 +1,60 @@
 /* eslint browser: true */
 /* global getLocalStorageWindowPropKey, chrome, $ */
 
-// keystroke saving variables
-// none of these are removed from the DOM, so can be relied on
-// so don't be dumb and remove them from the DOM
-// -----------------------------------------------------------------------------
-const userScreen = document.getElementById('screen');
-const windows = Array.from(document.getElementsByClassName('window'));
-const focusOptions = Array.from(document.getElementsByClassName('focus-option'));
-const resizeOriginal = document.getElementById('resize-original');
-const cloneOriginal = document.getElementById('clone-original');
-const clonePositions = Array.from(document.getElementsByName('clone-position'));
-const copyFullscreen = document.getElementById('copy-fullscreen');
-
-
 // Helper functions
 // These should be functions that are called in more than one place
 // -----------------------------------------------------------------------------
 
+function getFromId(id, root=document) {
+  return root.getElementById(id);
+}
+
+function getFromClass(className, root=document) {
+  return Array.from(root.getElementsByClassName(className));
+}
+
+function getFromTag(tagName, root=document) {
+  return Array.from(root.getElementsByTagName(tagName));
+}
+
 // window that will be focused on pop-out
 function getFocusedName() {
-  const focused = focusOptions.find(option => option.checked);
+  const focused = getFromClass('focus-option').find(option => option.checked);
   return focused === undefined ? 'original' : focused.id.replace('focus-', '');
 }
 
 // save current state
 function save() {
   localStorage.ttw_focus = getFocusedName();
-  localStorage.ttw_resize_original = resizeOriginal.checked;
-  localStorage.ttw_clone_original = cloneOriginal.checked;
+  localStorage.ttw_resize_original = getFromId('resize-original').checked;
+  localStorage.ttw_clone_original = getFromId('clone-original').checked;
 
   // Save to Local Storage
 
   // dimensions
-  windows.forEach(win => {
+  getFromClass('window').forEach(win => {
     [['Width', 'Width'],
      ['Height', 'Height'],
      ['Left', 'Width'],
      ['Top', 'Height']].forEach(([prop, dim]) => {
       const windowDimension = win[`offset${prop}`];
-      const screenDimension = userScreen[`offset${dim}`];
+      const screenDimension = getFromId('screen')[`offset${dim}`];
       const value = windowDimension / screenDimension;
       localStorage[getLocalStorageWindowPropKey(win.id, prop)] = value;
     });
   });
 
   // close position options
+  const clonePositions = getFromClass('clone-position-option');
   localStorage.ttw_clone_position = clonePositions.find(cp => cp.checked).id;
 
   // fullscreen status
-  localStorage.ttw_copy_fullscreen = copyFullscreen.checked;
+  localStorage.ttw_copy_fullscreen = getFromId('copy-fullscreen').checked;
 }
 
 
 function resizeInnerWindow(win) {
-  const inner = win.getElementsByClassName('inner-window')[0];
+  const inner = getFromClass('inner-window', win)[0];
 
   function getBorderWidth(keys) {
     const computed = getComputedStyle(inner);
@@ -92,21 +92,21 @@ function updateCloneOriginal () {
   updateWindowHandling('#clone-original', '#new', false);
 
   // toggle clone position controls if cloning enabled/disabled
-  Array.from(document.getElementsByClassName('clone-position-option')).forEach(opt => {
-    opt.disabled = !cloneOriginal.checked;
+  getFromClass('clone-position-option').forEach(opt => {
+    opt.disabled = !getFromId('clone-original').checked;
   });
 
-  const clonePositionOptions = document.getElementById('clone-position-options');
-  clonePositionOptions.style.display = cloneOriginal.checked ? '' : 'none';
+  const display = getFromId('clone-original').checked ? '' : 'none';
+  getFromId('clone-position-options').style.display = display;
 }
 
 
 // update appearance of windows depending on if they are active or not
 function updateFocus() {
   function getElements(id) {
-    const parent = document.getElementById(id);
+    const parent = getFromId(id);
     return ['inner-window', 'button'].reduce((accumulator, className) => {
-      return accumulator.concat(Array.from(parent.getElementsByClassName(className)));
+      return accumulator.concat(getFromClass(className, parent));
     }, []);
   }
 
@@ -144,17 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         [name, shortcut].forEach(el => li.appendChild(el));
 
-        document.getElementById('shortcut-list').appendChild(li);
+        getFromId('shortcut-list').appendChild(li);
       });
 
     });
   }
 
   const gridsize = 20; // px to use for window grid
-
   // Set monitor aspect ratio to match user's
   {
-    const monitor = document.getElementById('monitor');
+    const monitor = getFromId('monitor');
     const ratio = screen.height / screen.width;
     const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
     monitor.style.height =  `${height}px`;
@@ -163,24 +162,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // restore_options
   {
-    focusOptions.forEach(opt => opt.checked = opt.id.includes(localStorage.ttw_focus));
-    resizeOriginal.checked = localStorage.ttw_resize_original === 'true';
-    cloneOriginal.checked = localStorage.ttw_clone_original === 'true';
-    clonePositions.find(cp => cp.id === localStorage.ttw_clone_position).checked = true;
-    copyFullscreen.checked = localStorage.ttw_copy_fullscreen === 'true';
+    getFromClass('focus-option').forEach(opt => {
+      opt.checked = opt.id.includes(localStorage.ttw_focus);
+    });
+    getFromId('resize-original').checked = localStorage.ttw_resize_original === 'true';
+    getFromId('clone-original').checked = localStorage.ttw_clone_original === 'true';
+    getFromClass('clone-position-option').find(cp => {
+      return cp.id === localStorage.ttw_clone_position;
+    }).checked = true;
+    getFromId('copy-fullscreen').checked = localStorage.ttw_copy_fullscreen === 'true';
   }
 
 
   // setup windows
   {
-    windows.forEach(win => {
+    getFromClass('window').forEach(win => {
       // Restore positions from options
       ['width', 'height', 'left', 'top'].forEach(prop => {
         const key = getLocalStorageWindowPropKey(win.id, prop);
         win.style[prop] = `${localStorage[key] * 100}%`;
       });
 
-      const grid = [userScreen.clientWidth / gridsize, userScreen.clientHeight / gridsize];
+      const grid = ['clientWidth', 'clientHeight'].map(d => {
+        return getFromId('screen')[d] / gridsize;
+      });
 
       $(win).draggable({
         containment: "parent",
@@ -214,11 +219,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // add input handlers
   {
-    resizeOriginal.onchange = updateResizeOriginal;
-    cloneOriginal.onchange = updateCloneOriginal;
-    focusOptions.forEach(el => el.onchange = updateFocus);
-    Array.from(document.getElementsByTagName('input')).forEach(el => el.onclick = save);
-    document.getElementById('commandsUrl').onclick = event => {
+    getFromId('resize-original').onchange = updateResizeOriginal;
+    getFromId('clone-original').onchange = updateCloneOriginal;
+    getFromClass('focus-option').forEach(el => el.onchange = updateFocus);
+    getFromTag('input').forEach(el => el.onclick = save);
+    getFromId('commandsUrl').onclick = event => {
       chrome.tabs.create({ url: event.target.href });
     };
   }
