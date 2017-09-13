@@ -25,9 +25,9 @@ function getFocusedName() {
 
 // save current state
 function save() {
-  localStorage.ttw_focus = getFocusedName();
-  localStorage.ttw_resize_original = getFromId('resize-original').checked;
-  localStorage.ttw_clone_original = getFromId('clone-original').checked;
+  localStorage.focus = getFocusedName();
+  localStorage.resize_original = getFromId('resize-original').checked;
+  localStorage.clone_original = getFromId('clone-original').checked;
 
   // Save to Local Storage
 
@@ -46,10 +46,10 @@ function save() {
 
   // close position options
   const clonePositions = getFromClass('clone-position-option');
-  localStorage.ttw_clone_position = clonePositions.find(cp => cp.checked).id;
+  localStorage.clone_position = clonePositions.find(cp => cp.checked).id;
 
   // fullscreen status
-  localStorage.ttw_copy_fullscreen = getFromId('copy-fullscreen').checked;
+  localStorage.copy_fullscreen = getFromId('copy-fullscreen').checked;
 }
 
 
@@ -165,14 +165,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // restore_options
   {
     getFromClass('focus-option').forEach(opt => {
-      opt.checked = opt.id.includes(localStorage.ttw_focus);
+      opt.checked = opt.id.includes(localStorage.focus);
     });
-    getFromId('resize-original').checked = localStorage.ttw_resize_original === 'true';
-    getFromId('clone-original').checked = localStorage.ttw_clone_original === 'true';
+    getFromId('resize-original').checked = localStorage.resize_original === 'true';
+    getFromId('clone-original').checked = localStorage.clone_original === 'true';
     getFromClass('clone-position-option').find(cp => {
-      return cp.id === localStorage.ttw_clone_position;
+      return cp.id === localStorage.clone_position;
     }).checked = true;
-    getFromId('copy-fullscreen').checked = localStorage.ttw_copy_fullscreen === 'true';
+    getFromId('copy-fullscreen').checked = localStorage.copy_fullscreen === 'true';
   }
 
 

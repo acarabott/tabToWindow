@@ -1,24 +1,24 @@
 (() => {
   const localStorageDefaults = {
     // 'original' or 'new'
-    'ttw_focus': 'new',
+    'focus': 'new',
     // 'true' or 'false'
-    'ttw_resize_original': 'true',
+    'resize_original': 'true',
     // 'true' or 'false'
-    'ttw_clone_original': 'false',
+    'clone_original': 'false',
     // 'clone-position-same', 'clone-position-horizontal', 'clone-position-vertical'
-    'ttw_clone_position': 'clone-position-horizontal',
+    'clone_position': 'clone-position-horizontal',
     // 'true' or 'false'
-    'ttw_copy_fullscreen': 'true',
+    'copy_fullscreen': 'true',
     // these are all percentage 0.0 - 1.0
-    'ttw_original_width': 0.5,
-    'ttw_original_height': 1.0,
-    'ttw_original_left': 0.0,
-    'ttw_original_top': 0.0,
-    'ttw_new_width': 0.5,
-    'ttw_new_height': 1.0,
-    'ttw_new_left': 0.5,
-    'ttw_new_top': 0.0
+    'original_width': 0.5,
+    'original_height': 1.0,
+    'original_left': 0.0,
+    'original_top': 0.0,
+    'new_width': 0.5,
+    'new_height': 1.0,
+    'new_left': 0.5,
+    'new_top': 0.0
   };
 
   Object.keys(localStorageDefaults).forEach(key => {
@@ -32,5 +32,5 @@
 // @windowId: 'original', 'new'
 // @propertyKey: 'width', 'height', 'left', 'top'
 function getLocalStorageWindowPropKey(windowId, propertyKey) {
- return `ttw_${windowId}_${propertyKey.toLowerCase()}`;
+ return `${windowId}_${propertyKey.toLowerCase()}`;
 }
