@@ -86,6 +86,11 @@ function tabToWindow(windowType) {
       else {
         Object.entries(getSizeAndPos('new')).forEach(p => createData[p[0]] = p[1]);
       }
+
+      // ensure all values are integers for Chrome APIs
+      ['width', 'height', 'left', 'top'].forEach(k => {
+        createData[k] = Math.round(createData[k]);
+      });
     }
 
     // Move it to a new window
