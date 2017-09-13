@@ -17,92 +17,104 @@ function getOriginId(id) {
 }
 
 function tabToWindow(windowType) {
-  // Check there are more than 1 tabs in current window
-  chrome.tabs.query({
-    currentWindow: true
-  }, tabs => {
-    if (tabs.length <= 1) { return; }
-    chrome.windows.getCurrent({},  curWin => {
-      const resizeOriginal = localStorage.ttw_resize_original === 'true';
-      const fullscreen = localStorage.ttw_copy_fullscreen === 'true' &&
-                         curWin.state === 'fullscreen';
-
-      // resize original window
-      if (resizeOriginal && !fullscreen) {
-        const vals = getSizeAndPos('original');
-        chrome.windows.update(curWin.id, {
-          width: vals.width,
-          height: vals.height,
-          left: vals.left,
-          top: vals.top
-        });
-      }
-
-      // create new window
-      chrome.tabs.query({
-        currentWindow: true,
-        active: true
-      }, tabs => {
-        const tab = tabs[0];
-        const createData = {
-          tabId: tab.id,
-          type: windowType,
-          focused: localStorage.ttw_focus === 'new',
-          incognito: tab.incognito
-        };
-
-        chrome.runtime.getPlatformInfo(info => {
-          if (fullscreen) {
-              // On Mac, setting state to fullscreen when the current window is
-              // already fullscreen results in a NON fullscreen window (guessing
-              // chrome toggles the state after the window is created)
-            if(info.os !== chrome.runtime.PlatformOs.MAC) {
-              createData.state = fullscreen ? 'fullscreen' : 'normal';
-            }
-          }
-          else {
-            const cloning = localStorage.ttw_clone_original === 'true' && !fullscreen;
-            if (cloning) {
-              // copying all values covers the case of clone-position-same
-              ['width', 'height', 'left', 'top'].forEach(k => createData[k] = curWin[k]);
-
-              const pos = localStorage.ttw_clone_position;
-              if (pos === 'clone-position-horizontal') {
-                const right = curWin.left + curWin.width;
-                const hgap = screen.availWidth - right;
-                const positionOnRight = curWin.left < hgap;
-
-                createData.width = Math.min(curWin.width, positionOnRight ? hgap : curWin.left);
-                createData.left = positionOnRight ? right : curWin.left - Math.min(curWin.width, curWin.left);
-              }
-              else if (pos === 'clone-position-vertical') {
-                const bottom = curWin.top + curWin.height;
-                const vgap = screen.availHeight - bottom;
-                const positionBelow = curWin.top < vgap;
-
-                createData.top = positionBelow ? bottom : curWin.top - Math.min(curWin.height, curWin.top);
-                createData.height = Math.min(curWin.height, positionBelow ? vgap : curWin.top);
-              }
-            }
-            else {
-              Object.entries(getSizeAndPos('new')).forEach(p => createData[p[0]] = p[1]);
-            }
-          }
-
-          // Move it to a new window
-          chrome.windows.create(createData, newWindow => {
-            // save parent id in case we want to pop_in
-            sessionStorage[getOriginId(tab.id)] = curWin.id;
-
-            // focus on original if needed
-            if (localStorage.ttw_focus === "original") {
-              chrome.windows.update(curWin.id, { focused: true });
-            }
-          });
-        });
-      });
+  // Helper functions
+  // ---------------------------------------------------------------------------
+  function getTabs() {
+    return new Promise(resolve => {
+      chrome.tabs.query({currentWindow: true}, t => {if (t.length > 1) { resolve(t); }});
     });
+  }
+
+  function getCurrentWindow() {
+    return new Promise(resolve => chrome.windows.getCurrent({}, win => resolve(win)));
+  }
+
+  function getOs() {
+    return new Promise(resolve => chrome.runtime.getPlatformInfo(info => resolve(info.os)));
+  }
+
+  function resizeOriginalWindow(originalWindow) {
+    const vals = getSizeAndPos('original');
+    chrome.windows.update(originalWindow.id, {
+      width:  vals.width,
+      height: vals.height,
+      left:   vals.left,
+      top:    vals.top
+    });
+  }
+
+  function createNewWindow(tabs, windowType, fullscreen, os, curWin) {
+    // TODO move multiple highlighted tabs
+    const tab = tabs.find(tab => tab.active);
+    // new window data
+    const createData = {
+      tabId: tab.id,
+      type: windowType,
+      focused: localStorage.ttw_focus === 'new',
+      incognito: tab.incognito
+    };
+
+    if (fullscreen) {
+        // On Mac, setting state to fullscreen when the current window is
+        // already fullscreen results in a NON fullscreen window (guessing
+        // chrome toggles the state after the window is created)
+      if(os !== chrome.runtime.PlatformOs.MAC) {
+        createData.state = fullscreen ? 'fullscreen' : 'normal';
+      }
+    }
+    else {
+      const cloning = localStorage.ttw_clone_original === 'true' && !fullscreen;
+      if (cloning) {
+        // copying all values covers the case of clone-position-same
+        ['width', 'height', 'left', 'top'].forEach(k => createData[k] = curWin[k]);
+
+        const pos = localStorage.ttw_clone_position;
+        if (pos === 'clone-position-horizontal') {
+          const right = curWin.left + curWin.width;
+          const hgap = screen.availWidth - right;
+          const positionOnRight = curWin.left < hgap;
+
+          createData.width = Math.min(curWin.width, positionOnRight ? hgap : curWin.left);
+          createData.left = positionOnRight ? right : curWin.left - Math.min(curWin.width, curWin.left);
+        }
+        else if (pos === 'clone-position-vertical') {
+          const bottom = curWin.top + curWin.height;
+          const vgap = screen.availHeight - bottom;
+          const positionBelow = curWin.top < vgap;
+
+          createData.top = positionBelow ? bottom : curWin.top - Math.min(curWin.height, curWin.top);
+          createData.height = Math.min(curWin.height, positionBelow ? vgap : curWin.top);
+        }
+      }
+      else {
+        Object.entries(getSizeAndPos('new')).forEach(p => createData[p[0]] = p[1]);
+      }
+    }
+
+    // Move it to a new window
+    chrome.windows.create(createData, newWindow => {
+      // save parent id in case we want to pop_in
+      sessionStorage[getOriginId(tab.id)] = curWin.id;
+    });
+  }
+
+  // Here's the action
+  const toGet = [getTabs(), getCurrentWindow(), getOs];
+  Promise.all(toGet).then(([tabs, currentWindow, os]) => {
+    const fullscreen = localStorage.ttw_copy_fullscreen === 'true' &&
+                       currentWindow.state === 'fullscreen';
+    const resizeOriginal = localStorage.ttw_resize_original === 'true' && !fullscreen;
+
+    if (resizeOriginal) { resizeOriginalWindow(currentWindow); }
+
+    createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
+
+    // focus on original if needed
+    if (localStorage.ttw_focus === 'original') {
+      chrome.windows.update(currentWindow.id, { focused: true });
+    }
   });
+
 }
 
 function windowToTab() {
@@ -142,7 +154,5 @@ chrome.commands.onCommand.addListener(command => {
     'window-to-tab':        windowToTab
   };
 
-  if (lookup.hasOwnProperty(command)) {
-    lookup[command]();
-  }
+  if (lookup.hasOwnProperty(command)) { lookup[command](); }
 });
