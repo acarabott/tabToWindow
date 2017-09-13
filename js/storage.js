@@ -1,5 +1,8 @@
+/* eslint browser: true */
+/* global chrome */
+
 (() => {
-  const localStorageDefaults = {
+  const defaults = {
     // 'original' or 'new'
     'focus': 'new',
     // 'true' or 'false'
@@ -21,9 +24,9 @@
     'new_top': 0.0
   };
 
-  Object.keys(localStorageDefaults).forEach(key => {
+  Object.entries(defaults).forEach(([key, value]) => {
     if (!localStorage.hasOwnProperty(key)) {
-      localStorage[key] = localStorageDefaults[key];
+      localStorage[key] = value;
     }
   });
 })();
