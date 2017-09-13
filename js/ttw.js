@@ -24,16 +24,22 @@ function tabToWindow(windowType) {
   // ---------------------------------------------------------------------------
   function getTabs() {
     return new Promise(resolve => {
-      chrome.tabs.query({currentWindow: true}, t => {if (t.length > 1) { resolve(t); }});
+      chrome.tabs.query({currentWindow: true}, t => {
+        if (t.length > 1) { resolve(t); }
+      });
     });
   }
 
   function getCurrentWindow() {
-    return new Promise(resolve => chrome.windows.getCurrent({}, win => resolve(win)));
+    return new Promise(resolve => {
+      chrome.windows.getCurrent({}, win => resolve(win));
+    });
   }
 
   function getOs() {
-    return new Promise(resolve => chrome.runtime.getPlatformInfo(info => resolve(info.os)));
+    return new Promise(resolve => {
+      chrome.runtime.getPlatformInfo(info => resolve(info.os));
+    });
   }
 
   function resizeOriginalWindow(originalWindow) {
@@ -46,7 +52,7 @@ function tabToWindow(windowType) {
     });
   }
 
-  function createNewWindow(tabs, windowType, fullscreen, os, curWin) {
+  function createNewWindow(tabs, windowType, fullscreen, os, win) {
     // TODO move multiple highlighted tabs
     const tab = tabs.find(tab => tab.active);
     // new window data
@@ -58,7 +64,9 @@ function tabToWindow(windowType) {
       // On Mac, setting state to fullscreen when the current window is
       // already fullscreen results in a NON fullscreen window (guessing
       // chrome toggles the state after the window is created)
-      state: fullscreen && os !== chrome.runtime.PlatformOs.MAC ? 'fullscreen' : 'normal'
+      state: fullscreen && os !== chrome.runtime.PlatformOs.MAC
+        ? 'fullscreen'
+        : 'normal'
     };
 
     // shouldn't set width/height/left/top if fullscreen
@@ -66,28 +74,38 @@ function tabToWindow(windowType) {
       const cloning = localStorage.ttw_clone_original === 'true' && !fullscreen;
       if (cloning) {
         // copying all values covers the case of clone-position-same
-        ['width', 'height', 'left', 'top'].forEach(k => createData[k] = curWin[k]);
+        ['width', 'height', 'left', 'top'].forEach(k => createData[k] = win[k]);
 
         const pos = localStorage.ttw_clone_position;
         if (pos === 'clone-position-horizontal') {
-          const right = curWin.left + curWin.width;
+          const right = win.left + win.width;
           const hgap = screen.availWidth - right;
-          const positionOnRight = curWin.left < hgap;
+          const positionOnRight = win.left < hgap;
 
-          createData.width = Math.min(curWin.width, positionOnRight ? hgap : curWin.left);
-          createData.left = positionOnRight ? right : curWin.left - Math.min(curWin.width, curWin.left);
+          createData.width = Math.min(win.width, positionOnRight
+                                                      ? hgap
+                                                      : win.left);
+          createData.left = positionOnRight
+            ? right
+            : win.left - Math.min(win.width, win.left);
         }
         else if (pos === 'clone-position-vertical') {
-          const bottom = curWin.top + curWin.height;
+          const bottom = win.top + win.height;
           const vgap = screen.availHeight - bottom;
-          const positionBelow = curWin.top < vgap;
+          const positionBelow = win.top < vgap;
 
-          createData.top = positionBelow ? bottom : curWin.top - Math.min(curWin.height, curWin.top);
-          createData.height = Math.min(curWin.height, positionBelow ? vgap : curWin.top);
+          createData.top = positionBelow
+            ? bottom
+            : win.top - Math.min(win.height, win.top);
+          createData.height = Math.min(win.height, positionBelow
+                                                        ? vgap
+                                                        : win.top);
         }
       }
       else {
-        Object.entries(getSizeAndPos('new')).forEach(([k, v]) => createData[k] = v);
+        Object.entries(getSizeAndPos('new')).forEach(([k, v]) => {
+          createData[k] = v
+        });
       }
 
       // ensure all values are integers for Chrome APIs
@@ -99,7 +117,7 @@ function tabToWindow(windowType) {
     // Move it to a new window
     chrome.windows.create(createData, () => {
       // save parent id in case we want to pop_in
-      sessionStorage[getOriginId(tab.id)] = curWin.id;
+      sessionStorage[getOriginId(tab.id)] = win.id;
     });
   }
 
@@ -108,10 +126,14 @@ function tabToWindow(windowType) {
   Promise.all(toGet).then(([tabs, currentWindow, os]) => {
     const fullscreen = localStorage.ttw_copy_fullscreen === 'true' &&
                        currentWindow.state === 'fullscreen';
-    const resizeOriginal = localStorage.ttw_resize_original === 'true' && !fullscreen;
 
-    if (resizeOriginal) { resizeOriginalWindow(currentWindow); }
+    // original window
+    if (localStorage.ttw_resize_original === 'true' && !fullscreen) {
+      resizeOriginalWindow(currentWindow);
+    }
+    // new window
     createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
+    // focus
     if (localStorage.ttw_focus === 'original') {
       chrome.windows.update(currentWindow.id, { focused: true });
     }

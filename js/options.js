@@ -132,7 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.commands.getAll(cmds => {
       if (cmds.length === 0) { return; }
 
-      cmds.filter(cmd => cmd.name !== '_execute_browser_action').forEach(cmd => {
+      cmds
+      .filter(cmd => cmd.name !== '_execute_browser_action')
+      .forEach(cmd => {
         const name = document.createElement('span');
         name.textContent = `${cmd.description}:`;
         name.classList.add('shortcut-label');
