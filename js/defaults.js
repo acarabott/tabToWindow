@@ -27,3 +27,10 @@
     }
   });
 })();
+
+// retrieve the localStorage key for a particular window property
+// @windowId: 'original', 'new'
+// @propertyKey: 'width', 'height', 'left', 'top'
+function getLocalStorageWindowPropKey(windowId, propertyKey) {
+ return `ttw_${windowId}_${propertyKey.toLowerCase()}`;
+}

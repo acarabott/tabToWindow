@@ -2,7 +2,7 @@ function getSizeAndPos(winKey) {
   // Convert percentages to pixel values
   const properties = {};
   ['width', 'height', 'left', 'top'].forEach(pKey => {
-    const value = localStorage[`ttw_${winKey}_${pKey}`];
+    const value = localStorage[getLocalStorageWindowPropKey(winKey, pKey)];
     const screenDimension = pKey === 'width' || pKey === 'left'
       ? screen.availWidth
       : screen.availHeight;

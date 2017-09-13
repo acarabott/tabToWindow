@@ -21,14 +21,6 @@ function getFocusedName() {
   return focused === undefined ? 'original' : focused.id.replace('focus-', '');
 }
 
-
-// retrieve the localStorage key for a particular window property
-// @key: 'width', 'height', 'left', 'top'
-function getLocalStorageWindowPropKey(winId, key) {
- return `ttw_${winId}_${key.toLowerCase()}`;
-}
-
-
 // save current state
 function save() {
   localStorage.ttw_focus = getFocusedName();
