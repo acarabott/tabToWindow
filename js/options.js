@@ -1,3 +1,5 @@
+/* global getLocalStorageWindowPropKey, chrome, $ */
+
 // keystroke saving variables
 // none of these are removed from the DOM, so can be relied on
 // so don't be dumb and remove them from the DOM
@@ -195,7 +197,7 @@ const gridsize = 20; // px to use for window grid
       minHeight: $(win).parent().height() * 0.2
     });
 
-    function onChange(event) {
+    function onChange() {
       resizeInnerWindow(win);
       save();
     }

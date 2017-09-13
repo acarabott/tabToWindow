@@ -1,3 +1,5 @@
+/* global getLocalStorageWindowPropKey, chrome */
+
 function getSizeAndPos(winKey) {
   // Convert percentages to pixel values
   const properties = {};
@@ -94,7 +96,7 @@ function tabToWindow(windowType) {
     }
 
     // Move it to a new window
-    chrome.windows.create(createData, newWindow => {
+    chrome.windows.create(createData, () => {
       // save parent id in case we want to pop_in
       sessionStorage[getOriginId(tab.id)] = curWin.id;
     });
@@ -123,13 +125,13 @@ function windowToTab() {
   }, tabs => {
     const tab = tabs[0];
 
-    const popped_key = getOriginId(tab.id);
-    if (!sessionStorage.hasOwnProperty(popped_key)) { return; }
+    const poppedKey = getOriginId(tab.id);
+    if (!sessionStorage.hasOwnProperty(poppedKey)) { return; }
 
-    const origin_window_id = parseInt(sessionStorage[popped_key]);
+    const origin_window_id = parseInt(sessionStorage[poppedKey], 10);
 
     // check original window still exists
-    chrome.windows.get(origin_window_id, {}, originWindow => {
+    chrome.windows.get(origin_window_id, {}, () => {
       if (chrome.runtime.lastError) { return; }
 
       // move the current tab
@@ -137,10 +139,8 @@ function windowToTab() {
         windowId: origin_window_id,
         index:    -1
       }, () => {
-        sessionStorage.removeItem(popped_key);
-        chrome.tabs.update(tab.id, {
-          active: true
-        });
+        sessionStorage.removeItem(poppedKey);
+        chrome.tabs.update(tab.id, { active: true });
       });
     });
   });
