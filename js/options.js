@@ -31,11 +31,14 @@ function save() {
 
   // dimensions
   windows.forEach(win => {
-    [['Width'], ['Height'], ['Left', 'Width'], ['Top', 'Height']].forEach(pair => {
-      const windowDimension = win[`offset${pair[0]}`];
-      const screenDimension = userScreen[`offset${pair[1 % pair.length]}`];
+    [['Width', 'Width'],
+     ['Height', 'Height'],
+     ['Left', 'Width'],
+     ['Top', 'Height']].forEach(([prop, dim]) => {
+      const windowDimension = win[`offset${prop}`];
+      const screenDimension = userScreen[`offset${dim}`];
       const value = windowDimension / screenDimension;
-      localStorage[getLocalStorageWindowPropKey(win.id, pair[0])] = value;
+      localStorage[getLocalStorageWindowPropKey(win.id, prop)] = value;
     });
   });
 
@@ -67,11 +70,11 @@ function resizeInnerWindow(win) {
 
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
-function updateWindowHandling (input_id, window_id, enable_if_checked) {
-  const $input =  $(input_id);
-  const $win =    $(window_id);
+function updateWindowHandling (inputId, windowId, enableIfChecked) {
+  const $input =  $(inputId);
+  const $win =    $(windowId);
   const checked = $input.prop('checked');
-  const enable =  enable_if_checked ? checked : !checked;
+  const enable =  enableIfChecked ? checked : !checked;
   const action =  enable ? 'enable' : 'disable';
 
   $win.draggable(action);
