@@ -108,10 +108,7 @@ function tabToWindow(windowType) {
     const resizeOriginal = localStorage.ttw_resize_original === 'true' && !fullscreen;
 
     if (resizeOriginal) { resizeOriginalWindow(currentWindow); }
-
     createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
-
-    // focus on original if needed
     if (localStorage.ttw_focus === 'original') {
       chrome.windows.update(currentWindow.id, { focused: true });
     }
