@@ -51,18 +51,15 @@ function tabToWindow(windowType) {
       tabId: tab.id,
       type: windowType,
       focused: localStorage.ttw_focus === 'new',
-      incognito: tab.incognito
+      incognito: tab.incognito,
+      // On Mac, setting state to fullscreen when the current window is
+      // already fullscreen results in a NON fullscreen window (guessing
+      // chrome toggles the state after the window is created)
+      state: fullscreen && os !== chrome.runtime.PlatformOs.MAC ? 'fullscreen' : 'normal'
     };
 
-    if (fullscreen) {
-        // On Mac, setting state to fullscreen when the current window is
-        // already fullscreen results in a NON fullscreen window (guessing
-        // chrome toggles the state after the window is created)
-      if(os !== chrome.runtime.PlatformOs.MAC) {
-        createData.state = fullscreen ? 'fullscreen' : 'normal';
-      }
-    }
-    else {
+    // shouldn't set width/height/left/top if fullscreen
+    if (!fullscreen) {
       const cloning = localStorage.ttw_clone_original === 'true' && !fullscreen;
       if (cloning) {
         // copying all values covers the case of clone-position-same
