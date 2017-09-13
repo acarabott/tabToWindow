@@ -146,23 +146,27 @@ function create_new_window(window_type, original_window) {
 			incognito: tab.incognito
 		};
 
-		if (vals.fullscreen) {
-			createData.state = vals.fullscreen ? 'fullscreen' : 'normal';
-		}
-		else {
-			['width', 'height', 'left', 'top'].forEach(key => createData[key] = vals[key]);
-		}
-
-		// Move it to a new window
-		chrome.windows.create(createData, function (window) {
-			// save parent id in case we want to pop_in
-			sessionStorage[get_origin_id(tab.id)] = original_window.id;
-
-			if (localStorage.ttw_focus === "original") {
-				chrome.windows.update(original_window.id, {
-					focused: true
-				});
+		chrome.runtime.getPlatformInfo(info => {
+			if (vals.fullscreen) {
+				if(info.os !== chrome.runtime.PlatformOs.MAC) {
+					createData.state = vals.fullscreen ? 'fullscreen' : 'normal';
+				}
 			}
+			else {
+				['width', 'height', 'left', 'top'].forEach(key => createData[key] = vals[key]);
+			}
+
+			// Move it to a new window
+			chrome.windows.create(createData, function (window) {
+				// save parent id in case we want to pop_in
+				sessionStorage[get_origin_id(tab.id)] = original_window.id;
+
+				if (localStorage.ttw_focus === "original") {
+					chrome.windows.update(original_window.id, {
+						focused: true
+					});
+				}
+			});
 		});
 	});
 }
