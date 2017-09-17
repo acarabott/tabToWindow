@@ -1,11 +1,14 @@
 /* eslint browser: true */
-/* global getLocalStorageWindowPropKey, chrome */
+/* global getStorageWindowPropKey, loadOptions, chrome */
+
+// Load
+let options = defaults;
 
 function getSizeAndPos(winKey) {
   // Convert percentages to pixel values
   const properties = {};
   ['width', 'height', 'left', 'top'].forEach(pKey => {
-    const value = localStorage[getLocalStorageWindowPropKey(winKey, pKey)];
+    const value = options[getStorageWindowPropKey(winKey, pKey)];
     const screenDimension = pKey === 'width' || pKey === 'left'
       ? screen.availWidth
       : screen.availHeight;
@@ -16,7 +19,7 @@ function getSizeAndPos(winKey) {
 }
 
 function getOriginId(id) {
-  return `ttw_pop_origin_${id}`;
+  return `popOrigin_${id}`;
 }
 
 function tabToWindow(windowType) {
@@ -59,7 +62,7 @@ function tabToWindow(windowType) {
     const createData = {
       tabId: tab.id,
       type: windowType,
-      focused: localStorage.ttw_focus === 'new',
+      focused: options.focus === 'new',
       incognito: tab.incognito,
       // On Mac, setting state to fullscreen when the current window is
       // already fullscreen results in a NON fullscreen window (guessing
@@ -71,12 +74,12 @@ function tabToWindow(windowType) {
 
     // shouldn't set width/height/left/top if fullscreen
     if (!fullscreen) {
-      const cloning = localStorage.ttw_clone_original === 'true' && !fullscreen;
+      const cloning = options.cloneOriginal && !fullscreen;
       if (cloning) {
         // copying all values covers the case of clone-position-same
         ['width', 'height', 'left', 'top'].forEach(k => createData[k] = win[k]);
 
-        const pos = localStorage.ttw_clone_position;
+        const pos = options.clonePosition;
         if (pos === 'clone-position-horizontal') {
           const right = win.left + win.width;
           const hgap = screen.availWidth - right;
@@ -116,7 +119,7 @@ function tabToWindow(windowType) {
 
     // Move it to a new window
     chrome.windows.create(createData, () => {
-      // save parent id in case we want to pop_in
+      // save parent id in case we want to pop in
       sessionStorage[getOriginId(tab.id)] = win.id;
     });
   }
@@ -124,17 +127,17 @@ function tabToWindow(windowType) {
   // Here's the action
   const toGet = [getTabs(), getCurrentWindow(), getOs];
   Promise.all(toGet).then(([tabs, currentWindow, os]) => {
-    const fullscreen = localStorage.ttw_copy_fullscreen === 'true' &&
+    const fullscreen = options.copyFullscreen &&
                        currentWindow.state === 'fullscreen';
 
     // original window
-    if (localStorage.ttw_resize_original === 'true' && !fullscreen) {
+    if (options.resizeOriginal && !fullscreen) {
       resizeOriginalWindow(currentWindow);
     }
     // new window
     createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
     // focus
-    if (localStorage.ttw_focus === 'original') {
+    if (options.focus === 'original') {
       chrome.windows.update(currentWindow.id, { focused: true });
     }
   });
@@ -151,15 +154,15 @@ function windowToTab() {
     const poppedKey = getOriginId(tab.id);
     if (!sessionStorage.hasOwnProperty(poppedKey)) { return; }
 
-    const origin_window_id = parseInt(sessionStorage[poppedKey], 10);
+    const originalWindowId = parseInt(sessionStorage[poppedKey], 10);
 
     // check original window still exists
-    chrome.windows.get(origin_window_id, {}, () => {
+    chrome.windows.get(originalWindowId, {}, () => {
       if (chrome.runtime.lastError) { return; }
 
       // move the current tab
       chrome.tabs.move(tab.id, {
-        windowId: origin_window_id,
+        windowId: originalWindowId,
         index:    -1
       }, () => {
         sessionStorage.removeItem(poppedKey);
@@ -169,16 +172,29 @@ function windowToTab() {
   });
 }
 
-chrome.commands.onCommand.addListener(command => {
-  const lookup = {
-    'tab-to-window-normal': () => tabToWindow('normal'),
-    'tab-to-window-popup':  () => tabToWindow('popup'),
-    'window-to-tab':        windowToTab
-  };
+function setup(loadedOptions) {
+  options = loadedOptions;
 
-  if (lookup.hasOwnProperty(command)) { lookup[command](); }
-});
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    Object.entries(changes).forEach(([key, val]) => options[key] = val.newValue);
+  });
 
-chrome.browserAction.onClicked.addListener(tabs => {
-  tabToWindow('normal');
-});
+  chrome.commands.onCommand.addListener(command => {
+    const lookup = {
+      'tab-to-window-normal': () => tabToWindow('normal'),
+      'tab-to-window-popup':  () => tabToWindow('popup'),
+      'window-to-tab':        windowToTab
+    };
+
+    if (lookup.hasOwnProperty(command)) { lookup[command](); }
+  });
+
+  chrome.browserAction.onClicked.addListener(tabs => {
+    // TODO this becomes an option: 'normal' or 'popup'
+    const type = 'normal';
+    tabToWindow(type);
+  });
+}
+
+// loadOptions will return defaults on fail, so can use same setup function
+loadOptions().then(setup, setup);

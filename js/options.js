@@ -1,5 +1,5 @@
 /* eslint browser: true */
-/* global getLocalStorageWindowPropKey, chrome, $ */
+/* global getStorageWindowPropKey, saveOptions, chrome, $ */
 
 // Helper functions
 // These should be functions that are called in more than one place
@@ -25,11 +25,13 @@ function getFocusedName() {
 
 // save current state
 function save() {
-  localStorage.focus = getFocusedName();
-  localStorage.resize_original = getFromId('resize-original').checked;
-  localStorage.clone_original = getFromId('clone-original').checked;
-
-  // Save to Local Storage
+  const options = {
+    focus: getFocusedName(),
+    resizeOriginal: getFromId('resize-original').checked,
+    cloneOriginal: getFromId('clone-original').checked,
+    copyFullscreen: getFromId('copy-fullscreen').checked,
+    clonePosition: getFromClass('clone-position-option').find(cp => cp.checked).id
+  };
 
   // dimensions
   getFromClass('window').forEach(win => {
@@ -40,16 +42,11 @@ function save() {
       const windowDimension = win[`offset${prop}`];
       const screenDimension = getFromId('screen')[`offset${dim}`];
       const value = windowDimension / screenDimension;
-      localStorage[getLocalStorageWindowPropKey(win.id, prop)] = value;
+      options[getStorageWindowPropKey(win.id, prop)] = value;
     });
   });
 
-  // close position options
-  const clonePositions = getFromClass('clone-position-option');
-  localStorage.clone_position = clonePositions.find(cp => cp.checked).id;
-
-  // fullscreen status
-  localStorage.copy_fullscreen = getFromId('copy-fullscreen').checked;
+  saveOptions(options);
 }
 
 
@@ -121,12 +118,10 @@ function updateFocus() {
 
 
 
-// the "main function"
 // Each chunk has specifically *not* been broken out into a named function
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
-// -----------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
+function main(options) {
   // display_shortcuts
   {
     chrome.commands.getAll(cmds => {
@@ -162,17 +157,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // restore_options
+  // restore options
   {
     getFromClass('focus-option').forEach(opt => {
-      opt.checked = opt.id.includes(localStorage.focus);
+      opt.checked = opt.id.includes(options.focus);
     });
-    getFromId('resize-original').checked = localStorage.resize_original === 'true';
-    getFromId('clone-original').checked = localStorage.clone_original === 'true';
+    getFromId('resize-original').checked = options.resizeOriginal;
+    getFromId('clone-original').checked = options.cloneOriginal;
     getFromClass('clone-position-option').find(cp => {
-      return cp.id === localStorage.clone_position;
+      return cp.id === options.clonePosition;
     }).checked = true;
-    getFromId('copy-fullscreen').checked = localStorage.copy_fullscreen === 'true';
+    getFromId('copy-fullscreen').checked = options.copyFullscreen;
   }
 
 
@@ -181,8 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
     getFromClass('window').forEach(win => {
       // Restore positions from options
       ['width', 'height', 'left', 'top'].forEach(prop => {
-        const key = getLocalStorageWindowPropKey(win.id, prop);
-        win.style[prop] = `${localStorage[key] * 100}%`;
+        const key = getStorageWindowPropKey(win.id, prop);
+        win.style[prop] = `${options[key] * 100}%`;
       });
 
       const grid = ['clientWidth', 'clientHeight'].map(d => {
@@ -202,9 +197,12 @@ document.addEventListener('DOMContentLoaded', () => {
         minHeight: $(win).parent().height() * 0.2
       });
 
+
+      let saveTimeout;
       function onChange() {
         resizeInnerWindow(win);
-        save();
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(save, 200);
       }
 
       win.onresize = onChange;
@@ -229,4 +227,8 @@ document.addEventListener('DOMContentLoaded', () => {
       chrome.tabs.create({ url: event.target.href });
     };
   }
+}
+// -----------------------------------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  loadOptions().then(options => main(options));
 });
