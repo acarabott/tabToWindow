@@ -190,9 +190,7 @@ function setup(loadedOptions) {
   });
 
   chrome.browserAction.onClicked.addListener(tabs => {
-    // TODO this becomes an option: 'normal' or 'popup'
-    const type = 'normal';
-    tabToWindow(type);
+    tabToWindow(options.menuButtonType);
   });
 }
 

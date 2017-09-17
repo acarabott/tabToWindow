@@ -18,11 +18,18 @@
         <ul id="shortcut-list"></ul>
         <a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
       </div>
-      <p id="resize-note">Windows are resizable from all sides.</p>
       <div id="global-options">
         <label for="copy-fullscreen">Keep fullscreen status</label>
         <input type="checkbox" id="copy-fullscreen">
+        <br>
+        <span>Menu button opens in:</span>
+        <label for="menu-button-normal">Window</label>
+        <input name="menu-button-type" type="radio" id="menu-button-normal" class="menu-button-option" data-value="normal">
+        <label for="menu-button-window">Popup</label>
+        <input name="menu-button-type" type="radio" id="menu-button-popup" class="menu-button-option" data-value="popup">
+        <br>
       </div>
+      <p id="resize-note">Windows are resizable from all sides.</p>
       <div id="monitor">
         <div id="screen">
           <div id="original" class="window ui-widget-content">

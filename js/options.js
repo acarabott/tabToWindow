@@ -30,7 +30,8 @@ function save() {
     resizeOriginal: getFromId('resize-original').checked,
     cloneOriginal: getFromId('clone-original').checked,
     copyFullscreen: getFromId('copy-fullscreen').checked,
-    clonePosition: getFromClass('clone-position-option').find(cp => cp.checked).id
+    clonePosition: getFromClass('clone-position-option').find(cp => cp.checked).id,
+    menuButtonType: getFromClass('menu-button-option').find(mb => mb.checked).getAttribute('data-value')
   };
 
   // dimensions
@@ -168,6 +169,9 @@ function main(options) {
       return cp.id === options.clonePosition;
     }).checked = true;
     getFromId('copy-fullscreen').checked = options.copyFullscreen;
+    getFromClass('menu-button-option').forEach(opt => {
+      opt.checked = opt.id.includes(options.menuButtonType);
+    });
   }
 
 

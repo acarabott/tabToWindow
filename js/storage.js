@@ -13,6 +13,8 @@ const defaults = {
   'clonePosition': 'clone-position-horizontal',
   // boolean
   'copyFullscreen': true,
+  // 'normal', 'popup'
+  menuButtonType: 'normal',
   // these are all percentage 0.0 - 1.0
   'original_width': 0.5,
   'original_height': 1.0,
@@ -64,6 +66,7 @@ function validateOptions(options) {
                                             'clone-position-horizontal',
                                             'clone-position-vertical'])) return false;
   if (!validBoolOption('copyFullscreen')) return false;
+  if (!validStringOption('menuButtonType', ['normal', 'popup'])) return false;
 
   const numberOpts = ['original_width', 'original_height', 'original_left',
                       'original_top', 'new_width', 'new_height', 'new_left',
