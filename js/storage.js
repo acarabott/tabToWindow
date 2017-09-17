@@ -4,38 +4,39 @@
 
 const defaults = {
   // 'original' or 'new'
-  'focus': 'new',
+  focus: 'new',
   // boolean
-  'resizeOriginal': true,
+  resizeOriginal: true,
   // boolean
-  'cloneOriginal': false,
-  // 'clone-position-same', 'clone-position-horizontal', 'clone-position-vertical'
-  'clonePosition': 'clone-position-horizontal',
+  cloneOriginal: false,
+  // clone-position-same', 'clone-position-horizontal', 'clone-position-vertical'
+  clonePosition: 'clone-position-horizontal',
   // boolean
-  'copyFullscreen': true,
+  copyFullscreen: true,
   // 'normal', 'popup'
   menuButtonType: 'normal',
   // these are all percentage 0.0 - 1.0
-  'original_width': 0.5,
-  'original_height': 1.0,
-  'original_left': 0.0,
-  'original_top': 0.0,
-  'new_width': 0.5,
-  'new_height': 1.0,
-  'new_left': 0.5,
-  'new_top': 0.0
+  originalWidth:  0.5,
+  originalHeight: 1.0,
+  originalLeft:   0.0,
+  originalTop:    0.0,
+  newWidth:       0.5,
+  newHeight:      1.0,
+  newLeft:        0.5,
+  newTop:         0.0
 };
 
 // retrieve the localStorage key for a particular window property
 // @windowId: 'original', 'new'
 // @propertyKey: 'width', 'height', 'left', 'top'
-function getStorageWindowPropKey(windowId, propertyKey) {
- return `${windowId}_${propertyKey.toLowerCase()}`;
+function getStorageWindowPropKey(windowId, propKey) {
+  return `${windowId}${propKey.slice(0).charAt().toUpperCase()}${propKey.slice(1)}`;
 }
 
 function validateOptions(options) {
   if (!Object.keys(options).every(key => Object.keys(defaults).includes(key))) {
     console.error('not all options are present!');
+    console.error(Object.keys(options).filter(key => !Object.keys(defaults).includes(key)));
     return false;
   }
 
@@ -68,9 +69,9 @@ function validateOptions(options) {
   if (!validBoolOption('copyFullscreen')) return false;
   if (!validStringOption('menuButtonType', ['normal', 'popup'])) return false;
 
-  const numberOpts = ['original_width', 'original_height', 'original_left',
-                      'original_top', 'new_width', 'new_height', 'new_left',
-                      'new_top'];
+  const numberOpts = ['originalWidth', 'originalHeight', 'originalLeft',
+                      'originalTop', 'newWidth', 'newHeight', 'newLeft',
+                      'newTop'];
   if (numberOpts.some(opt => !validNumberOption(opt, 0.0, 1.0))) return false;
 
   return true;

@@ -123,7 +123,7 @@ function updateFocus() {
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
 function main(options) {
-  // display_shortcuts
+  // display shortcuts
   {
     chrome.commands.getAll(cmds => {
       if (cmds.length === 0) { return; }
