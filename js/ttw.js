@@ -175,25 +175,21 @@ function windowToTab() {
 
 function setup(loadedOptions) {
   options = loadedOptions;
-
-  chrome.storage.onChanged.addListener((changes, areaName) => {
-    Object.entries(changes).forEach(([key, val]) => options[key] = val.newValue);
-  });
-
-  chrome.commands.onCommand.addListener(command => {
-    const lookup = {
-      'tab-to-window-normal': () => tabToWindow('normal'),
-      'tab-to-window-popup':  () => tabToWindow('popup'),
-      'window-to-tab':        windowToTab
-    };
-
-    if (lookup.hasOwnProperty(command)) { lookup[command](); }
-  });
-
-  chrome.browserAction.onClicked.addListener(tabs => {
-    tabToWindow(options.menuButtonType);
-  });
 }
 
 // loadOptions will return defaults on fail, so can use same setup function
 loadOptions().then(setup, setup);
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  Object.entries(changes).forEach(([k, v]) => options[k] = v.newValue);
+});
+
+chrome.commands.onCommand.addListener(command => {
+       if (command === 'tab-to-window-normal') tabToWindow('normal');
+  else if (command === 'tab-to-window-popup') tabToWindow('popup');
+  else if (command === 'window-to-tab') windowToTab();
+});
+
+chrome.browserAction.onClicked.addListener(tabs => {
+  tabToWindow(options.menuButtonType);
+});
