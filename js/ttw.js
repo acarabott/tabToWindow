@@ -39,7 +39,7 @@ function tabToWindow(windowType) {
     });
   }
 
-  function getOs() {
+  function getOS() {
     return new Promise(resolve => {
       chrome.runtime.getPlatformInfo(info => resolve(info.os));
     });
@@ -125,7 +125,8 @@ function tabToWindow(windowType) {
   }
 
   // Here's the action
-  const toGet = [getTabs(), getCurrentWindow(), getOs];
+  // ---------------------------------------------------------------------------
+  const toGet = [getTabs(), getCurrentWindow(), getOS];
   Promise.all(toGet).then(([tabs, currentWindow, os]) => {
     const fullscreen = options.copyFullscreen &&
                        currentWindow.state === 'fullscreen';
