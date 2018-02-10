@@ -1,7 +1,6 @@
 /* global chrome */
-/* TODO this really wants to become a module when google fix the bug with them*/
 
-const defaults = {
+export const defaults = {
   // "original" or "new"
   focus: "new",
   // boolean
@@ -28,7 +27,7 @@ const defaults = {
 // retrieve the localStorage key for a particular window property
 // @windowId: "original", "new"
 // @propertyKey: "width", "height", "left", "top"
-function getStorageWindowPropKey(windowId, propKey) {
+export function getStorageWindowPropKey(windowId, propKey) {
   return `${windowId}${propKey.slice(0).charAt().toUpperCase()}${propKey.slice(1)}`;
 }
 
@@ -76,7 +75,7 @@ function validateOptions(options) {
   return true;
 }
 
-function saveOptions(options) {
+export function saveOptions(options) {
   if (!validateOptions(options)) { return; }
 
   chrome.storage.sync.set(options, () => {
@@ -87,7 +86,7 @@ function saveOptions(options) {
 }
 
 // this returns defaults on fail
-function loadOptions() {
+export function loadOptions() {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(defaults, options => {
       if (chrome.runtime.lastError === undefined) { resolve(options); }

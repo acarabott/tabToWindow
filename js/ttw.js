@@ -1,4 +1,6 @@
-/* global getStorageWindowPropKey, loadOptions, chrome */
+/* global chrome */
+
+import { defaults, loadOptions, getStorageWindowPropKey } from "./storage.js";
 
 // Load
 let options = defaults;

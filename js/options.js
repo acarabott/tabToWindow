@@ -1,4 +1,6 @@
-/* global getStorageWindowPropKey, saveOptions, chrome, $ */
+/* global chrome, $ */
+
+import { loadOptions, saveOptions, getStorageWindowPropKey } from "./storage.js";
 
 // Helper functions
 // These should be functions that are called in more than one place

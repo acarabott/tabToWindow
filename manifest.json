@@ -19,7 +19,7 @@
 	},
 
 	"background": {
-		"scripts": ["js/storage.js", "js/ttw.js"],
+		"page": "background.html",
 		"persistent": false
 	},
 
