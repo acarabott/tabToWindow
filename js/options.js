@@ -37,10 +37,10 @@ function save() {
 
   // dimensions
   getFromClass("window").forEach(win => {
-    [["Width", "Width"],
+    [["Width",  "Width" ],
      ["Height", "Height"],
-     ["Left", "Width"],
-     ["Top", "Height"]].forEach(([prop, dim]) => {
+     ["Left",   "Width" ],
+     ["Top",    "Height"]].forEach(([prop, dim]) => {
       const windowDimension = win[`offset${prop}`];
       const screenDimension = getFromId("screen")[`offset${dim}`];
       const value = windowDimension / screenDimension;
