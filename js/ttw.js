@@ -5,18 +5,17 @@ import { defaults, loadOptions, getStorageWindowPropKey } from "./storage.js";
 // Load
 let options = defaults;
 
-function getSizeAndPos(winKey, display) {
+function getSizeAndPos(winKey, displayBounds) {
   // Convert percentages to pixel values
   const values = {};
   ["left", "top", "width", "height"].forEach(propKey => {
     values[propKey] = options[getStorageWindowPropKey(winKey, propKey)];
   });
-  const bounds = display.workArea;
   return {
-    left:   Math.round(values.left   * bounds.width  + bounds.left),
-    top:    Math.round(values.top    * bounds.height + bounds.top),
-    width:  Math.round(values.width  * bounds.width),
-    height: Math.round(values.height * bounds.height)
+    left:   Math.round(values.left   * displayBounds.width  + displayBounds.left),
+    top:    Math.round(values.top    * displayBounds.height + displayBounds.top),
+    width:  Math.round(values.width  * displayBounds.width),
+    height: Math.round(values.height * displayBounds.height)
   };
 }
 
@@ -27,17 +26,19 @@ function getOriginId(id) {
 function tabToWindow(windowType) {
   // Helper functions
   // ---------------------------------------------------------------------------
-  function resizeOriginalWindow(originalWindow, display) {
-    const vals = getSizeAndPos("original", display);
-    chrome.windows.update(originalWindow.id, {
-      width:  vals.width,
-      height: vals.height,
-      left:   vals.left,
-      top:    vals.top
+  function resizeOriginalWindow(originalWindow, displayBounds) {
+    const vals = getSizeAndPos("original", displayBounds);
+    return new Promise(resolve => {
+      chrome.windows.update(originalWindow.id, {
+        width:  vals.width,
+        height: vals.height,
+        left:   vals.left,
+        top:    vals.top
+      }, win => resolve(win));
     });
   }
 
-  function createNewWindow(tabs, windowType, isFullscreen, os, win, display) {
+  function createNewWindow(tabs, windowType, isFullscreen, os, win, displayBounds) {
     // TODO move multiple highlighted tabs
     const tab = tabs.find(tab => tab.active);
     // new window data
@@ -61,32 +62,45 @@ function tabToWindow(windowType) {
         // copying all values covers the case of clone-position-same
         ["width", "height", "left", "top"].forEach(k => createData[k] = win[k]);
 
-        const pos = options.clonePosition;
-        if (pos === "clone-position-horizontal") {
-          const right = win.left + win.width;
-          const hgap = screen.availWidth - right;
-          const positionOnRight = win.left < hgap;
+        // find the position that has the most space and return the position
+        // and length to fill it.
+        // e.g. when cloning horizontally and the window is left: 25% width: 25%
+        // there is more space on the right side than the left, so use the right
+        // pos is left/top opposite is right/bottom
+        const getPosAndLength = (winPos, winLength, displayPos, displayLength) => {
+          const normWinPos = winPos - displayPos;
+          const oppositeEdge = normWinPos + winLength;
+          const oppositeGap = displayLength - oppositeEdge;
+          const useOppositeGap = normWinPos < oppositeGap;
 
-          createData.width = Math.min(win.width,
-                                      positionOnRight ? hgap : win.left);
-          createData.left = positionOnRight
-            ? right
-            : win.left - Math.min(win.width, win.left);
+          const pos = useOppositeGap
+            ? displayPos + oppositeEdge
+            : winPos - Math.min(winLength, normWinPos);
+
+          const length = Math.min(winLength,
+                                  useOppositeGap ? oppositeGap : normWinPos);
+
+          return { pos, length };
+        };
+
+        if (options.clonePosition === "clone-position-horizontal") {
+          const { pos, length } = getPosAndLength(win.left, win.width,
+                                                  displayBounds.left,
+                                                  displayBounds.width);
+          createData.left = pos;
+          createData.width = length;
+
         }
-        else if (pos === "clone-position-vertical") {
-          const bottom = win.top + win.height;
-          const vgap = screen.availHeight - bottom;
-          const positionBelow = win.top < vgap;
-
-          createData.top = positionBelow
-            ? bottom
-            : win.top - Math.min(win.height, win.top);
-          createData.height = Math.min(win.height,
-                                       positionBelow ? vgap : win.top);
+        else if (options.clonePosition === "clone-position-vertical") {
+          const { pos, length } = getPosAndLength(win.top, win.height,
+                                                  displayBounds.top,
+                                                  displayBounds.height);
+          createData.top = pos;
+          createData.height = length;
         }
       }
       else { // not cloning
-        Object.entries(getSizeAndPos("new", display)).forEach(([k, v]) => {
+        Object.entries(getSizeAndPos("new", displayBounds)).forEach(([k, v]) => {
           createData[k] = v;
         });
       }
@@ -136,20 +150,25 @@ function tabToWindow(windowType) {
       const isLeftOfFirstDisplay = displayLeft === 0 && currentWindow.left < 0;
 
       return (currentWindow.left >= displayLeft || isLeftOfFirstDisplay) &&
-              currentWindow.left <= displayRight &&
+              currentWindow.left < displayRight &&
               currentWindow.top >= displayTop &&
-              currentWindow.top <= displayBottom;
+              currentWindow.top < displayBottom;
     });
     const isFullscreen = options.copyFullscreen &&
                          currentWindow.state === "fullscreen";
 
+    const resizePromises = [];
     // original window
     if (options.resizeOriginal && !isFullscreen) {
-      resizeOriginalWindow(currentWindow, display);
+      resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
     }
 
     // new window
-    createNewWindow(tabs, windowType, isFullscreen, os, currentWindow, display);
+    Promise.all(resizePromises).then(([updatedWin]) => {
+      const origWin = updatedWin === undefined ? currentWindow : updatedWin;
+      createNewWindow(tabs, windowType, isFullscreen, os, origWin,
+                      display.workArea);
+    });
 
     // focus
     if (options.focus === "original") {
