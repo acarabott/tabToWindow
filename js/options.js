@@ -73,22 +73,19 @@ function resizeInnerWindow(win) {
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
 function updateWindowHandling (inputId, windowId, enableIfChecked) {
-  const $input =  $(inputId);
-  const $win =    $(windowId);
-  const checked = $input.prop("checked");
-  const enable =  enableIfChecked ? checked : !checked;
-  const action =  enable ? "enable" : "disable";
-
+  const checked = document.getElementById(inputId).checked;
+  const action = enableIfChecked === checked ? "enable" : "disable";
+  const $win = $(`#${windowId}`);
   $win.draggable(action);
   $win.resizable(action);
 }
 
 function updateResizeOriginal() {
-  updateWindowHandling("#resize-original", "#original", true);
+  updateWindowHandling("resize-original", "original", true);
 }
 
 function updateCloneOriginal () {
-  updateWindowHandling("#clone-original", "#new", false);
+  updateWindowHandling("clone-original", "new", false);
 
   // toggle clone position controls if cloning enabled/disabled
   getFromClass("clone-position-option").forEach(opt => {
@@ -189,17 +186,16 @@ function main(options) {
         return getFromId("screen")[d] / gridsize;
       });
 
-      $(win).draggable({
-        containment: "parent",
-        grid: grid
-      });
+      const $win = $(win);
 
-      $(win).resizable({
+      $win.draggable({ containment: "parent", grid });
+
+      $win.resizable({
         containment: "parent",
-        handles: "all",
-        grid: grid,
-        minWidth: $(win).parent().width() * 0.2,
-        minHeight: $(win).parent().height() * 0.2
+        handles:     "all",
+        grid:        grid,
+        minWidth:    $win.parent().width() * 0.2,
+        minHeight:   $win.parent().height() * 0.2
       });
 
 
