@@ -39,7 +39,6 @@ function tabToWindow(windowType) {
   }
 
   function createNewWindow(tabs, windowType, isFullscreen, os, win, displayBounds) {
-    // TODO move multiple highlighted tabs
     const tab = tabs.find(tab => tab.active);
 
     // new window data
@@ -107,9 +106,12 @@ function tabToWindow(windowType) {
     }
 
     // Move it to a new window
-    chrome.windows.create(createData, () => {
-      // save parent id in case we want to pop in
-      sessionStorage[getOriginId(tab.id)] = win.id;
+    return new Promise(resolve => {
+      chrome.windows.create(createData, newWin => {
+        // save parent id in case we want to pop in
+        sessionStorage[getOriginId(tab.id)] = win.id;
+        resolve(newWin, tab);
+      });
     });
   }
 
@@ -153,16 +155,27 @@ function tabToWindow(windowType) {
                          currentWindow.state === "fullscreen";
 
     const resizePromises = [];
-    // original window
+
+    // (maybe) move and resize original window
     if (options.resizeOriginal && !isFullscreen) {
       resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
     }
 
-    // new window
-    Promise.all(resizePromises).then(([updatedWin]) => {
+    // move and resize new window
+    const bothMoved = Promise.all(resizePromises).then(([updatedWin]) => {
       const origWin = updatedWin === undefined ? currentWindow : updatedWin;
-      createNewWindow(tabs, windowType, isFullscreen, os, origWin,
-                      display.workArea);
+      return createNewWindow(tabs, windowType, isFullscreen, os, origWin,
+                             display.workArea);
+    });
+
+    // move highlighted tabs
+    bothMoved.then((newWin, movedTab) => {
+      const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
+      const otherTabIds = otherTabs.map(tab => tab.id);
+      chrome.tabs.move(otherTabIds, {
+        windowId: newWin.id,
+        index: 1
+      });
     });
 
     // focus
@@ -172,6 +185,7 @@ function tabToWindow(windowType) {
   });
 }
 
+// TODO move multiple back
 function windowToTab() {
   chrome.tabs.query({
     currentWindow: true,
@@ -187,7 +201,6 @@ function windowToTab() {
     // check original window still exists
     chrome.windows.get(originalWindowId, {}, () => {
       if (chrome.runtime.lastError) { return; }
-
       // move the current tab
       chrome.tabs.move(tab.id, {
         windowId: originalWindowId,
