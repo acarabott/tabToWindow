@@ -104,7 +104,7 @@ function tabToWindow(windowType) {
     });
   }
 
-  // Here"s the action
+  // Here's the action
   // ---------------------------------------------------------------------------
   const osPromise = new Promise(resolve => {
     chrome.runtime.getPlatformInfo(info => resolve(info.os));

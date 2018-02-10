@@ -118,8 +118,8 @@ function updateFocus() {
 
 
 // Each chunk has specifically *not* been broken out into a named function
-// as then it"s more difficult to tell when / where they are being called
-// and if it"s more than one
+// as then it's more difficult to tell when / where they are being called
+// and if it's more than one
 function main(options) {
   // display shortcuts
   {
@@ -147,7 +147,7 @@ function main(options) {
   }
 
   const gridsize = 20; // px to use for window grid
-  // Set monitor aspect ratio to match user"s
+  // Set monitor aspect ratio to match user's
   {
     const monitor = getFromId("monitor");
     const ratio = screen.height / screen.width;
