@@ -1,4 +1,3 @@
-/* eslint browser: true */
 /* global getStorageWindowPropKey, loadOptions, chrome */
 
 // Load
@@ -7,9 +6,9 @@ let options = defaults;
 function getSizeAndPos(winKey) {
   // Convert percentages to pixel values
   const properties = {};
-  ['width', 'height', 'left', 'top'].forEach(pKey => {
+  ["width", "height", "left", "top"].forEach(pKey => {
     const value = options[getStorageWindowPropKey(winKey, pKey)];
-    const screenDimension = pKey === 'width' || pKey === 'left'
+    const screenDimension = pKey === "width" || pKey === "left"
       ? screen.availWidth
       : screen.availHeight;
     properties[pKey] = Math.round(value * screenDimension);
@@ -26,7 +25,7 @@ function tabToWindow(windowType) {
   // Helper functions
   // ---------------------------------------------------------------------------
   function resizeOriginalWindow(originalWindow) {
-    const vals = getSizeAndPos('original');
+    const vals = getSizeAndPos("original");
     chrome.windows.update(originalWindow.id, {
       width:  vals.width,
       height: vals.height,
@@ -42,25 +41,25 @@ function tabToWindow(windowType) {
     const createData = {
       tabId: tab.id,
       type: windowType,
-      focused: options.focus === 'new',
+      focused: options.focus === "new",
       incognito: tab.incognito,
       // On Mac, setting state to fullscreen when the current window is
       // already fullscreen results in a NON fullscreen window (guessing
       // chrome toggles the state after the window is created)
       state: fullscreen && os !== chrome.runtime.PlatformOs.MAC
-        ? 'fullscreen'
-        : 'normal'
+        ? "fullscreen"
+        : "normal"
     };
 
-    // shouldn't set width/height/left/top if fullscreen
+    // shouldn"t set width/height/left/top if fullscreen
     if (!fullscreen) {
       const cloning = options.cloneOriginal && !fullscreen;
       if (cloning) {
         // copying all values covers the case of clone-position-same
-        ['width', 'height', 'left', 'top'].forEach(k => createData[k] = win[k]);
+        ["width", "height", "left", "top"].forEach(k => createData[k] = win[k]);
 
         const pos = options.clonePosition;
-        if (pos === 'clone-position-horizontal') {
+        if (pos === "clone-position-horizontal") {
           const right = win.left + win.width;
           const hgap = screen.availWidth - right;
           const positionOnRight = win.left < hgap;
@@ -72,7 +71,7 @@ function tabToWindow(windowType) {
             ? right
             : win.left - Math.min(win.width, win.left);
         }
-        else if (pos === 'clone-position-vertical') {
+        else if (pos === "clone-position-vertical") {
           const bottom = win.top + win.height;
           const vgap = screen.availHeight - bottom;
           const positionBelow = win.top < vgap;
@@ -86,13 +85,13 @@ function tabToWindow(windowType) {
         }
       }
       else {
-        Object.entries(getSizeAndPos('new')).forEach(([k, v]) => {
-          createData[k] = v
+        Object.entries(getSizeAndPos("new")).forEach(([k, v]) => {
+          createData[k] = v;
         });
       }
 
       // ensure all values are integers for Chrome APIs
-      ['width', 'height', 'left', 'top'].forEach(k => {
+      ["width", "height", "left", "top"].forEach(k => {
         createData[k] = Math.round(createData[k]);
       });
     }
@@ -104,7 +103,7 @@ function tabToWindow(windowType) {
     });
   }
 
-  // Here's the action
+  // Here"s the action
   // ---------------------------------------------------------------------------
   const tabsPromise = new Promise(resolve => {
     chrome.tabs.query({currentWindow: true}, t => {
@@ -123,7 +122,7 @@ function tabToWindow(windowType) {
   const promises = [tabsPromise, currentWindowPromise, osPromise];
   Promise.all(promises).then(([tabs, currentWindow, os]) => {
     const fullscreen = options.copyFullscreen &&
-                       currentWindow.state === 'fullscreen';
+                       currentWindow.state === "fullscreen";
 
     // original window
     if (options.resizeOriginal && !fullscreen) {
@@ -134,7 +133,7 @@ function tabToWindow(windowType) {
     createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
 
     // focus
-    if (options.focus === 'original') {
+    if (options.focus === "original") {
       chrome.windows.update(currentWindow.id, { focused: true });
     }
   });
@@ -180,9 +179,9 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 });
 
 chrome.commands.onCommand.addListener(command => {
-       if (command === 'tab-to-window-normal') tabToWindow('normal');
-  else if (command === 'tab-to-window-popup')  tabToWindow('popup');
-  else if (command === 'window-to-tab')        windowToTab();
+       if (command === "tab-to-window-normal") { tabToWindow("normal"); }
+  else if (command === "tab-to-window-popup")  { tabToWindow("popup"); }
+  else if (command === "window-to-tab")        { windowToTab(); }
 });
 
 chrome.browserAction.onClicked.addListener(tabs => {
