@@ -26,11 +26,11 @@ function getFocusedName() {
 // save current state
 function save() {
   const options = {
-    focus: getFocusedName(),
+    focus:          getFocusedName(),
     resizeOriginal: getFromId('resize-original').checked,
-    cloneOriginal: getFromId('clone-original').checked,
+    cloneOriginal:  getFromId('clone-original').checked,
     copyFullscreen: getFromId('copy-fullscreen').checked,
-    clonePosition: getFromClass('clone-position-option').find(cp => cp.checked).id,
+    clonePosition:  getFromClass('clone-position-option').find(cp => cp.checked).id,
     menuButtonType: getFromClass('menu-button-option').find(mb => mb.checked).getAttribute('data-value')
   };
 
