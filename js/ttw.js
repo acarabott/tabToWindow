@@ -5,18 +5,19 @@ import { defaults, loadOptions, getStorageWindowPropKey } from "./storage.js";
 // Load
 let options = defaults;
 
-function getSizeAndPos(winKey) {
+function getSizeAndPos(winKey, display) {
   // Convert percentages to pixel values
-  const properties = {};
-  ["width", "height", "left", "top"].forEach(pKey => {
-    const value = options[getStorageWindowPropKey(winKey, pKey)];
-    const screenDimension = pKey === "width" || pKey === "left"
-      ? screen.availWidth
-      : screen.availHeight;
-    properties[pKey] = Math.round(value * screenDimension);
+  const values = {};
+  ["left", "top", "width", "height"].forEach(propKey => {
+    values[propKey] = options[getStorageWindowPropKey(winKey, propKey)];
   });
-
-  return properties;
+  const bounds = display.workArea;
+  return {
+    left:   Math.round(values.left   * bounds.width  + bounds.left),
+    top:    Math.round(values.top    * bounds.height + bounds.top),
+    width:  Math.round(values.width  * bounds.width),
+    height: Math.round(values.height * bounds.height)
+  };
 }
 
 function getOriginId(id) {
@@ -26,8 +27,8 @@ function getOriginId(id) {
 function tabToWindow(windowType) {
   // Helper functions
   // ---------------------------------------------------------------------------
-  function resizeOriginalWindow(originalWindow) {
-    const vals = getSizeAndPos("original");
+  function resizeOriginalWindow(originalWindow, display) {
+    const vals = getSizeAndPos("original", display);
     chrome.windows.update(originalWindow.id, {
       width:  vals.width,
       height: vals.height,
@@ -36,7 +37,7 @@ function tabToWindow(windowType) {
     });
   }
 
-  function createNewWindow(tabs, windowType, fullscreen, os, win) {
+  function createNewWindow(tabs, windowType, isFullscreen, os, win, display) {
     // TODO move multiple highlighted tabs
     const tab = tabs.find(tab => tab.active);
     // new window data
@@ -48,15 +49,15 @@ function tabToWindow(windowType) {
       // On Mac, setting state to fullscreen when the current window is
       // already fullscreen results in a NON fullscreen window (guessing
       // chrome toggles the state after the window is created)
-      state: fullscreen && os !== chrome.runtime.PlatformOs.MAC
+      // TODO check if this still the case
+      state: isFullscreen && os !== chrome.runtime.PlatformOs.MAC
         ? "fullscreen"
         : "normal"
     };
 
-    // shouldn"t set width/height/left/top if fullscreen
-    if (!fullscreen) {
-      const cloning = options.cloneOriginal && !fullscreen;
-      if (cloning) {
+    // shouldn't set width/height/left/top if fullscreen
+    if (!isFullscreen) {
+      if (options.cloneOriginal) {
         // copying all values covers the case of clone-position-same
         ["width", "height", "left", "top"].forEach(k => createData[k] = win[k]);
 
@@ -66,9 +67,8 @@ function tabToWindow(windowType) {
           const hgap = screen.availWidth - right;
           const positionOnRight = win.left < hgap;
 
-          createData.width = Math.min(win.width, positionOnRight
-                                                      ? hgap
-                                                      : win.left);
+          createData.width = Math.min(win.width,
+                                      positionOnRight ? hgap : win.left);
           createData.left = positionOnRight
             ? right
             : win.left - Math.min(win.width, win.left);
@@ -81,13 +81,12 @@ function tabToWindow(windowType) {
           createData.top = positionBelow
             ? bottom
             : win.top - Math.min(win.height, win.top);
-          createData.height = Math.min(win.height, positionBelow
-                                                        ? vgap
-                                                        : win.top);
+          createData.height = Math.min(win.height,
+                                       positionBelow ? vgap : win.top);
         }
       }
-      else {
-        Object.entries(getSizeAndPos("new")).forEach(([k, v]) => {
+      else { // not cloning
+        Object.entries(getSizeAndPos("new", display)).forEach(([k, v]) => {
           createData[k] = v;
         });
       }
@@ -107,32 +106,50 @@ function tabToWindow(windowType) {
 
   // Here"s the action
   // ---------------------------------------------------------------------------
-  const tabsPromise = new Promise(resolve => {
-    chrome.tabs.query({currentWindow: true}, t => {
-      if (t.length > 1) { resolve(t); }
-    });
+  const osPromise = new Promise(resolve => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+
+  const displaysPromise = new Promise(resolve => {
+    chrome.system.display.getInfo(displays => resolve(displays));
   });
 
   const currentWindowPromise = new Promise(resolve => {
     chrome.windows.getCurrent({}, win => resolve(win));
   });
 
-  const osPromise = new Promise(resolve => {
-    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  const tabsPromise = new Promise(resolve => {
+    chrome.tabs.query({ currentWindow: true }, t => {
+      if (t.length > 1) { resolve(t); }
+    });
   });
 
-  const promises = [tabsPromise, currentWindowPromise, osPromise];
-  Promise.all(promises).then(([tabs, currentWindow, os]) => {
-    const fullscreen = options.copyFullscreen &&
-                       currentWindow.state === "fullscreen";
+  const promises = [osPromise, displaysPromise, currentWindowPromise,
+    tabsPromise];
+
+  Promise.all(promises).then(([os, displays, currentWindow, tabs]) => {
+    const display = displays.find(display => {
+      const displayLeft = display.bounds.left;
+      const displayRight = displayLeft + display.bounds.width;
+      const displayTop = display.bounds.top;
+      const displayBottom = displayTop + display.bounds.height;
+      const isLeftOfFirstDisplay = displayLeft === 0 && currentWindow.left < 0;
+
+      return (currentWindow.left >= displayLeft || isLeftOfFirstDisplay) &&
+              currentWindow.left <= displayRight &&
+              currentWindow.top >= displayTop &&
+              currentWindow.top <= displayBottom;
+    });
+    const isFullscreen = options.copyFullscreen &&
+                         currentWindow.state === "fullscreen";
 
     // original window
-    if (options.resizeOriginal && !fullscreen) {
-      resizeOriginalWindow(currentWindow);
+    if (options.resizeOriginal && !isFullscreen) {
+      resizeOriginalWindow(currentWindow, display);
     }
 
     // new window
-    createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
+    createNewWindow(tabs, windowType, isFullscreen, os, currentWindow, display);
 
     // focus
     if (options.focus === "original") {
