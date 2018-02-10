@@ -25,26 +25,6 @@ function getOriginId(id) {
 function tabToWindow(windowType) {
   // Helper functions
   // ---------------------------------------------------------------------------
-  function getTabs() {
-    return new Promise(resolve => {
-      chrome.tabs.query({currentWindow: true}, t => {
-        if (t.length > 1) { resolve(t); }
-      });
-    });
-  }
-
-  function getCurrentWindow() {
-    return new Promise(resolve => {
-      chrome.windows.getCurrent({}, win => resolve(win));
-    });
-  }
-
-  function getOS() {
-    return new Promise(resolve => {
-      chrome.runtime.getPlatformInfo(info => resolve(info.os));
-    });
-  }
-
   function resizeOriginalWindow(originalWindow) {
     const vals = getSizeAndPos('original');
     chrome.windows.update(originalWindow.id, {
@@ -126,8 +106,22 @@ function tabToWindow(windowType) {
 
   // Here's the action
   // ---------------------------------------------------------------------------
-  const toGet = [getTabs(), getCurrentWindow(), getOS];
-  Promise.all(toGet).then(([tabs, currentWindow, os]) => {
+  const tabsPromise = new Promise(resolve => {
+    chrome.tabs.query({currentWindow: true}, t => {
+      if (t.length > 1) { resolve(t); }
+    });
+  });
+
+  const currentWindowPromise = new Promise(resolve => {
+    chrome.windows.getCurrent({}, win => resolve(win));
+  });
+
+  const osPromise = new Promise(resolve => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+
+  const promises = [tabsPromise, currentWindowPromise, osPromise];
+  Promise.all(promises).then(([tabs, currentWindow, os]) => {
     const fullscreen = options.copyFullscreen &&
                        currentWindow.state === 'fullscreen';
 
