@@ -40,39 +40,39 @@ function validateOptions(options) {
     return false;
   }
 
-  function validStringOption(key, validOptions) {
-    const result = validOptions.includes(options[key]);
-    if (!result) console.error(`"${key}" is invalid, should be in ${validOptions}`);
+  function isValidStringOption(option, validOptions) {
+    const result = validOptions.includes(options[option]);
+    if (!result) console.error(`"${option}" is invalid, should be in ${validOptions}`);
     return result;
   }
 
-  function validBoolOption(key) {
+  function isValidBoolOption(key) {
     const result = typeof options[key] === 'boolean';
     if (!result) console.error(`"${key}" option is invalid, should be boolean`);
     return result;
   }
 
-  function validNumberOption(key, min, max) {
-    const result =  typeof options[key] === 'number' &&
-                           options[key] >= min &&
-                           options[key] <= max;
+  function isValidNumberOption(key, min, max) {
+    const result = typeof options[key] === 'number' &&
+                          options[key] >= min &&
+                          options[key] <= max;
     if (!result) console.error(`${key} should be between ${min} and ${max}`);
     return result;
   }
 
-  if (!validStringOption('focus', ['original', 'new'])) return false;
-  if (!validBoolOption('resizeOriginal')) return false;
-  if (!validBoolOption('cloneOriginal')) return false;
-  if (!validStringOption('clonePosition', ['clone-position-same',
-                                            'clone-position-horizontal',
-                                            'clone-position-vertical'])) return false;
-  if (!validBoolOption('copyFullscreen')) return false;
-  if (!validStringOption('menuButtonType', ['normal', 'popup'])) return false;
+  if (!isValidStringOption('focus', ['original', 'new'])) return false;
+  if (!isValidBoolOption('resizeOriginal')) return false;
+  if (!isValidBoolOption('cloneOriginal')) return false;
+  if (!isValidStringOption('clonePosition', ['clone-position-same',
+                                             'clone-position-horizontal',
+                                             'clone-position-vertical'])) return false;
+  if (!isValidBoolOption('copyFullscreen')) return false;
+  if (!isValidStringOption('menuButtonType', ['normal', 'popup'])) return false;
 
   const numberOpts = ['originalWidth', 'originalHeight', 'originalLeft',
                       'originalTop', 'newWidth', 'newHeight', 'newLeft',
                       'newTop'];
-  if (numberOpts.some(opt => !validNumberOption(opt, 0.0, 1.0))) return false;
+  if (numberOpts.some(opt => !isValidNumberOption(opt, 0.0, 1.0))) return false;
 
   return true;
 }
