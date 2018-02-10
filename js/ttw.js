@@ -135,20 +135,21 @@ function tabToWindow(windowType) {
     if (options.resizeOriginal && !fullscreen) {
       resizeOriginalWindow(currentWindow);
     }
+
     // new window
     createNewWindow(tabs, windowType, fullscreen, os, currentWindow);
+
     // focus
     if (options.focus === 'original') {
       chrome.windows.update(currentWindow.id, { focused: true });
     }
   });
-
 }
 
 function windowToTab() {
   chrome.tabs.query({
     currentWindow: true,
-    active:      true
+    active:        true
   }, tabs => {
     const tab = tabs[0];
 
@@ -186,8 +187,8 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 chrome.commands.onCommand.addListener(command => {
        if (command === 'tab-to-window-normal') tabToWindow('normal');
-  else if (command === 'tab-to-window-popup') tabToWindow('popup');
-  else if (command === 'window-to-tab') windowToTab();
+  else if (command === 'tab-to-window-popup')  tabToWindow('popup');
+  else if (command === 'window-to-tab')        windowToTab();
 });
 
 chrome.browserAction.onClicked.addListener(tabs => {
