@@ -41,19 +41,14 @@ function tabToWindow(windowType) {
   function createNewWindow(tabs, windowType, isFullscreen, os, win, displayBounds) {
     // TODO move multiple highlighted tabs
     const tab = tabs.find(tab => tab.active);
+
     // new window data
     const createData = {
       tabId: tab.id,
       type: windowType,
       focused: options.focus === "new",
       incognito: tab.incognito,
-      // On Mac, setting state to fullscreen when the current window is
-      // already fullscreen results in a NON fullscreen window (guessing
-      // chrome toggles the state after the window is created)
-      // TODO check if this still the case
-      state: isFullscreen && os !== chrome.runtime.PlatformOs.MAC
-        ? "fullscreen"
-        : "normal"
+      state: isFullscreen ? "fullscreen" : "normal"
     };
 
     // shouldn't set width/height/left/top if fullscreen
