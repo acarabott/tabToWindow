@@ -2,25 +2,25 @@
 
 import { defaults, loadOptions, getStorageWindowPropKey } from "./storage.js";
 
-const storage = {
+const originWindowCache = {
   getOriginId: function(id) {
     return `popOrigin_${id}`;
   },
 
   has: function(tab) {
-    return sessionStorage.hasOwnProperty(storage.getOriginId(tab.id));
+    return sessionStorage.hasOwnProperty(originWindowCache.getOriginId(tab.id));
   },
 
   set: function(tab, win) {
-    sessionStorage[storage.getOriginId(tab.id)] = win.id;
+    sessionStorage[originWindowCache.getOriginId(tab.id)] = win.id;
   },
 
   get: function(tab) {
-    return parseInt(sessionStorage[storage.getOriginId(tab.id)], 10);
+    return parseInt(sessionStorage[originWindowCache.getOriginId(tab.id)], 10);
   },
 
   remove: function(tab) {
-    sessionStorage.removeItem(storage.getOriginId(tab.id));
+    sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
   }
 };
 
@@ -210,7 +210,7 @@ function tabToWindow(windowType) {
     // move highlighted tabs
     const othersMoved = bothMoved.then(([newWin, movedTab]) => {
       // save parent id in case we want to pop in
-      storage.set(movedTab, currentWindow);
+      originWindowCache.set(movedTab, currentWindow);
 
       // move other highlighted tabs
       const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
@@ -254,9 +254,9 @@ function windowToTab() {
   });
 
   const checkOriginalWindowsExist = getTabs.then(tabs => {
-    const tabsWithWindow = tabs.filter(tab => storage.has(tab));
+    const tabsWithWindow = tabs.filter(tab => originWindowCache.has(tab));
     const promises = tabsWithWindow.map(tab => {
-      const originalWindowId = storage.get(tab);
+      const originalWindowId = originWindowCache.get(tab);
 
       return new Promise(resolve => {
         chrome.windows.get(originalWindowId, {}, () => {
@@ -280,7 +280,7 @@ function windowToTab() {
 
   moveTabs.then(moveResults => {
     moveResults.forEach((tab) => {
-      storage.remove(tab);
+      originWindowCache.remove(tab);
       if (tab.active) { chrome.tabs.update(tab.id, { active: true }); }
     });
   });
