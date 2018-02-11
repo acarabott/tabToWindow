@@ -1,6 +1,6 @@
 /* global chrome */
 
-import { options } from "./storage.js";
+import { options } from "./options-storage.js";
 
 const originWindowCache = {
   getOriginId: function(id) {

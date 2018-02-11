@@ -1,6 +1,6 @@
 /* global chrome, $ */
 
-import { options } from "./storage.js";
+import { options } from "./options-storage.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
