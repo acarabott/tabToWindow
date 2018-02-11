@@ -1,6 +1,6 @@
 /* global chrome */
 
-export const defaults = {
+const defaults = {
   // "original" or "new"
   focus: "new",
   // boolean
@@ -24,10 +24,10 @@ export const defaults = {
   newTop:         0.0
 };
 
-// retrieve the localStorage key for a particular window property
+// retrieve the storage key for a particular window property
 // @windowId: "original", "new"
 // @propertyKey: "width", "height", "left", "top"
-export function getStorageWindowPropKey(windowId, propKey) {
+function getStorageWindowPropKey(windowId, propKey) {
   return `${windowId}${propKey.slice(0).charAt().toUpperCase()}${propKey.slice(1)}`;
 }
 
@@ -75,7 +75,7 @@ function validateOptions(options) {
   return true;
 }
 
-export function saveOptions(options) {
+function saveOptions(options) {
   if (!validateOptions(options)) { return; }
 
   chrome.storage.sync.set(options, () => {
@@ -85,12 +85,40 @@ export function saveOptions(options) {
   });
 }
 
-// this returns defaults on fail
-export function loadOptions() {
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(defaults, options => {
-      if (chrome.runtime.lastError === undefined) { resolve(options); }
+const values = defaults;
+
+export const options = {
+  defaults,
+
+  get(key) {
+    return values[key];
+  },
+
+  getForWindow(windowId, key) {
+    return options.get(getStorageWindowPropKey(windowId, key));
+  },
+
+  set(key, value) {
+    values[key] = value;
+  },
+
+  setForWindow(windowId, key, value) {
+    options.set(getStorageWindowPropKey(windowId, key), value);
+  },
+
+  save() {
+    saveOptions(values);
+  },
+
+  loadPromise: new Promise((resolve, reject) => {
+    chrome.storage.sync.get(defaults, loadedOptions => {
+      if (chrome.runtime.lastError === undefined) {
+        Object.entries(loadedOptions).forEach(([key, value]) => {
+          values[key] = value;
+        });
+        resolve(options);
+      }
       else { reject(chrome.runtime.lastError); }
     });
-  });
-}
+  })
+};

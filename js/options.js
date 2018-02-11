@@ -1,6 +1,6 @@
 /* global chrome, $ */
 
-import { loadOptions, saveOptions, getStorageWindowPropKey } from "./storage.js";
+import { options } from "./storage.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
@@ -26,14 +26,12 @@ function getFocusedName() {
 
 // save current state
 function save() {
-  const options = {
-    focus:          getFocusedName(),
-    resizeOriginal: getFromId("resize-original").checked,
-    cloneOriginal:  getFromId("clone-original").checked,
-    copyFullscreen: getFromId("copy-fullscreen").checked,
-    clonePosition:  getFromClass("clone-position-option").find(cp => cp.checked).id,
-    menuButtonType: getFromClass("menu-button-option").find(mb => mb.checked).getAttribute("data-value")
-  };
+  options.set("focus", getFocusedName());
+  options.set("resizeOriginal", getFromId("resize-original").checked);
+  options.set("cloneOriginal",  getFromId("clone-original").checked);
+  options.set("copyFullscreen", getFromId("copy-fullscreen").checked);
+  options.set("clonePosition",  getFromClass("clone-position-option").find(cp => cp.checked).id);
+  options.set("menuButtonType", getFromClass("menu-button-option").find(mb => mb.checked).getAttribute("data-value"));
 
   // dimensions
   getFromClass("window").forEach(win => {
@@ -44,11 +42,11 @@ function save() {
       const windowDimension = win[`offset${prop}`];
       const screenDimension = getFromId("screen")[`offset${dim}`];
       const value = windowDimension / screenDimension;
-      options[getStorageWindowPropKey(win.id, prop)] = value;
+      options.setForWindow(win.id, prop, value);
     });
   });
 
-  saveOptions(options);
+  options.save();
 }
 
 
@@ -120,7 +118,7 @@ function updateFocus() {
 // Each chunk has specifically *not* been broken out into a named function
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
-function main(options) {
+function main() {
   // display shortcuts
   {
     chrome.commands.getAll(cmds => {
@@ -152,23 +150,23 @@ function main(options) {
     const monitor = getFromId("monitor");
     const ratio = screen.height / screen.width;
     const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
-    monitor.style.height =  `${height}px`;
+    monitor.style.height = `${height}px`;
   }
 
 
   // restore options
   {
     getFromClass("focus-option").forEach(opt => {
-      opt.checked = opt.id.includes(options.focus);
+      opt.checked = opt.id.includes(options.get("focus"));
     });
-    getFromId("resize-original").checked = options.resizeOriginal;
-    getFromId("clone-original").checked = options.cloneOriginal;
+    getFromId("resize-original").checked = options.get("resizeOriginal");
+    getFromId("clone-original").checked = options.get("cloneOriginal");
     getFromClass("clone-position-option").find(cp => {
-      return cp.id === options.clonePosition;
+      return cp.id === options.get("clonePosition");
     }).checked = true;
-    getFromId("copy-fullscreen").checked = options.copyFullscreen;
+    getFromId("copy-fullscreen").checked = options.get("copyFullscreen");
     getFromClass("menu-button-option").forEach(opt => {
-      opt.checked = opt.id.includes(options.menuButtonType);
+      opt.checked = opt.id.includes(options.get("menuButtonType"));
     });
   }
 
@@ -178,8 +176,7 @@ function main(options) {
     getFromClass("window").forEach(win => {
       // Restore positions from options
       ["width", "height", "left", "top"].forEach(prop => {
-        const key = getStorageWindowPropKey(win.id, prop);
-        win.style[prop] = `${options[key] * 100}%`;
+        win.style[prop] = `${options.getForWindow(win.id, prop) * 100}%`;
       });
 
       const grid = ["clientWidth", "clientHeight"].map(d => {
@@ -231,5 +228,5 @@ function main(options) {
 }
 // -----------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  loadOptions().then(options => main(options));
+  options.loadPromise.then(main);
 });

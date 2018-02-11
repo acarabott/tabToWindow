@@ -1,6 +1,6 @@
 /* global chrome */
 
-import { defaults, loadOptions, getStorageWindowPropKey } from "./storage.js";
+import { options } from "./storage.js";
 
 const originWindowCache = {
   getOriginId: function(id) {
@@ -25,13 +25,11 @@ const originWindowCache = {
 };
 
 // Load
-let options = defaults;
-
 function getSizeAndPos(winKey, displayBounds) {
   // Convert percentages to pixel values
   const values = {};
   ["left", "top", "width", "height"].forEach(propKey => {
-    values[propKey] = options[getStorageWindowPropKey(winKey, propKey)];
+    values[propKey] = options.getForWindow(winKey, propKey);
   });
   return {
     left:   Math.round(values.left   * displayBounds.width  + displayBounds.left),
@@ -179,14 +177,14 @@ function tabToWindow(windowType) {
               currentWindow.top >= displayTop &&
               currentWindow.top < displayBottom;
     });
-    const isFullscreen = options.copyFullscreen &&
+    const isFullscreen = options.get("copyFullscreen") &&
                          currentWindow.state === "fullscreen";
-    const isFocused = options.focus === "new";
+    const isFocused = options.get("focus") === "new";
 
     const resizePromises = [];
 
     // (maybe) move and resize original window
-    if (options.resizeOriginal && !isFullscreen && tabs.length > 1) {
+    if (options.get("resizeOriginal") && !isFullscreen && tabs.length > 1) {
       resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
     }
 
@@ -200,8 +198,8 @@ function tabToWindow(windowType) {
         ? getWindowBounds(origWindow)
         : getNewWindowBounds(origWindow,
                              display.workArea,
-                             options.cloneOriginal,
-                             options.clonePosition);
+                             options.get("cloneOriginal"),
+                             options.get("clonePosition"));
 
       return createNewWindow(activeTab, windowType, windowBounds, isFullscreen,
                              isFocused);
@@ -236,9 +234,14 @@ function tabToWindow(windowType) {
     });
 
     othersMoved.then(() => {
-      // focus
-      if (options.focus === "original") {
-        chrome.windows.update(currentWindow.id, { focused: true });
+      // focus on original window if specified, and it still exists
+      // (popping a single tab will destroy the original window)
+      if (options.get("focus") === "original") {
+        chrome.windows.get(currentWindow.id, {}, () => {
+          if (!chrome.runtime.lastError) {
+            chrome.windows.update(currentWindow.id, { focused: true });
+          }
+        });
       }
     });
   });
@@ -286,17 +289,8 @@ function windowToTab() {
   });
 }
 
-
-function setup(loadedOptions) {
-  options = loadedOptions;
-}
-
-
-// loadOptions will return defaults on fail, so can use same setup function
-loadOptions().then(setup, setup);
-
 chrome.storage.onChanged.addListener(changes => {
-  Object.entries(changes).forEach(([k, v]) => options[k] = v.newValue);
+  Object.entries(changes).forEach(([k, v]) => options.set(k, v.newValue));
 });
 
 chrome.commands.onCommand.addListener(command => {
@@ -306,5 +300,5 @@ chrome.commands.onCommand.addListener(command => {
 });
 
 chrome.browserAction.onClicked.addListener(() => {
-  tabToWindow(options.menuButtonType);
+  tabToWindow(options.get("menuButtonType"));
 });
