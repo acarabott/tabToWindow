@@ -173,9 +173,9 @@ function tabToWindow(windowType) {
       const isLeftOfFirstDisplay = displayLeft === 0 && currentWindow.left < 0;
 
       return (currentWindow.left >= displayLeft || isLeftOfFirstDisplay) &&
-              currentWindow.left < displayRight &&
-              currentWindow.top >= displayTop &&
-              currentWindow.top < displayBottom;
+              currentWindow.left <  displayRight &&
+              currentWindow.top  >= displayTop &&
+              currentWindow.top  <  displayBottom;
     });
     const isFullscreen = options.get("copyFullscreen") &&
                          currentWindow.state === "fullscreen";
