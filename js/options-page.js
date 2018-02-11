@@ -115,32 +115,33 @@ function updateFocus() {
 
 
 
+// Main Function
+// -----------------------------------------------------------------------------
 // Each chunk has specifically *not* been broken out into a named function
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
+
 function main() {
   // display shortcuts
   {
     chrome.commands.getAll(cmds => {
       if (cmds.length === 0) { return; }
 
-      cmds
-      .filter(cmd => cmd.name !== "_execute_browser_action")
-      .forEach(cmd => {
-        const name = document.createElement("span");
-        name.textContent = `${cmd.description}:`;
-        name.classList.add("shortcut-label");
+      cmds.filter(cmd => cmd.name !== "_execute_browser_action")
+          .forEach(cmd => {
+            const name = document.createElement("span");
+            name.textContent = `${cmd.description}:`;
+            name.classList.add("shortcut-label");
 
-        const shortcut = document.createElement("span");
-        shortcut.classList.add("shortcut");
-        shortcut.textContent = cmd.shortcut;
+            const shortcut = document.createElement("span");
+            shortcut.classList.add("shortcut");
+            shortcut.textContent = cmd.shortcut;
 
-        const li = document.createElement("li");
-        [name, shortcut].forEach(el => li.appendChild(el));
+            const li = document.createElement("li");
+            [name, shortcut].forEach(el => li.appendChild(el));
 
-        getFromId("shortcut-list").appendChild(li);
-      });
-
+            getFromId("shortcut-list").appendChild(li);
+          });
     });
   }
 
@@ -226,7 +227,10 @@ function main() {
     };
   }
 }
+
+// Loading
 // -----------------------------------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", () => {
   options.loadPromise.then(main);
 });

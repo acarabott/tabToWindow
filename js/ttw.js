@@ -2,6 +2,9 @@
 
 import { options } from "./options-storage.js";
 
+// Session storage interface
+// -----------------------------------------------------------------------------
+
 const originWindowCache = {
   getOriginId: function(id) {
     return `popOrigin_${id}`;
@@ -24,7 +27,9 @@ const originWindowCache = {
   }
 };
 
-// Load
+// Helper functions
+// -----------------------------------------------------------------------------
+
 function getSizeAndPos(winKey, displayBounds) {
   // Convert percentages to pixel values
   const values = {};
@@ -38,7 +43,6 @@ function getSizeAndPos(winKey, displayBounds) {
     height: Math.round(values.height * displayBounds.height)
   };
 }
-
 
 
 function resizeOriginalWindow(originalWindow, displayBounds) {
@@ -144,6 +148,8 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, focused) {
   });
 }
 
+// Primary Functions
+// -----------------------------------------------------------------------------
 
 function tabToWindow(windowType) {
   const displaysPromise = new Promise(resolve => {
@@ -288,6 +294,9 @@ function windowToTab() {
     });
   });
 }
+
+// Chrome Listeners
+// -----------------------------------------------------------------------------
 
 chrome.storage.onChanged.addListener(changes => {
   Object.entries(changes).forEach(([k, v]) => options.set(k, v.newValue));
