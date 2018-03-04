@@ -200,7 +200,7 @@ function tabToWindow(windowType) {
     const destroyingOriginalWindow = tabs.length === 1;
     if (options.get("resizeOriginal") &&
         !isFullscreen &&
-        destroyingOriginalWindow) {
+        !destroyingOriginalWindow) {
       resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
     }
 
