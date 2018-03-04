@@ -22,7 +22,7 @@ const originWindowCache = {
     return parseInt(sessionStorage[originWindowCache.getOriginId(tab.id)], 10);
   },
 
-  remove(tab) {
+  delete(tab) {
     sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
   }
 };
@@ -311,7 +311,7 @@ function windowToTab() {
 
   moveTabs.then(moveResults => {
     moveResults.forEach((tab) => {
-      originWindowCache.remove(tab);
+      originWindowCache.delete(tab);
       if (tab.active) { chrome.tabs.update(tab.id, { active: true }); }
     });
   });
