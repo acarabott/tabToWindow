@@ -127,14 +127,14 @@ function getNewWindowBounds(origWindow, displayBounds, cloneOriginal, clonePosit
 }
 
 
-function createNewWindow(tab, windowType, windowBounds, isFullscreen, focused) {
+function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused) {
   // new window options
   const opts = {
-    tabId: tab.id,
-    type: windowType,
-    focused,
-    incognito: tab.incognito,
-    state: isFullscreen ? "fullscreen" : "normal"
+    tabId:           tab.id,
+    type:            windowType,
+    focused:         isFocused,
+    incognito:       tab.incognito,
+    state:           isFullscreen ? "fullscreen" : "normal",
   };
 
   // shouldn't set width/height/left/top if fullscreen
