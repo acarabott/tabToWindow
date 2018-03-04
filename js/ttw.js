@@ -156,8 +156,15 @@ function tabToWindow(windowType) {
     chrome.system.display.getInfo(displays => resolve(displays));
   });
 
-  const currentWindowPromise = new Promise(resolve => {
-    chrome.windows.getCurrent({}, win => resolve(win));
+  const currentWindowPromise = new Promise((resolve, reject) => {
+    chrome.windows.getCurrent({}, win => {
+      if (chrome.runtime.lastError === undefined) {
+        resolve(win);
+      }
+      else {
+        reject(new Error(chrome.runtime.lastError.message));
+      }
+    });
   });
 
   const tabsPromise = new Promise(resolve => {
@@ -242,15 +249,19 @@ function tabToWindow(windowType) {
     othersMoved.then(() => {
       // focus on original window if specified, and it still exists
       // (popping a single tab will destroy the original window)
-      if (options.get("focus") === "original") {
+      if (options.get("focus") === "original" && !destroyingOriginalWindow) {
         chrome.windows.get(currentWindow.id, {}, () => {
-          if (!chrome.runtime.lastError) {
+          if (chrome.runtime.lastError === undefined) {
             chrome.windows.update(currentWindow.id, { focused: true });
+          }
+          else {
+            throw new Error(chrome.runtime.lastError.message);
           }
         });
       }
     });
-  });
+  },
+  error => { console.error(error); });
 }
 
 
@@ -267,9 +278,14 @@ function windowToTab() {
     const promises = tabsWithWindow.map(tab => {
       const originalWindowId = originWindowCache.get(tab);
 
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         chrome.windows.get(originalWindowId, {}, () => {
-          if (!chrome.runtime.lastError) {  resolve([tab, originalWindowId]); }
+          if (chrome.runtime.lastError === undefined) {
+            resolve([tab, originalWindowId]);
+          }
+          else {
+            reject(new Error(chrome.runtime.lastError.message));
+          }
         });
       });
     });
@@ -285,7 +301,8 @@ function windowToTab() {
     });
 
     return Promise.all(movePromises);
-  });
+  },
+  error => { console.error(error); });
 
   moveTabs.then(moveResults => {
     moveResults.forEach((tab) => {
