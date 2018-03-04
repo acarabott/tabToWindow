@@ -6,23 +6,23 @@ import { options } from "./options-storage.js";
 // -----------------------------------------------------------------------------
 
 const originWindowCache = {
-  getOriginId: function(id) {
+  getOriginId(id) {
     return `popOrigin_${id}`;
   },
 
-  has: function(tab) {
+  has(tab) {
     return sessionStorage.hasOwnProperty(originWindowCache.getOriginId(tab.id));
   },
 
-  set: function(tab, win) {
+  set(tab, win) {
     sessionStorage[originWindowCache.getOriginId(tab.id)] = win.id;
   },
 
-  get: function(tab) {
+  get(tab) {
     return parseInt(sessionStorage[originWindowCache.getOriginId(tab.id)], 10);
   },
 
-  remove: function(tab) {
+  remove(tab) {
     sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
   }
 };
