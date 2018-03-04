@@ -197,7 +197,10 @@ function tabToWindow(windowType) {
     const resizePromises = [];
 
     // (maybe) move and resize original window
-    if (options.get("resizeOriginal") && !isFullscreen && tabs.length > 1) {
+    const destroyingOriginalWindow = tabs.length === 1;
+    if (options.get("resizeOriginal") &&
+        !isFullscreen &&
+        destroyingOriginalWindow) {
       resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
     }
 
@@ -221,7 +224,9 @@ function tabToWindow(windowType) {
     // move highlighted tabs
     const othersMoved = bothMoved.then(([newWin, movedTab]) => {
       // save parent id in case we want to pop in
-      originWindowCache.set(movedTab, currentWindow);
+      if (!destroyingOriginalWindow) {
+        originWindowCache.set(movedTab, currentWindow);
+      }
 
       // move other highlighted tabs
       const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
