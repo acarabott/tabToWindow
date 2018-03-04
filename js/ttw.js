@@ -231,6 +231,8 @@ function tabToWindow(windowType) {
       // move other highlighted tabs
       const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
       if (otherTabs.length > 0) {
+        otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
+
         if (windowType === "normal") {
           return new Promise(resolve => {
             // move all tabs at once
