@@ -2,11 +2,11 @@
 	"manifest_version": 2,
 	"name": "Tab to Window/Popup - Keyboard Shortcut",
 	"short_name": "Tab 2 Window",
-	"version": "2.3.4",
+	"version": "3.0.0",
 	"author": "Arthur Carabott",
 
 	"description": "Add a keyboard shortcut to move the current tab to a new window or popup.",
-	"minimum_chrome_version": "25",
+	"minimum_chrome_version": "61",
 
 	"icons": {
 		"16": "icons/ttw16.png",
@@ -15,7 +15,7 @@
 	},
 
 	"browser_action": {
-		"default_title": "Move tab to window"
+		"default_title": "Tab to window"
 	},
 
 	"background": {
