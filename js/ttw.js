@@ -271,6 +271,11 @@ function tabToWindow(windowType) {
   error => { console.error(error); });
 }
 
+function urlToWindow(url) {
+  chrome.tabs.create({ url, active: true }, () => {
+    tabToWindow(options.get("menuButtonType"));
+  });
+}
 
 function windowToTab() {
   const getTabs = new Promise(resolve => {
@@ -356,7 +361,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
-    id:       "Tab To Window",
+    id:       "tab to window",
     title:    `Tab To Window ${normalShortcut}`,
     contexts: ["browser_action", "page"],   // "link"
   });
@@ -365,7 +370,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
-    id:       "Tab To Popup",
+    id:       "tab to popup",
     title:    `Tab To Popup ${popupShortcut}`,
     contexts: ["browser_action", "page"],   // "link"
   });
@@ -374,7 +379,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const undoShortcut = undoCommand === undefined ? "" : `(${undoCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
-    id:       "Move tab back",
+    id:       "move tab back",
     title:    `Move tab back ${undoShortcut}`,
     contexts: ["browser_action", "page"],
   });
@@ -394,7 +399,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
 
   chrome.contextMenus.create({
     type:     "radio",
-    id:       "Window Option",
+    id:       "window option",
     parentId: "type parent",
     title:    "Window",
     checked:  options.get("menuButtonType") === "normal",
@@ -403,7 +408,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
 
   chrome.contextMenus.create({
     type:     "radio",
-    id:       "Popup Option",
+    id:       "popup option",
     parentId: "type parent",
     title:    "Popup",
     checked:  options.get("menuButtonType") === "popup",
@@ -420,7 +425,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
 
   chrome.contextMenus.create({
     type:     "radio",
-    id:       "Focus Original Option",
+    id:       "focus original option",
     parentId: "focus parent",
     title:    "Original",
     checked:  options.get("focus") === "original",
@@ -429,32 +434,46 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
 
   chrome.contextMenus.create({
     type:     "radio",
-    id:       "Focus New Option",
+    id:       "focus new option",
     parentId: "focus parent",
     title:    "New",
     checked:  options.get("focus") === "new",
     contexts: ["browser_action"],
   });
 
+
+  // links on page
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "link to window",
+    title:    "Link To New Window",
+    contexts: ["link"]
+  });
+
   // Context Menu action
   chrome.contextMenus.onClicked.addListener(info => {
-         if (info.menuItemId === "Tab To Window") { tabToWindow("normal"); }
-    else if (info.menuItemId === "Tab To Popup")  { tabToWindow("popup"); }
-    else if (info.menuItemId === "Move tab back") { windowToTab(); }
+    // actions
+         if (info.menuItemId === "tab to window")  { tabToWindow("normal"); }
+    else if (info.menuItemId === "tab to popup")   { tabToWindow("popup"); }
+    else if (info.menuItemId === "move tab back")  { windowToTab(); }
+    else if (info.menuItemId === "link to window") {
+      urlToWindow(info.linkUrl);
+    }
 
-    else if (info.menuItemId === "Window Option") {
+    // options
+    else if (info.menuItemId === "window option") {
       options.set("menuButtonType", "normal");
       options.save();
     }
-    else if (info.menuItemId === "Popup Option") {
+    else if (info.menuItemId === "popup option") {
       options.set("menuButtonType", "popup");
       options.save();
     }
-    else if (info.menuItemId === "Focus Original Option") {
+    else if (info.menuItemId === "focus original option") {
       options.set("focus", "original");
       options.save();
     }
-    else if (info.menuItemId === "Focus New Option") {
+    else if (info.menuItemId === "focus new option") {
       options.set("focus", "new");
       options.save();
     }
