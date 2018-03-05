@@ -175,9 +175,9 @@ function tabToWindow(windowType) {
     });
   });
 
-  const proms = [displaysPromise, currentWindowPromise, tabsPromise];
+  const promises = [displaysPromise, currentWindowPromise, tabsPromise];
 
-  Promise.all(proms).then(([displays, currentWindow, tabs]) => {
+  Promise.all(promises).then(([displays, currentWindow, tabs]) => {
     const display = displays.find(display => {
       const displayLeft = display.bounds.left;
       const displayRight = displayLeft + display.bounds.width;
