@@ -277,6 +277,82 @@ function urlToWindow(url) {
   });
 }
 
+function tabToNextWindow() {
+  const tabsPromise = new Promise(resolve => {
+    chrome.tabs.query({
+      currentWindow: true,
+      highlighted: true,
+    }, tabs => {
+      if (tabs.length > 0) { resolve(tabs); }
+    });
+  });
+
+  const windowsPromise = new Promise(resolve => {
+    chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
+  });
+
+  Promise.all([tabsPromise, windowsPromise]).then(([tabsToMove, windows]) => {
+    const windowIndex = windows.findIndex(win => win.id === tabsToMove[0].windowId);
+    if (windowIndex === -1) { return; }
+
+    const nextWindowIndex = (windowIndex + 1) % windows.length;
+    if (nextWindowIndex !== windowIndex) {
+      const windowId = windows[nextWindowIndex].id;
+      const focusWindow = new Promise(resolve => {
+        chrome.windows.update(windowId, { focused: true }, win => resolve(win));
+      });
+
+      const getTabsToUnhighlight = new Promise(resolve => {
+        chrome.tabs.query({ windowId, highlighted: true }, tabs => {
+          resolve(tabs);
+        });
+      });
+
+      const focusWindowAndGetTabsToUnhighlight = new Promise(resolve => {
+        return Promise.all([focusWindow, getTabsToUnhighlight]).then(([_win, tabsToUnhighlight]) => {
+          if (!Array.isArray((tabsToUnhighlight))) { tabsToUnhighlight = [tabsToUnhighlight]; }
+          resolve(tabsToUnhighlight);
+        });
+      });
+
+      const moveTabs = new Promise(resolve => {
+        focusWindowAndGetTabsToUnhighlight.then(tabsToUnhighlight => {
+          chrome.tabs.move(tabsToMove.map(tab => tab.id), {
+            windowId,
+            index: -1
+          }, movedTabs => {
+            if (!Array.isArray(movedTabs)) {
+              movedTabs = [movedTabs];
+            }
+            resolve([movedTabs, tabsToUnhighlight]);
+          });
+        });
+      });
+
+      const highlightMovedTabs = new Promise(resolve => {
+        moveTabs.then(([movedTabs, tabsToUnhighlight]) => {
+          const highlightMovedTabs = movedTabs.map((tab, i) => {
+            return new Promise(tabResolve => {
+              chrome.tabs.update(tab.id, {
+                highlighted: true,
+                active: i === movedTabs.legth - 1
+              }, tab => tabResolve(tab));
+            });
+          });
+
+          Promise.all(highlightMovedTabs).then(() => resolve(tabsToUnhighlight));
+        });
+      });
+
+      highlightMovedTabs.then(tabsToUnhighlight => {
+        tabsToUnhighlight.forEach(tab => {
+          chrome.tabs.update(tab.id, { highlighted: false });
+        });
+      });
+    }
+  });
+}
+
 function windowToTab() {
   const getTabs = new Promise(resolve => {
     chrome.tabs.query({
