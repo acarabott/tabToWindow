@@ -332,6 +332,131 @@ chrome.commands.onCommand.addListener(command => {
   else if (command === "window-to-tab")        { windowToTab(); }
 });
 
+// Extension Button
+// -----------------------------------------------------------------------------
+
 chrome.browserAction.onClicked.addListener(() => {
   tabToWindow(options.get("menuButtonType"));
+});
+
+
+// Context Menu Creation
+// Options
+// -------
+const commandsPromise = new Promise(resolve => {
+  chrome.commands.getAll(commands => resolve(commands));
+});
+
+Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) => {
+  chrome.contextMenus.removeAll();
+
+  // Actions
+  // -------
+  const normalCommand = commands.find(cmd => cmd.name === "tab-to-window-normal");
+  const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "Tab To Window",
+    title:    `Tab To Window ${normalShortcut}`,
+    contexts: ["browser_action", "page"],   // "link"
+  });
+
+  const popupCommand = commands.find(cmd => cmd.name === "tab-to-window-popup");
+  const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "Tab To Popup",
+    title:    `Tab To Popup ${popupShortcut}`,
+    contexts: ["browser_action", "page"],   // "link"
+  });
+
+  const undoCommand = commands.find(cmd => cmd.name === "window-to-tab");
+  const undoShortcut = undoCommand === undefined ? "" : `(${undoCommand.shortcut})`;
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "Move tab back",
+    title:    `Move tab back ${undoShortcut}`,
+    contexts: ["browser_action", "page"],
+  });
+
+  chrome.contextMenus.create({
+    type: "separator", id: "action option separator", contexts: ["browser_action"],
+  });
+
+
+  // Type
+  chrome.contextMenus.create({
+    type:  "normal",
+    id:    "type parent",
+    title: "Window Type",
+    contexts: ["browser_action"]
+  });
+
+  chrome.contextMenus.create({
+    type:     "radio",
+    id:       "Window Option",
+    parentId: "type parent",
+    title:    "Window",
+    checked:  options.get("menuButtonType") === "normal",
+    contexts: ["browser_action"],
+  });
+
+  chrome.contextMenus.create({
+    type:     "radio",
+    id:       "Popup Option",
+    parentId: "type parent",
+    title:    "Popup",
+    checked:  options.get("menuButtonType") === "popup",
+    contexts: ["browser_action"],
+  });
+
+  // Focus
+  chrome.contextMenus.create({
+    type:  "normal",
+    id:    "focus parent",
+    title: "Focus",
+    contexts: ["browser_action"]
+  });
+
+  chrome.contextMenus.create({
+    type:     "radio",
+    id:       "Focus Original Option",
+    parentId: "focus parent",
+    title:    "Original",
+    checked:  options.get("focus") === "original",
+    contexts: ["browser_action"],
+  });
+
+  chrome.contextMenus.create({
+    type:     "radio",
+    id:       "Focus New Option",
+    parentId: "focus parent",
+    title:    "New",
+    checked:  options.get("focus") === "new",
+    contexts: ["browser_action"],
+  });
+
+  // Context Menu action
+  chrome.contextMenus.onClicked.addListener(info => {
+         if (info.menuItemId === "Tab To Window") { tabToWindow("normal"); }
+    else if (info.menuItemId === "Tab To Popup")  { tabToWindow("popup"); }
+    else if (info.menuItemId === "Move tab back") { windowToTab(); }
+
+    else if (info.menuItemId === "Window Option") {
+      options.set("menuButtonType", "normal");
+      options.save();
+    }
+    else if (info.menuItemId === "Popup Option") {
+      options.set("menuButtonType", "popup");
+      options.save();
+    }
+    else if (info.menuItemId === "Focus Original Option") {
+      options.set("focus", "original");
+      options.save();
+    }
+    else if (info.menuItemId === "Focus New Option") {
+      options.set("focus", "new");
+      options.save();
+    }
+  });
 });

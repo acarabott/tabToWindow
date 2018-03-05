@@ -46,7 +46,7 @@
 			"description": "Undo tab to window"
 		}
 	},
-	"permissions": ["tabs", "storage", "system.display"],
+	"permissions": ["tabs", "storage", "system.display", "contextMenus"],
 	"options_page": "options.html",
 	"options_ui": {
 		"page": "options.html",
