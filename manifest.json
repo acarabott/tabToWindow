@@ -24,26 +24,26 @@
 	},
 
 	"commands": {
-		"tab-to-window-normal": {
+		"01-tab-to-window-normal": {
 			"suggested_key": {
 				"default": "Alt+X",
 				"linux": "Alt+Shift+X"
 			},
-			"description": "Tab to window"
+			"description": "Tab to New Window"
 		},
-		"tab-to-window-popup": {
+		"02-tab-to-window-popup": {
 			"suggested_key": {
 				"default": "Alt+C",
 				"linux": "Alt+Shift+C"
 			},
-			"description": "Tab to popup window"
+			"description": "Tab to New Popup Window"
 		},
-		"window-to-tab": {
+		"03-tab-to-window-next": {
 			"suggested_key": {
 				"default": "Alt+Z",
 				"linux": "Alt+Shift+Z"
 			},
-			"description": "Undo tab to window"
+			"description": "Tab to Next Window"
 		}
 	},
 	"permissions": ["tabs", "storage", "system.display", "contextMenus"],

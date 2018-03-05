@@ -288,7 +288,7 @@ function tabToNextWindow() {
   });
 
   const windowsPromise = new Promise(resolve => {
-    chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
+    chrome.windows.getAll({}, windows => resolve(windows));
   });
 
   Promise.all([tabsPromise, windowsPromise]).then(([tabsToMove, windows]) => {
@@ -353,53 +353,6 @@ function tabToNextWindow() {
   });
 }
 
-function windowToTab() {
-  const getTabs = new Promise(resolve => {
-    chrome.tabs.query({
-      currentWindow: true,
-      highlighted: true
-    }, tabs => resolve(tabs));
-  });
-
-  const checkOriginalWindowsExist = getTabs.then(tabs => {
-    const tabsWithWindow = tabs.filter(tab => originWindowCache.has(tab));
-    const promises = tabsWithWindow.map(tab => {
-      const originalWindowId = originWindowCache.get(tab);
-
-      return new Promise((resolve, reject) => {
-        chrome.windows.get(originalWindowId, {}, () => {
-          if (chrome.runtime.lastError === undefined) {
-            resolve([tab, originalWindowId]);
-          }
-          else {
-            reject(new Error(chrome.runtime.lastError.message));
-          }
-        });
-      });
-    });
-
-    return Promise.all(promises);
-  });
-
-  const moveTabs = checkOriginalWindowsExist.then(tabResults => {
-    const movePromises = tabResults.map(([tab, windowId]) => {
-      return new Promise(resolve => {
-        chrome.tabs.move(tab.id, { windowId, index: -1 }, () => resolve(tab));
-      });
-    });
-
-    return Promise.all(movePromises);
-  },
-  error => { console.error(error); });
-
-  moveTabs.then(moveResults => {
-    moveResults.forEach((tab) => {
-      originWindowCache.delete(tab);
-      if (tab.active) { chrome.tabs.update(tab.id, { active: true }); }
-    });
-  });
-}
-
 // Chrome Listeners
 // -----------------------------------------------------------------------------
 
@@ -408,9 +361,9 @@ chrome.storage.onChanged.addListener(changes => {
 });
 
 chrome.commands.onCommand.addListener(command => {
-       if (command === "tab-to-window-normal") { tabToWindow("normal"); }
-  else if (command === "tab-to-window-popup")  { tabToWindow("popup"); }
-  else if (command === "window-to-tab")        { windowToTab(); }
+       if (command === "01-tab-to-window-normal") { tabToWindow("normal"); }
+  else if (command === "02-tab-to-window-popup")  { tabToWindow("popup"); }
+  else if (command === "03-tab-to-window-next")   { tabToNextWindow(); }
 });
 
 // Extension Button
@@ -433,30 +386,42 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
 
   // Actions
   // -------
-  const normalCommand = commands.find(cmd => cmd.name === "tab-to-window-normal");
-  const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
+  const normalCommand = commands.find(cmd => cmd.name === "01-tab-to-window-normal");
+  const normalShortcut = normalCommand === undefined
+    ? ""
+    : normalCommand.shortcut === ""
+      ? ""
+      : `(${normalCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to window",
-    title:    `Tab To Window ${normalShortcut}`,
+    title:    `${normalCommand.description} ${normalShortcut}`,
     contexts: ["browser_action", "page"],   // "link"
   });
 
-  const popupCommand = commands.find(cmd => cmd.name === "tab-to-window-popup");
-  const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
+  const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
+  const popupShortcut = popupCommand === undefined
+    ? ""
+    : popupCommand.shortcut === ""
+      ? ""
+      : `(${popupCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to popup",
-    title:    `Tab To Popup ${popupShortcut}`,
+    title:    `${popupCommand.description} ${popupShortcut}`,
     contexts: ["browser_action", "page"],   // "link"
   });
 
-  const undoCommand = commands.find(cmd => cmd.name === "window-to-tab");
-  const undoShortcut = undoCommand === undefined ? "" : `(${undoCommand.shortcut})`;
+  const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
+  const nextShortcut = nextCommand === undefined
+    ? ""
+    : nextCommand.shortcut === ""
+      ? ""
+      : `(${nextCommand.shortcut})`;
   chrome.contextMenus.create({
     type:     "normal",
-    id:       "move tab back",
-    title:    `Move tab back ${undoShortcut}`,
+    id:       "tab to next",
+    title:    `${nextCommand.description} ${nextShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -531,7 +496,7 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
     // actions
          if (info.menuItemId === "tab to window")  { tabToWindow("normal"); }
     else if (info.menuItemId === "tab to popup")   { tabToWindow("popup"); }
-    else if (info.menuItemId === "move tab back")  { windowToTab(); }
+    else if (info.menuItemId === "tab to next")    { tabToNextWindow(); }
     else if (info.menuItemId === "link to window") {
       urlToWindow(info.linkUrl);
     }
