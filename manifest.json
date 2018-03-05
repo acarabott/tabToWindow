@@ -29,14 +29,14 @@
 				"default": "Alt+X",
 				"linux": "Alt+Shift+X"
 			},
-			"description": "Tab to New Window"
+			"description": "Tab to Window"
 		},
 		"02-tab-to-window-popup": {
 			"suggested_key": {
 				"default": "Alt+C",
 				"linux": "Alt+Shift+C"
 			},
-			"description": "Tab to New Popup Window"
+			"description": "Tab to Popup Window"
 		},
 		"03-tab-to-window-next": {
 			"suggested_key": {
@@ -44,6 +44,13 @@
 				"linux": "Alt+Shift+Z"
 			},
 			"description": "Tab to Next Window"
+		},
+		"04-tab-to-window-display": {
+			"suggested_key": {
+				"default": "Alt+D",
+				"linux": "Alt+Shift+D"
+			},
+			"description": "Tab to Next Display"
 		}
 	},
 	"permissions": ["tabs", "storage", "system.display", "contextMenus"],

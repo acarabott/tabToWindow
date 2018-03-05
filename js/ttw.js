@@ -151,7 +151,7 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused)
 // Primary Functions
 // -----------------------------------------------------------------------------
 
-function tabToWindow(windowType) {
+function tabToWindow(windowType, moveToNextDisplay=false) {
   const displaysPromise = new Promise(resolve => {
     chrome.system.display.getInfo(displays => resolve(displays));
   });
@@ -178,7 +178,9 @@ function tabToWindow(windowType) {
   const promises = [displaysPromise, currentWindowPromise, tabsPromise];
 
   Promise.all(promises).then(([displays, currentWindow, tabs]) => {
-    const display = displays.find(display => {
+    moveToNextDisplay = moveToNextDisplay && displays.length > 1;
+
+    const currentDisplay = displays.find(display => {
       const displayLeft = display.bounds.left;
       const displayRight = displayLeft + display.bounds.width;
       const displayTop = display.bounds.top;
@@ -200,20 +202,29 @@ function tabToWindow(windowType) {
     const destroyingOriginalWindow = tabs.length === 1;
     if (options.get("resizeOriginal") &&
         !isFullscreen &&
-        !destroyingOriginalWindow) {
-      resizePromises.push(resizeOriginalWindow(currentWindow, display.workArea));
+        !destroyingOriginalWindow &&
+        !moveToNextDisplay) {
+      resizePromises.push(resizeOriginalWindow(currentWindow,
+                                               currentDisplay.workArea));
     }
 
     // move and resize new window
     const bothMoved = Promise.all(resizePromises).then(([updatedWin]) => {
       const origWindow = updatedWin === undefined ? currentWindow : updatedWin;
       const activeTab = tabs.find(tab => tab.active);
+
+      function getNextDisplay() {
+        const currentIndex = displays.findIndex(disp => disp === currentDisplay);
+        const nextIndex = (currentIndex + 1) % displays.length;
+        return displays[nextIndex];
+      }
+
       // if it's just one tab, the only use case is to convert it into a popup
       // window, so just leave it where it was
-      const windowBounds = tabs.length === 1
-        ? getWindowBounds(origWindow)
-        : getNewWindowBounds(origWindow,
-                             display.workArea,
+      const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
+                         : tabs.length === 1 ? getWindowBounds(origWindow)
+                         : getNewWindowBounds(origWindow,
+                             currentDisplay.workArea,
                              options.get("cloneOriginal"),
                              options.get("clonePosition"));
 
@@ -361,9 +372,12 @@ chrome.storage.onChanged.addListener(changes => {
 });
 
 chrome.commands.onCommand.addListener(command => {
-       if (command === "01-tab-to-window-normal") { tabToWindow("normal"); }
-  else if (command === "02-tab-to-window-popup")  { tabToWindow("popup"); }
-  else if (command === "03-tab-to-window-next")   { tabToNextWindow(); }
+       if (command === "01-tab-to-window-normal")  { tabToWindow("normal"); }
+  else if (command === "02-tab-to-window-popup")   { tabToWindow("popup"); }
+  else if (command === "03-tab-to-window-next")    { tabToNextWindow(); }
+  else if (command === "04-tab-to-window-display") {
+    tabToWindow(options.get("menuButtonType"), true);
+  }
 });
 
 // Extension Button
@@ -425,8 +439,17 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
     contexts: ["browser_action", "page"],
   });
 
+  const displayCommand = commands.find(cmd => cmd.name === "04-tab-to-window-display");
+  const displayShortcut = displayCommand === undefined
+    ? ""
+    : displayCommand.shortcut === ""
+      ? ""
+      : `(${displayCommand.shortcut})`;
   chrome.contextMenus.create({
-    type: "separator", id: "action option separator", contexts: ["browser_action"],
+    type:     "normal",
+    id:       "tab to display",
+    title:    `${displayCommand.description} ${displayShortcut}`,
+    contexts: ["browser_action", "page"],
   });
 
 
@@ -497,6 +520,9 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
          if (info.menuItemId === "tab to window")  { tabToWindow("normal"); }
     else if (info.menuItemId === "tab to popup")   { tabToWindow("popup"); }
     else if (info.menuItemId === "tab to next")    { tabToNextWindow(); }
+    else if (info.menuItemId === "tab to display") {
+      tabToWindow(options.get("menuButtonType"), true);
+    }
     else if (info.menuItemId === "link to window") {
       urlToWindow(info.linkUrl);
     }
