@@ -192,7 +192,8 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
               currentWindow.top  >= displayTop &&
               currentWindow.top  <  displayBottom;
     });
-    const isFullscreen = options.get("copyFullscreen") &&
+    const isFullscreen = !moveToNextDisplay &&
+                         options.get("copyFullscreen") &&
                          currentWindow.state === "fullscreen";
     const isFocused = options.get("focus") === "new";
 
