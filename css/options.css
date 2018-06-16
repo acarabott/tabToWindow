@@ -146,6 +146,7 @@ ul {
 		0deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%),
 	repeating-linear-gradient(
 		-90deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%);
+	user-select: none;
 }
 
 .window {
@@ -178,7 +179,6 @@ ul {
 
 .inner-window-controls label {
 	width: auto;
-	user-select: none;
 }
 
 .button {
