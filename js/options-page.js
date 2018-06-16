@@ -63,7 +63,14 @@ function updateResizeOriginal() {
   updateWindowHandling("resize-original", "original", true);
 }
 
-function updateCloneOriginal () {
+function cloneSize() {
+  const $original = $("#original");
+  const $new = $("#new");
+  $new.width($original.width());
+  $new.height($original.height());
+}
+
+function updateCloneOriginal() {
   updateWindowHandling("clone-original", "new", false);
 
   // toggle clone position controls if cloning enabled/disabled
@@ -73,6 +80,8 @@ function updateCloneOriginal () {
 
   const display = getFromId("clone-original").checked ? "" : "none";
   getFromId("clone-position-options").style.display = display;
+
+  if (options.get("cloneOriginal")) { cloneSize(); }
 }
 
 
@@ -179,13 +188,19 @@ function main() {
 
 
       let saveTimeout;
-      function onChange() {
+      function save() {
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(save, 200);
       }
 
-      win.onresize = onChange;
-      win.ondrag = onChange;
+      function onResize() {
+        const shouldUpdateClone = win.id === "original" && options.get("cloneOriginal");
+        if (shouldUpdateClone) { cloneSize(); }
+        save();
+      }
+
+      win.onresize = () => onResize();
+      win.ondrag = () => save();
     });
 
     updateResizeOriginal();
