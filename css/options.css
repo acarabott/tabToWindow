@@ -79,8 +79,16 @@ label, input {
 	margin-bottom: 5px;
 }
 
-label {
-	width: 60px;
+.option-set {
+	height: 23px;
+}
+
+.option-set label {
+	margin-left: 10px;
+}
+
+.option-set:not(.prefix) label:first-child {
+	margin-left: 0;
 }
 
 ul {
@@ -116,30 +124,9 @@ ul {
 	font-weight: bold;
 }
 
-#global-options label {
-	width: auto;
-}
-
 #credit {
 	font-size: 14px;
 	margin-top: 10px;
-}
-
-#clone-position-options {
-	margin-top: 10px;
-}
-
-#clone-position-options h2 {
-	margin-bottom: 10px;
-}
-
-#clone-position-options label {
-	width: auto;
-	margin-right: 5px;
-}
-
-#clone-position-options p {
-	margin-top: 0px;
 }
 
 #monitor {
@@ -170,6 +157,12 @@ ul {
 	border: 0;
 }
 
+.window.disabled {
+	background: rgba(220, 220, 220, 0.7);
+	color: rgba(0, 0, 0, 0.5);
+	opacity: 0.7;
+}
+
 .inner-window {
 	box-sizing: border-box;
 	width: 100%;
@@ -180,11 +173,12 @@ ul {
 }
 
 .inner-window h4 {
-	margin: 0 0 5px;
+	margin: 0 5px 5px;
 }
 
 .inner-window-controls label {
 	width: auto;
+	user-select: none;
 }
 
 .button {
@@ -228,10 +222,4 @@ ul {
 	left:-5px;
 	border-radius: 10px;
 	border: 5px solid white;
-}
-
-
-#resize-note {
-	font-size:12px;
-	margin:5px 0 0;
 }

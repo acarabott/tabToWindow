@@ -5,10 +5,11 @@ const defaults = {
   focus: "new",
   // boolean
   resizeOriginal: true,
-  // boolean
-  cloneOriginal: false,
-  // clone-position-same", "clone-position-horizontal", "clone-position-vertical"
-  clonePosition: "clone-position-horizontal",
+  // "clone-mode-no"
+  // "clone-mode-same"
+  // "clone-mode-horizontal"
+  // "clone-mode-vertical"
+  cloneMode: "clone-mode-no",
   // boolean
   copyFullscreen: true,
   // "normal", "popup"
@@ -60,10 +61,10 @@ function validateOptions(options) {
 
   if (!isValidStringOption("focus", ["original", "new"])) { return false; }
   if (!isValidBoolOption("resizeOriginal")) { return false; }
-  if (!isValidBoolOption("cloneOriginal")) { return false; }
-  if (!isValidStringOption("clonePosition", ["clone-position-same",
-                                             "clone-position-horizontal",
-                                             "clone-position-vertical"])) { return false; }
+  if (!isValidStringOption("cloneMode", ["clone-mode-no",
+                                         "clone-mode-same",
+                                         "clone-mode-horizontal",
+                                         "clone-mode-vertical"])) { return false; }
   if (!isValidBoolOption("copyFullscreen")) { return false; }
   if (!isValidStringOption("menuButtonType", ["normal", "popup"])) { return false; }
 

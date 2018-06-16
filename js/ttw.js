@@ -63,7 +63,7 @@ function getWindowBounds(win) {
 }
 
 
-function getNewWindowBounds(origWindow, displayBounds, cloneOriginal, clonePosition) {
+function getNewWindowBounds(origWindow, displayBounds, cloneMode) {
   const bounds = { left: 0, top: 0, width: 0, height: 0 };
 
   // find the position that has the most space and return the position
@@ -97,16 +97,17 @@ function getNewWindowBounds(origWindow, displayBounds, cloneOriginal, clonePosit
                            displayBounds.top, displayBounds.height);
   }
 
-  if (cloneOriginal) {
-    // copying all values covers the case of clone-position-same
+  const isCloning = cloneMode !== "clone-mode-no";
+  if (isCloning) {
+    // copying all values covers the case of clone-mode-same
     ["width", "height", "left", "top"].forEach(k => bounds[k] = origWindow[k]);
 
-    if (clonePosition === "clone-position-horizontal") {
+    if (cloneMode === "clone-mode-horizontal") {
       const { pos, length } = getHorzPosAndLength();
       bounds.left = pos;
       bounds.width = length;
     }
-    else if (clonePosition === "clone-position-vertical") {
+    else if (cloneMode === "clone-mode-vertical") {
       const { pos, length } = getVertPosAndLength();
       bounds.top = pos;
       bounds.height = length;
@@ -130,11 +131,11 @@ function getNewWindowBounds(origWindow, displayBounds, cloneOriginal, clonePosit
 function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused) {
   // new window options
   const opts = {
-    tabId:           tab.id,
-    type:            windowType,
-    focused:         isFocused,
-    incognito:       tab.incognito,
-    state:           isFullscreen ? "fullscreen" : "normal",
+    tabId:     tab.id,
+    type:      windowType,
+    focused:   isFocused,
+    incognito: tab.incognito,
+    state:     isFullscreen ? "fullscreen" : "normal",
   };
 
   // shouldn't set width/height/left/top if fullscreen
@@ -224,10 +225,8 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
       // window, so just leave it where it was
       const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
                          : tabs.length === 1 ? getWindowBounds(origWindow)
-                         : getNewWindowBounds(origWindow,
-                             currentDisplay.workArea,
-                             options.get("cloneOriginal"),
-                             options.get("clonePosition"));
+                         : getNewWindowBounds(origWindow, currentDisplay.workArea,
+                             options.get("cloneMode"));
 
       return createNewWindow(activeTab, windowType, windowBounds, isFullscreen,
                              isFocused);

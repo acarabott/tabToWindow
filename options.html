@@ -12,24 +12,49 @@
   </head>
   <body>
     <div id="container">
+
       <h1>Tab To Window Keyboard Shortcut</h1>
+
       <div id="shortcuts">
         <h2>Current shortcuts</h2>
         <ul id="shortcut-list"></ul>
         <a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
       </div>
-      <div id="global-options">
-        <label for="copy-fullscreen">Keep fullscreen status</label>
-        <input type="checkbox" id="copy-fullscreen">
-        <br>
-        <span>Menu button opens in:</span>
-        <label for="menu-button-normal">Window</label>
-        <input name="menu-button-type" type="radio" id="menu-button-normal" class="menu-button-option" data-value="normal">
-        <label for="menu-button-window">Popup</label>
-        <input name="menu-button-type" type="radio" id="menu-button-popup" class="menu-button-option" data-value="popup">
-        <br>
+
+      <div class="option-set">
+        <label for="resize-original">Resize Original Window:</label>
+        <input type="checkbox" id="resize-original">
       </div>
-      <p id="resize-note">Windows are resizable from all sides.</p>
+
+      <div class="option-set">
+        <label for="copy-fullscreen">Keep fullscreen status:</label>
+        <input type="checkbox" id="copy-fullscreen">
+      </div>
+
+      <div class="option-set prefix">
+      <span>Menu button opens in:</span>
+        <span>
+          <label for="menu-button-normal">Window</label>
+          <input name="menu-button-type" type="radio" id="menu-button-normal" class="menu-button-option" data-value="normal">
+          <label for="menu-button-window">Popup</label>
+          <input name="menu-button-type" type="radio" id="menu-button-popup" class="menu-button-option" data-value="popup">
+        </span>
+      </div>
+
+      <div class="option-set prefix">
+        <span>Clone:</span>
+        <span>
+          <label for="clone-mode-no">No</label>
+          <input class="clone-mode-option" type="radio" id="clone-mode-no" name="clone-mode">
+          <label for="clone-mode-same">On top</label>
+          <input class="clone-mode-option" type="radio" id="clone-mode-same" name="clone-mode">
+          <label for="clone-mode-horizontal">Horizontal</label>
+          <input class="clone-mode-option" type="radio" id="clone-mode-horizontal" name="clone-mode">
+          <label for="clone-mode-vertical">Vertical</label>
+          <input class="clone-mode-option" type="radio" id="clone-mode-vertical" name="clone-mode">
+        </span>
+      </div>
+
       <div id="monitor">
         <div id="screen">
           <div id="original" class="window ui-widget-content">
@@ -38,9 +63,6 @@
               <div class="inner-window-controls">
                 <label for="focus-original">Focus</label>
                 <input name="focus" type="radio" id="focus-original" class="focus-option">
-                <br>
-                <label for="resize-original">Move and resize?</label>
-                <input type="checkbox" id="resize-original">
               </div>
             </div>
             <div class="button red"></div>
@@ -53,9 +75,6 @@
               <div class="inner-window-controls">
                 <label for="focus-new">Focus</label>
                 <input name="focus" type="radio" id="focus-new" class="focus-option">
-                <br>
-                <label for="clone-original">Clone original window size</label>
-                <input type="checkbox" id="clone-original">
               </div>
             </div>
             <div class="button red"></div>
@@ -64,16 +83,6 @@
           </div>
           <div id="icon"></div>
         </div>
-      </div>
-      <div id="clone-position-options">
-        <label for="clone-position">Clone Position:</label>
-        <input class="clone-position-option" type="radio" id="clone-position-same" name="clone-position">
-        <label for="clone-position-same">On top</label>
-        <input class="clone-position-option" type="radio" id="clone-position-horizontal" name="clone-position">
-        <label for="clone-position-horizontal">Horizontal</label>
-        <input class="clone-position-option" type="radio" id="clone-position-vertical" name="clone-position">
-        <label for="clone-position-vertical">Vertical</label>
-        <p>The cloned window can be positioned on top off the original window, or next to it horizontally or vertically.</p>
       </div>
     </div>
     <div id="credit">

@@ -28,9 +28,8 @@ function getFocusedName() {
 function save() {
   options.set("focus", getFocusedName());
   options.set("resizeOriginal", getFromId("resize-original").checked);
-  options.set("cloneOriginal",  getFromId("clone-original").checked);
   options.set("copyFullscreen", getFromId("copy-fullscreen").checked);
-  options.set("clonePosition",  getFromClass("clone-position-option").find(cp => cp.checked).id);
+  options.set("cloneMode",  getFromClass("clone-mode-option").find(cp => cp.checked).id);
   options.set("menuButtonType", getFromClass("menu-button-option").find(mb => mb.checked).getAttribute("data-value"));
 
   // dimensions
@@ -52,7 +51,7 @@ function save() {
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
 function updateWindowHandling(inputId, windowId, enableIfChecked) {
-  const checked = document.getElementById(inputId).checked;
+  const checked = getFromId(inputId).checked;
   const action = enableIfChecked === checked ? "enable" : "disable";
   const $win = $(`#${windowId}`);
   $win.draggable(action);
@@ -61,29 +60,85 @@ function updateWindowHandling(inputId, windowId, enableIfChecked) {
 
 function updateResizeOriginal() {
   updateWindowHandling("resize-original", "original", true);
+  const originalWin = getFromId("original");
+  const isResizing = getFromId("resize-original").checked;
+  isResizing
+    ? originalWin.classList.remove("disabled")
+    : originalWin.classList.add("disabled");
 }
 
-function cloneSize() {
-  const $original = $("#original");
-  const $new = $("#new");
-  $new.width($original.width());
-  $new.height($original.height());
+function updateResizeNew() {
+  const inputId = "clone-mode-no";
+  const windowId = "new";
+  const enableIfChecked = true;
+  updateWindowHandling(inputId, windowId, enableIfChecked);
 }
 
-function updateCloneOriginal() {
-  updateWindowHandling("clone-original", "new", false);
+function updateClone() {
+  const originalWin = getFromId("original");
+  const newWin = getFromId("new");
+  newWin.style.width = originalWin.style.width;
+  newWin.style.height = originalWin.style.height;
 
-  // toggle clone position controls if cloning enabled/disabled
-  getFromClass("clone-position-option").forEach(opt => {
-    opt.disabled = !getFromId("clone-original").checked;
+  const monitor = getFromId("monitor");
+  const displayBounds = {
+    left: 0,
+    top: 0,
+    width: monitor.clientWidth,
+    height: monitor.clientHeight
+  };
+
+  function getPosAndLength (winPos, winLength, displayPos, displayLength) {
+    const normWinPos = winPos - displayPos;
+    const oppositeEdge = normWinPos + winLength;
+    const oppositeGap = displayLength - oppositeEdge;
+    const useOppositeGap = normWinPos < oppositeGap;
+
+    const pos = useOppositeGap
+      ? displayPos + oppositeEdge
+      : winPos - Math.min(winLength, normWinPos);
+
+    const length = Math.min(winLength,
+                            useOppositeGap ? oppositeGap : normWinPos);
+
+    return { pos, length };
+  }
+
+  function getHorzPosAndLength() {
+    return getPosAndLength(originalWin.offsetLeft, originalWin.offsetWidth,
+                           displayBounds.left, displayBounds.width);
+  }
+
+  function getVertPosAndLength() {
+    return getPosAndLength(originalWin.offsetTop, originalWin.offsetHeight,
+                           displayBounds.top, displayBounds.height);
+  }
+
+  // copying all values covers the case of clone-mode-same
+  const bounds = {
+    left:   originalWin.offsetLeft,
+    top:    originalWin.offsetTop,
+    width:  originalWin.offsetWidth,
+    height: originalWin.offsetHeight
+  };
+
+
+  const cloneMode = options.get("cloneMode");
+  if (cloneMode === "clone-mode-horizontal") {
+    const { pos, length } = getHorzPosAndLength();
+    bounds.left = pos;
+    bounds.width = length;
+  }
+  else if (cloneMode === "clone-mode-vertical") {
+    const { pos, length } = getVertPosAndLength();
+    bounds.top = pos;
+    bounds.height = length;
+  }
+
+  Object.entries(bounds).forEach(([key, value]) => {
+    newWin.style[key] = `${value}px`;
   });
-
-  const display = getFromId("clone-original").checked ? "" : "none";
-  getFromId("clone-position-options").style.display = display;
-
-  if (options.get("cloneOriginal")) { cloneSize(); }
 }
-
 
 // update appearance of windows depending on if they are active or not
 function updateFocus() {
@@ -103,6 +158,7 @@ function updateFocus() {
   });
 }
 
+function isCloning() { return options.get("cloneMode") !== "clone-mode-no"; }
 
 
 // Main Function
@@ -151,10 +207,9 @@ function main() {
       opt.checked = opt.id.includes(options.get("focus"));
     });
     getFromId("resize-original").checked = options.get("resizeOriginal");
-    getFromId("clone-original").checked = options.get("cloneOriginal");
-    getFromClass("clone-position-option").find(cp => {
-      return cp.id === options.get("clonePosition");
-    }).checked = true;
+    const curCloneOption = getFromClass("clone-mode-option").find(cp =>
+      cp.id === options.get("cloneMode"));
+    curCloneOption.checked = true;
     getFromId("copy-fullscreen").checked = options.get("copyFullscreen");
     getFromClass("menu-button-option").forEach(opt => {
       opt.checked = opt.id.includes(options.get("menuButtonType"));
@@ -188,36 +243,40 @@ function main() {
 
 
       let saveTimeout;
-      function save() {
+      function update() {
+        const shouldUpdateClone = win.id === "original" && isCloning();
+
+        if (shouldUpdateClone) { updateClone(); }
+
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(save, 200);
       }
 
-      function onResize() {
-        const shouldUpdateClone = win.id === "original" && options.get("cloneOriginal");
-        if (shouldUpdateClone) { cloneSize(); }
-        save();
-      }
-
-      win.onresize = () => onResize();
-      win.ondrag = () => save();
+      win.onresize = update;
+      win.ondrag = update;
     });
 
     updateResizeOriginal();
-    updateCloneOriginal();
+    updateResizeNew();
     updateFocus();
+    if (isCloning()) { updateClone(); }
   }
 
 
   // add input handlers
   {
     getFromId("resize-original").onchange = updateResizeOriginal;
-    getFromId("clone-original").onchange = updateCloneOriginal;
     getFromClass("focus-option").forEach(el => el.onchange = updateFocus);
     getFromTag("input").forEach(el => el.onclick = save);
     getFromId("commandsUrl").onclick = event => {
       chrome.tabs.create({ url: event.target.href });
     };
+    getFromClass("clone-mode-option").forEach(el => {
+      el.addEventListener("change", () => {
+        if (isCloning()) { updateClone(); }
+        updateResizeNew();
+      }, false);
+    });
   }
 }
 
