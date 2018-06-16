@@ -174,11 +174,13 @@ ul {
 }
 
 .inner-window h4 {
-	margin: 0 5px 5px;
+	margin-bottom: 5px;
+	margin-top: 5px;
 }
 
-.inner-window-controls label {
-	width: auto;
+.inner-window h4,
+.inner-window label {
+	margin-left: 5px;
 }
 
 .button {
