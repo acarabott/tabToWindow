@@ -49,28 +49,9 @@ function save() {
   options.save();
 }
 
-
-function resizeInnerWindow(win) {
-  const inner = getFromClass("inner-window", win)[0];
-
-  function getBorderWidth(keys) {
-    const computed = getComputedStyle(inner);
-    return keys.reduce((accumulator, key) => {
-      return accumulator + parseInt(computed[`border${key}Width`], 10);
-    }, 0);
-  }
-
-  const newInnerWidth = win.clientWidth - getBorderWidth(["Left", "Right"]);
-  inner.style.width = `${newInnerWidth}px`;
-  const newInnerHeight = win.clientHeight - getBorderWidth(["Top", "Bottom"]);
-  inner.style.height = `${newInnerHeight}px`;
-}
-
-
-
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
-function updateWindowHandling (inputId, windowId, enableIfChecked) {
+function updateWindowHandling(inputId, windowId, enableIfChecked) {
   const checked = document.getElementById(inputId).checked;
   const action = enableIfChecked === checked ? "enable" : "disable";
   const $win = $(`#${windowId}`);
@@ -199,15 +180,12 @@ function main() {
 
       let saveTimeout;
       function onChange() {
-        resizeInnerWindow(win);
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(save, 200);
       }
 
       win.onresize = onChange;
       win.ondrag = onChange;
-
-      resizeInnerWindow(win);
     });
 
     updateResizeOriginal();
