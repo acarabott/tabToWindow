@@ -154,7 +154,11 @@ ul {
 #screen {
 	height: 100%;
 	width: 100%;
-	background-image: -webkit-repeating-linear-gradient(0deg, #6E6E6E, #6E6E6E 2px, transparent 2px, transparent 25%), -webkit-repeating-linear-gradient(-90deg, #6E6E6E, #6E6E6E 2px, transparent 2px, transparent 25%);
+	background: rgb(240, 240, 240);
+	background-image: repeating-linear-gradient(
+		0deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%),
+	repeating-linear-gradient(
+		-90deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%);
 }
 
 .window {
@@ -169,17 +173,13 @@ ul {
 .inner-window {
 	width: 100%;
 	height: 100%;
-	border:1px solid rgb(200, 200, 200);
+	border: 1px solid rgb(125, 125, 125);
 	border-top-width:10px;
 	border-radius:3px;
 }
 
 .inner-window h4 {
 	margin: 0 0 5px;
-}
-
-.inner-window-controls {
-	background: white;
 }
 
 .inner-window-controls label {
