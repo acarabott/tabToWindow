@@ -178,6 +178,10 @@ ul {
 	margin: 0 0 5px;
 }
 
+.inner-window-controls {
+	background: white;
+}
+
 .inner-window-controls label {
 	width: auto;
 }
