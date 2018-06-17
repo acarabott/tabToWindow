@@ -12,33 +12,45 @@
   </head>
   <body>
     <div id="container">
+      <div id="options">
+        <div id="shortcuts">
+          <h2>Current shortcuts</h2>
+          <ul id="shortcut-list"></ul>
+          <a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
+        </div>
 
-      <h1>Tab To Window Keyboard Shortcut</h1>
+        <div id="global">
+          <h2>Global</h2>
+          <div class="option-set">
+            <label for="copy-fullscreen">Keep fullscreen status:</label>
+            <input type="checkbox" id="copy-fullscreen">
+          </div>
 
-      <div id="shortcuts">
-        <h2>Current shortcuts</h2>
-        <ul id="shortcut-list"></ul>
-        <a id="commandsUrl" href="chrome://extensions/configureCommands">Change shortcuts</a>
+          <div>
+            <div id="opens-in">Menu button opens in:</div>
+            <div class="option-set">
+              <label for="menu-button-normal">Window</label>
+              <input name="menu-button-type" type="radio" id="menu-button-normal" class="menu-button-option" data-value="normal">
+              <label for="menu-button-window">Popup</label>
+              <input name="menu-button-type" type="radio" id="menu-button-popup" class="menu-button-option" data-value="popup">
+            </div>
+          </div>
+        </div>
       </div>
+
+      <h2>Resizing</h2>
 
       <div class="option-set">
         <label for="resize-original">Resize Original Window:</label>
         <input type="checkbox" id="resize-original">
       </div>
 
-      <div class="option-set">
-        <label for="copy-fullscreen">Keep fullscreen status:</label>
-        <input type="checkbox" id="copy-fullscreen">
-      </div>
-
       <div class="option-set prefix">
-      <span>Menu button opens in:</span>
-        <span>
-          <label for="menu-button-normal">Window</label>
-          <input name="menu-button-type" type="radio" id="menu-button-normal" class="menu-button-option" data-value="normal">
-          <label for="menu-button-window">Popup</label>
-          <input name="menu-button-type" type="radio" id="menu-button-popup" class="menu-button-option" data-value="popup">
-        </span>
+        <span>Focus:</span>
+        <label for="focus-original">Original</label>
+        <input name="focus" type="radio" id="focus-original" class="focus-option">
+        <label for="focus-new">New</label>
+        <input name="focus" type="radio" id="focus-new" class="focus-option">
       </div>
 
       <div class="option-set prefix">
@@ -58,25 +70,13 @@
       <div id="monitor">
         <div id="screen">
           <div id="original" class="window ui-widget-content">
-            <div class="inner-window">
-              <h4>Original</h4>
-              <div class="inner-window-controls">
-                <label for="focus-original">Focus</label>
-                <input name="focus" type="radio" id="focus-original" class="focus-option">
-              </div>
-            </div>
+            <div class="inner-window"><h4>Original</h4></div>
             <div class="button red"></div>
             <div class="button yellow"></div>
             <div class="button green"></div>
           </div>
           <div id="new" class="window ui-widget-content">
-            <div class="inner-window">
-              <h4>New</h4>
-              <div class="inner-window-controls">
-                <label for="focus-new">Focus</label>
-                <input name="focus" type="radio" id="focus-new" class="focus-option">
-              </div>
-            </div>
+            <div class="inner-window"><h4>New</h4></div>
             <div class="button red"></div>
             <div class="button yellow"></div>
             <div class="button green"></div>

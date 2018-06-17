@@ -36,7 +36,7 @@ body {
 #container {
 	position: relative;
 	overflow: hidden;
-	padding: 20px 0;
+	padding: 0 20px 20px;
 	background-color: white;
 	border-bottom: 1px solid #aaa;
 }
@@ -55,7 +55,6 @@ h1 {
 h2, h4 {
 	font-size: 16px;
 	font-weight: bold;
-	margin-bottom: 0;
 }
 
 h3 {
@@ -79,6 +78,10 @@ label, input {
 	margin-bottom: 5px;
 }
 
+#container input {
+	margin-left: 5px;
+}
+
 .option-set {
 	height: 23px;
 }
@@ -95,14 +98,20 @@ ul {
 	list-style-type: none;
 }
 
+#options {
+	display: flex;
+}
+
+#shortcuts,
+#global {
+	width: 50%;
+	display: inline-block;
+}
+
 #shortcuts {
 	font-size: 16px;
 	margin-top: 0px;
 	margin-bottom: 12px;
-}
-
-#shortcuts h2 {
-	margin: 10px 0 5px;
 }
 
 #shortcuts ul {
@@ -117,11 +126,15 @@ ul {
 
 #shortcuts .shortcut-label {
 	display: inline-block;
-	width: 40%;
+	width: 80%;
 }
 
 #shortcuts .shortcut {
 	font-weight: bold;
+}
+
+#opens-in {
+	margin-bottom: 10px;
 }
 
 #credit {
@@ -156,12 +169,25 @@ ul {
 	top: 0;
 	opacity: 0.925;
 	border: 0;
+	z-index: 10;
+}
+
+.window.current {
+	z-index: 20;
 }
 
 .window.disabled {
 	background: rgba(220, 220, 220, 0.7);
 	color: rgba(0, 0, 0, 0.5);
 	opacity: 0.7;
+}
+
+.window.blurred {
+	color: rgb(125, 125, 125);
+}
+
+.window.blurred .button {
+	opacity: 0.3;
 }
 
 .inner-window {
@@ -176,6 +202,7 @@ ul {
 .inner-window h4 {
 	margin-bottom: 5px;
 	margin-top: 5px;
+	display: inline-block;
 }
 
 .inner-window h4,
@@ -204,14 +231,6 @@ ul {
 .button.green {
 	border-color: rgb(80, 180, 80);
 	left:22px;
-}
-
-#original {
-	left: 0;
-}
-
-#new {
-	left: 50%;
 }
 
 #icon {

@@ -105,19 +105,11 @@ function updateClone() {
 
 // update appearance of windows depending on if they are active or not
 function updateFocus() {
-  function getElements(id) {
-    const parent = getFromId(id);
-    return ["inner-window", "button"].reduce((accumulator, className) => {
-      return accumulator.concat(getFromClass(className, parent));
-    }, []);
-  }
-
-  ["original", "new"].forEach(id => {
-    getElements(id).forEach(element => {
-      element.style.opacity = getFocusedName() === id
-        ? 1.0
-        : element.classList.contains("inner-window") ? 0.92 : 0.1;
-    });
+  getFromClass("window").forEach(win => {
+    const isBlurred = win.id !== getFocusedName();
+    isBlurred
+      ? win.classList.add("blurred")
+      : win.classList.remove("blurred");
   });
 }
 
@@ -189,31 +181,37 @@ function main() {
         return getFromId("screen")[d] / gridsize;
       });
 
-      const $win = $(win);
-
-      $win.draggable({ containment: "parent", grid });
-
-      $win.resizable({
-        containment: "parent",
-        handles:     "all",
-        grid:        grid,
-        minWidth:    $win.parent().width() * 0.2,
-        minHeight:   $win.parent().height() * 0.2
-      });
-
-
       let saveTimeout;
       function update() {
         const shouldUpdateClone = win.id === "original" && isCloning();
-
+        getFromClass("window").forEach(_win => _win.classList.remove("current"));
+        win.classList.add("current");
         if (shouldUpdateClone) { updateClone(); }
 
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(save, 200);
       }
 
-      win.onresize = update;
-      win.ondrag = update;
+      const $win = $(win);
+
+      $win.draggable({
+        containment: "parent",
+        grid,
+        drag: update,
+        start: update,
+        stop: update
+      });
+
+      $win.resizable({
+        containment: "parent",
+        handles:     "all",
+        grid:        grid,
+        minWidth:    $win.parent().width() * 0.2,
+        minHeight:   $win.parent().height() * 0.2,
+        resize: update,
+        start: update,
+        stop: update
+      });
     });
 
     updateResizeOriginal();

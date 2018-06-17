@@ -2,7 +2,8 @@ function getPosAndLength (winPos, winLength, displayPos, displayLength) {
   const normWinPos = winPos - displayPos;
   const oppositeEdge = normWinPos + winLength;
   const oppositeGap = displayLength - oppositeEdge;
-  const useOppositeGap = normWinPos < oppositeGap;
+  const doesFit = winLength <= oppositeGap;
+  const useOppositeGap = doesFit || normWinPos < oppositeGap;
 
   const pos = useOppositeGap
     ? displayPos + oppositeEdge

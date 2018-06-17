@@ -64,7 +64,8 @@ function getWindowBounds(win) {
 }
 
 
-function getNewWindowBounds(origWindow, displayBounds, cloneMode) {
+function getNewWindowBounds(origWindow, displayBounds) {
+  const cloneMode = options.get("cloneMode");
   const newBounds = isCloning()
     ? getCloneBounds(getWindowBounds(origWindow), displayBounds, cloneMode)
     : getSizeAndPos("new", displayBounds);
@@ -176,8 +177,7 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
       // window, so just leave it where it was
       const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
                          : tabs.length === 1 ? getWindowBounds(origWindow)
-                         : getNewWindowBounds(origWindow, currentDisplay.workArea,
-                             options.get("cloneMode"));
+                         : getNewWindowBounds(origWindow, currentDisplay.workArea);
 
       return createNewWindow(activeTab, windowType, windowBounds, isFullscreen,
                              isFocused);
