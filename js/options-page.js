@@ -1,6 +1,7 @@
 /* global chrome, $ */
 
-import { options } from "./options-storage.js";
+import { options, isCloning } from "./options-storage.js";
+import { getCloneBounds } from "./clone.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
@@ -88,54 +89,16 @@ function updateClone() {
     height: monitor.clientHeight
   };
 
-  function getPosAndLength (winPos, winLength, displayPos, displayLength) {
-    const normWinPos = winPos - displayPos;
-    const oppositeEdge = normWinPos + winLength;
-    const oppositeGap = displayLength - oppositeEdge;
-    const useOppositeGap = normWinPos < oppositeGap;
-
-    const pos = useOppositeGap
-      ? displayPos + oppositeEdge
-      : winPos - Math.min(winLength, normWinPos);
-
-    const length = Math.min(winLength,
-                            useOppositeGap ? oppositeGap : normWinPos);
-
-    return { pos, length };
-  }
-
-  function getHorzPosAndLength() {
-    return getPosAndLength(originalWin.offsetLeft, originalWin.offsetWidth,
-                           displayBounds.left, displayBounds.width);
-  }
-
-  function getVertPosAndLength() {
-    return getPosAndLength(originalWin.offsetTop, originalWin.offsetHeight,
-                           displayBounds.top, displayBounds.height);
-  }
-
-  // copying all values covers the case of clone-mode-same
-  const bounds = {
+  const origBounds = {
     left:   originalWin.offsetLeft,
     top:    originalWin.offsetTop,
     width:  originalWin.offsetWidth,
     height: originalWin.offsetHeight
   };
 
+  const newBounds = getCloneBounds(origBounds, displayBounds, options.get("cloneMode"));
 
-  const cloneMode = options.get("cloneMode");
-  if (cloneMode === "clone-mode-horizontal") {
-    const { pos, length } = getHorzPosAndLength();
-    bounds.left = pos;
-    bounds.width = length;
-  }
-  else if (cloneMode === "clone-mode-vertical") {
-    const { pos, length } = getVertPosAndLength();
-    bounds.top = pos;
-    bounds.height = length;
-  }
-
-  Object.entries(bounds).forEach(([key, value]) => {
+  Object.entries(newBounds).forEach(([key, value]) => {
     newWin.style[key] = `${value}px`;
   });
 }
@@ -157,9 +120,6 @@ function updateFocus() {
     });
   });
 }
-
-function isCloning() { return options.get("cloneMode") !== "clone-mode-no"; }
-
 
 // Main Function
 // -----------------------------------------------------------------------------

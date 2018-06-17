@@ -123,3 +123,7 @@ export const options = {
     });
   })
 };
+
+export function isCloning() {
+  return options.get("cloneMode") !== "clone-mode-no";
+}

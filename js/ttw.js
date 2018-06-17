@@ -1,6 +1,7 @@
 /* global chrome */
 
-import { options } from "./options-storage.js";
+import { options, isCloning } from "./options-storage.js";
+import { getCloneBounds } from "./clone.js";
 
 // Session storage interface
 // -----------------------------------------------------------------------------
@@ -64,67 +65,17 @@ function getWindowBounds(win) {
 
 
 function getNewWindowBounds(origWindow, displayBounds, cloneMode) {
-  const bounds = { left: 0, top: 0, width: 0, height: 0 };
+  const newBounds = isCloning()
+    ? getCloneBounds(getWindowBounds(origWindow), displayBounds, cloneMode)
+    : getSizeAndPos("new", displayBounds);
 
-  // find the position that has the most space and return the position
-  // and length to fill it.
-  // e.g. when cloning horizontally and the window is left: 25% width: 25%
-  // there is more space on the right side than the left, so use the right
-  // pos is left/top opposite is right/bottom
-  function getPosAndLength (winPos, winLength, displayPos, displayLength) {
-    const normWinPos = winPos - displayPos;
-    const oppositeEdge = normWinPos + winLength;
-    const oppositeGap = displayLength - oppositeEdge;
-    const useOppositeGap = normWinPos < oppositeGap;
-
-    const pos = useOppositeGap
-      ? displayPos + oppositeEdge
-      : winPos - Math.min(winLength, normWinPos);
-
-    const length = Math.min(winLength,
-                            useOppositeGap ? oppositeGap : normWinPos);
-
-    return { pos, length };
-  }
-
-  function getHorzPosAndLength() {
-    return getPosAndLength(origWindow.left, origWindow.width,
-                           displayBounds.left, displayBounds.width);
-  }
-
-  function getVertPosAndLength() {
-    return getPosAndLength(origWindow.top, origWindow.height,
-                           displayBounds.top, displayBounds.height);
-  }
-
-  const isCloning = cloneMode !== "clone-mode-no";
-  if (isCloning) {
-    // copying all values covers the case of clone-mode-same
-    ["width", "height", "left", "top"].forEach(k => bounds[k] = origWindow[k]);
-
-    if (cloneMode === "clone-mode-horizontal") {
-      const { pos, length } = getHorzPosAndLength();
-      bounds.left = pos;
-      bounds.width = length;
-    }
-    else if (cloneMode === "clone-mode-vertical") {
-      const { pos, length } = getVertPosAndLength();
-      bounds.top = pos;
-      bounds.height = length;
-    }
-  }
-  else { // not cloning
-    Object.entries(getSizeAndPos("new", displayBounds)).forEach(([k, v]) => {
-      bounds[k] = v;
-    });
-  }
 
   // ensure all values are integers for Chrome APIs
-  ["width", "height", "left", "top"].forEach(k => {
-    bounds[k] = Math.round(bounds[k]);
+  ["width", "height", "left", "top"].forEach(key => {
+    newBounds[key] = Math.round(newBounds[key]);
   });
 
-  return bounds;
+  return newBounds;
 }
 
 
