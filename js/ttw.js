@@ -365,9 +365,8 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const normalCommand = commands.find(cmd => cmd.name === "01-tab-to-window-normal");
   const normalShortcut = normalCommand === undefined
     ? ""
-    : normalCommand.shortcut === ""
-      ? ""
-      : `(${normalCommand.shortcut})`;
+    : `(${normalCommand.shortcut})`;
+
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to window",
@@ -378,9 +377,8 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
   const popupShortcut = popupCommand === undefined
     ? ""
-    : popupCommand.shortcut === ""
-      ? ""
-      : `(${popupCommand.shortcut})`;
+    : `(${popupCommand.shortcut})`;
+
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to popup",
@@ -391,9 +389,8 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
   const nextShortcut = nextCommand === undefined
     ? ""
-    : nextCommand.shortcut === ""
-      ? ""
-      : `(${nextCommand.shortcut})`;
+    : `(${nextCommand.shortcut})`;
+
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to next",
@@ -404,9 +401,8 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
   const displayCommand = commands.find(cmd => cmd.name === "04-tab-to-window-display");
   const displayShortcut = displayCommand === undefined
     ? ""
-    : displayCommand.shortcut === ""
-      ? ""
-      : `(${displayCommand.shortcut})`;
+    : `(${displayCommand.shortcut})`;
+
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to display",
