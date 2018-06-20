@@ -27,10 +27,10 @@ body {
 	font-family:'Oxygen', sans-serif;
 }
 
-#container, #note, #credit {
+#container, #credit {
 	width: 408px;
 	margin: 0 auto;
-	padding: 20px;
+	padding: 0 20px 10px;
 }
 
 #container {
