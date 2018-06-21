@@ -377,11 +377,12 @@ chrome.browserAction.onClicked.addListener(() => {
 // Context Menu Creation
 // Options
 // -------
-const commandsPromise = new Promise(resolve => {
-  chrome.commands.getAll(commands => resolve(commands));
-});
+async function createMenu() {
+  const commandsPromise = new Promise(resolve => {
+    chrome.commands.getAll(commands => resolve(commands));
+  });
 
-Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) => {
+  const [, commands] = await Promise.all([options.loadPromise, commandsPromise]);
   chrome.contextMenus.removeAll();
 
   // Actions
@@ -539,4 +540,6 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
       options.save();
     }
   });
-});
+}
+
+createMenu();
