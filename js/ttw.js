@@ -265,7 +265,7 @@ function urlToWindowNormal(url) { urlToWindow(url, "normal");        }
 function urlToWindowPopup(url)  { urlToWindow(url, "popup");         }
 function urlToNextDisplay(url)  { urlToWindow(url, undefined, true); }
 
-function tabToNextWindow() {
+async function tabToNextWindow() {
   const tabsPromise = new Promise(resolve => {
     chrome.tabs.query({
       currentWindow: true,
@@ -279,67 +279,52 @@ function tabToNextWindow() {
     chrome.windows.getAll({}, windows => resolve(windows));
   });
 
-  Promise.all([tabsPromise, windowsPromise]).then(([tabsToMove, windows]) => {
-    const windowIndex = windows.findIndex(win => win.id === tabsToMove[0].windowId);
-    if (windowIndex === -1) { return; }
+  const [tabsToMove, windows] = await Promise.all([tabsPromise, windowsPromise]);
+  const windowIndex = windows.findIndex(win => win.id === tabsToMove[0].windowId);
+  if (windowIndex === -1) { return; }
 
-    const nextWindowIndex = (windowIndex + 1) % windows.length;
-    if (nextWindowIndex !== windowIndex) {
-      const windowId = windows[nextWindowIndex].id;
-      const focusWindow = new Promise(resolve => {
-        chrome.windows.update(windowId, { focused: true }, win => resolve(win));
+  const nextWindowIndex = (windowIndex + 1) % windows.length;
+  if (nextWindowIndex !== windowIndex) {
+    const windowId = windows[nextWindowIndex].id;
+
+    await new Promise(resolve => {
+      chrome.windows.update(windowId, { focused: true }, win => resolve(win));
+    });
+
+    const tabsToUnhighlight = await new Promise(resolve => {
+      chrome.tabs.query({ windowId, highlighted: true }, tabs => {
+        const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
+        resolve(tabsArray);
       });
+    });
 
-      const getTabsToUnhighlight = new Promise(resolve => {
-        chrome.tabs.query({ windowId, highlighted: true }, tabs => {
-          resolve(tabs);
-        });
+    const movedTabs = await new Promise(resolve => {
+      chrome.tabs.move(tabsToMove.map(tab => tab.id), {
+        windowId,
+        index: -1
+      }, movedTabs => {
+        const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
+        resolve(tabsArray);
       });
+    });
 
-      const focusWindowAndGetTabsToUnhighlight = new Promise(resolve => {
-        return Promise.all([focusWindow, getTabsToUnhighlight]).then(([_win, tabsToUnhighlight]) => {
-          if (!Array.isArray((tabsToUnhighlight))) { tabsToUnhighlight = [tabsToUnhighlight]; }
-          resolve(tabsToUnhighlight);
-        });
+    const highlightTabPromises = movedTabs.map((tab, i) => {
+      return new Promise(tabResolve => {
+        chrome.tabs.update(tab.id, {
+          highlighted: true,
+          active: i === movedTabs.legth - 1
+        }, tab => tabResolve(tab));
       });
+    });
 
-      const moveTabs = new Promise(resolve => {
-        focusWindowAndGetTabsToUnhighlight.then(tabsToUnhighlight => {
-          chrome.tabs.move(tabsToMove.map(tab => tab.id), {
-            windowId,
-            index: -1
-          }, movedTabs => {
-            if (!Array.isArray(movedTabs)) {
-              movedTabs = [movedTabs];
-            }
-            resolve([movedTabs, tabsToUnhighlight]);
-          });
-        });
-      });
+    await Promise.all(highlightTabPromises);
 
-      const highlightMovedTabs = new Promise(resolve => {
-        moveTabs.then(([movedTabs, tabsToUnhighlight]) => {
-          const highlightMovedTabs = movedTabs.map((tab, i) => {
-            return new Promise(tabResolve => {
-              chrome.tabs.update(tab.id, {
-                highlighted: true,
-                active: i === movedTabs.legth - 1
-              }, tab => tabResolve(tab));
-            });
-          });
-
-          Promise.all(highlightMovedTabs).then(() => resolve(tabsToUnhighlight));
-        });
-      });
-
-      highlightMovedTabs.then(tabsToUnhighlight => {
-        tabsToUnhighlight.forEach(tab => {
-          chrome.tabs.update(tab.id, { highlighted: false });
-        });
-      });
-    }
-  });
+    tabsToUnhighlight.forEach(tab => {
+      chrome.tabs.update(tab.id, { highlighted: false });
+    });
+  }
 }
+
 
 // Chrome Listeners
 // -----------------------------------------------------------------------------
