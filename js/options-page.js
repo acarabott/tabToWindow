@@ -113,6 +113,14 @@ function updateFocus() {
   });
 }
 
+function setWindowAsCurrent(win) {
+  getFromClass("window").forEach(_win => {
+    _win === win
+      ? _win.classList.add("current")
+      : _win.classList.remove("current");
+  });
+}
+
 // Main Function
 // -----------------------------------------------------------------------------
 // Each chunk has specifically *not* been broken out into a named function
@@ -184,8 +192,6 @@ function main() {
       let saveTimeout;
       function update() {
         const shouldUpdateClone = win.id === "original" && isCloning();
-        getFromClass("window").forEach(_win => _win.classList.remove("current"));
-        win.classList.add("current");
         if (shouldUpdateClone) { updateClone(); }
 
         clearTimeout(saveTimeout);
@@ -212,6 +218,9 @@ function main() {
         start: update,
         stop: update
       });
+
+      win.addEventListener("mousedown", () => setWindowAsCurrent(win), false);
+      win.addEventListener("touchstart", () => setWindowAsCurrent(win), false);
     });
 
     updateResizeOriginal();
@@ -232,6 +241,7 @@ function main() {
     getFromClass("clone-mode-option").forEach(el => {
       el.addEventListener("change", () => {
         if (isCloning()) { updateClone(); }
+        setWindowAsCurrent(getFromId("original"));
         updateResizeNew();
       }, false);
     });
