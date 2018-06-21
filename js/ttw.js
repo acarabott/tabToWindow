@@ -113,7 +113,7 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused)
 // Primary Functions
 // -----------------------------------------------------------------------------
 
-function tabToWindow(windowType, moveToNextDisplay=false) {
+async function tabToWindow(windowType, moveToNextDisplay=false) {
   const displaysPromise = new Promise(resolve => {
     chrome.system.display.getInfo(displays => resolve(displays));
   });
@@ -139,125 +139,116 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
 
   const promises = [displaysPromise, currentWindowPromise, tabsPromise];
 
-  Promise.all(promises).then(([displays, currentWindow, tabs]) => {
-    moveToNextDisplay = moveToNextDisplay && displays.length > 1;
+  const [displays, currentWindow, tabs] = await Promise.all(promises);
 
-    function calcOverlapArea(display) {
-      const wl = currentWindow.left;
-      const wt = currentWindow.top;
-      const wr = currentWindow.left + currentWindow.width;
-      const wb = currentWindow.top + currentWindow.height;
+  moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
-      const dl = display.bounds.left;
-      const dt = display.bounds.top;
-      const dr = display.bounds.left + display.bounds.width;
-      const db = display.bounds.top + display.bounds.height;
+  function calcOverlapArea(display) {
+    const wl = currentWindow.left;
+    const wt = currentWindow.top;
+    const wr = currentWindow.left + currentWindow.width;
+    const wb = currentWindow.top + currentWindow.height;
 
-      return Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
-             Math.max(0, Math.min(wb, db) - Math.max(wt, dt));
-    }
+    const dl = display.bounds.left;
+    const dt = display.bounds.top;
+    const dr = display.bounds.left + display.bounds.width;
+    const db = display.bounds.top + display.bounds.height;
 
-    const currentDisplay = displays.reduce((accum, current) => {
-      const accumOverlap = calcOverlapArea(accum);
-      const curOverlap = calcOverlapArea(current);
-      return curOverlap > accumOverlap ? current : accum;
-    }, displays[0]);
+    return Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
+           Math.max(0, Math.min(wb, db) - Math.max(wt, dt));
+  }
 
-    const isFullscreen = options.get("copyFullscreen") &&
-                         currentWindow.state === "fullscreen";
-    const isFocused = options.get("focus") === "new";
+  const currentDisplay = displays.reduce((accum, current) => {
+    const accumOverlap = calcOverlapArea(accum);
+    const curOverlap = calcOverlapArea(current);
+    return curOverlap > accumOverlap ? current : accum;
+  }, displays[0]);
 
-    const resizePromises = [];
+  const isFullscreen = options.get("copyFullscreen") &&
+                       currentWindow.state === "fullscreen";
+  const isFocused = options.get("focus") === "new";
 
-    // (maybe) move and resize original window
-    const destroyingOriginalWindow = tabs.length === 1;
-    if (options.get("resizeOriginal") &&
-        !isFullscreen &&
-        !destroyingOriginalWindow &&
-        !moveToNextDisplay) {
-      resizePromises.push(resizeOriginalWindow(currentWindow,
-                                               currentDisplay.workArea));
-    }
 
-    // move and resize new window
-    const bothMoved = Promise.all(resizePromises).then(([updatedWin]) => {
-      const origWindow = updatedWin === undefined ? currentWindow : updatedWin;
-      const activeTab = tabs.find(tab => tab.active);
+  // (maybe) move and resize original window
+  let origWindow = currentWindow;
+  const destroyingOriginalWindow = tabs.length === 1;
+  if (options.get("resizeOriginal") &&
+      !isFullscreen &&
+      !destroyingOriginalWindow &&
+      !moveToNextDisplay) {
+    origWindow = await resizeOriginalWindow(currentWindow, currentDisplay.workArea);
+  }
 
-      function getNextDisplay() {
-        const currentIndex = displays.indexOf(currentDisplay);
-        const nextIndex = (currentIndex + 1) % displays.length;
-        return displays[nextIndex];
-      }
+  // move and resize new window
+  const activeTab = tabs.find(tab => tab.active);
 
-      // if it's just one tab, the only use case is to convert it into a popup
-      // window, so just leave it where it was
-      const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
-                         : tabs.length === 1 ? getWindowBounds(origWindow)
-                         : getNewWindowBounds(origWindow, currentDisplay.workArea);
+  function getNextDisplay() {
+    const currentIndex = displays.indexOf(currentDisplay);
+    const nextIndex = (currentIndex + 1) % displays.length;
+    return displays[nextIndex];
+  }
 
-      if (windowType === undefined) { windowType = currentWindow.type; }
-      return createNewWindow(activeTab, windowType, windowBounds, isFullscreen,
-                             isFocused);
-    });
+  // if it's just one tab, the only use case is to convert it into a popup
+  // window, so just leave it where it was
+  const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
+                     : tabs.length === 1 ? getWindowBounds(origWindow)
+                     : getNewWindowBounds(origWindow, currentDisplay.workArea);
 
-    // move highlighted tabs
-    const othersMoved = bothMoved.then(async ([newWin, movedTab]) => {
-      // save parent id in case we want to pop in
-      if (!destroyingOriginalWindow) {
-        originWindowCache.set(movedTab, currentWindow);
-      }
+  if (windowType === undefined) { windowType = currentWindow.type; }
+  const [newWin, movedTab] = await createNewWindow(activeTab, windowType,
+    windowBounds, isFullscreen, isFocused);
 
-      // move other highlighted tabs
-      const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
-      if (otherTabs.length > 0) {
-        otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
+  // move highlighted tabs
+  // save parent id in case we want to pop in
+  if (!destroyingOriginalWindow) {
+    originWindowCache.set(movedTab, currentWindow);
+  }
 
-        if (windowType === "normal") {
-          // move all tabs at once
-          const movedTabs = await new Promise(resolve => {
-            chrome.tabs.move(otherTabs.map(tab => tab.id), {
-              windowId: newWin.id,
-              index: 1
-            }, tabs => resolve(tabs));
-          });
+  // move other highlighted tabs
+  const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
+  if (otherTabs.length > 0) {
+    otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
 
-          // highlight tabs in new window
-          const tabPromises = movedTabs.map(tab => {
-            return new Promise(resolve => {
-              chrome.tabs.update(tab.id, { highlighted: true }, resolve(tab));
-            });
-          });
+    if (windowType === "normal") {
+      // move all tabs at once
+      const movedTabs = await new Promise(resolve => {
+        chrome.tabs.move(otherTabs.map(tab => tab.id), {
+          windowId: newWin.id,
+          index: 1
+        }, tabs => resolve(tabs));
+      });
 
-          return Promise.all(tabPromises);
-        }
-        else if (windowType === "popup") {
-          // can't move tabs to a popup window, so create individual ones
-          const tabPromises = otherTabs.map(tab => {
-            return createNewWindow(tab, windowType, getWindowBounds(newWin),
-              isFullscreen, isFocused);
-          });
-          return Promise.all(tabPromises);
-        }
-      }
-    });
-
-    othersMoved.then(() => {
-      // focus on original window if specified, and it still exists
-      // (popping a single tab will destroy the original window)
-      if (options.get("focus") === "original" && !destroyingOriginalWindow) {
-        chrome.windows.get(currentWindow.id, {}, () => {
-          if (chrome.runtime.lastError === undefined) {
-            chrome.windows.update(currentWindow.id, { focused: true });
-          }
-          else {
-            throw new Error(chrome.runtime.lastError.message);
-          }
+      // highlight tabs in new window
+      const tabPromises = movedTabs.map(tab => {
+        return new Promise(resolve => {
+          chrome.tabs.update(tab.id, { highlighted: true }, resolve(tab));
         });
+      });
+
+      await Promise.all(tabPromises);
+    }
+    else if (windowType === "popup") {
+      // can't move tabs to a popup window, so create individual ones
+      const tabPromises = otherTabs.map(tab => {
+        return createNewWindow(tab, windowType, getWindowBounds(newWin),
+          isFullscreen, isFocused);
+      });
+      await Promise.all(tabPromises);
+    }
+  }
+
+  // focus on original window if specified, and it still exists
+  // (popping a single tab will destroy the original window)
+  if (options.get("focus") === "original" && !destroyingOriginalWindow) {
+    chrome.windows.get(currentWindow.id, {}, () => {
+      if (chrome.runtime.lastError === undefined) {
+        chrome.windows.update(currentWindow.id, { focused: true });
+      }
+      else {
+        throw new Error(chrome.runtime.lastError.message);
       }
     });
-  },
-  error => { console.error(error); });
+  }
 }
 
 function tabToWindowNormal() { tabToWindow("normal");        }
