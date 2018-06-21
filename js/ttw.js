@@ -188,6 +188,7 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
                          : tabs.length === 1 ? getWindowBounds(origWindow)
                          : getNewWindowBounds(origWindow, currentDisplay.workArea);
 
+      if (windowType === undefined) { windowType = currentWindow.type; }
       return createNewWindow(activeTab, windowType, windowBounds, isFullscreen,
                              isFocused);
     });
@@ -242,11 +243,19 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
   error => { console.error(error); });
 }
 
-function urlToWindow(url) {
+function tabToWindowNormal() { tabToWindow("normal");        }
+function tabToWindowPopup()  { tabToWindow("popup");         }
+function tabToNextDisplay()  { tabToWindow(undefined, true); }
+
+function urlToWindow(url, windowType, moveToNextDisplay=false) {
   chrome.tabs.create({ url, active: true }, () => {
-    tabToWindow(options.get("menuButtonType"));
+    tabToWindow(windowType, moveToNextDisplay);
   });
 }
+
+function urlToWindowNormal(url) { urlToWindow(url, "normal");        }
+function urlToWindowPopup(url)  { urlToWindow(url, "popup");         }
+function urlToNextDisplay(url)  { urlToWindow(url, undefined, true); }
 
 function tabToNextWindow() {
   const tabsPromise = new Promise(resolve => {
@@ -332,12 +341,10 @@ chrome.storage.onChanged.addListener(changes => {
 });
 
 chrome.commands.onCommand.addListener(command => {
-       if (command === "01-tab-to-window-normal")  { tabToWindow("normal"); }
-  else if (command === "02-tab-to-window-popup")   { tabToWindow("popup"); }
-  else if (command === "03-tab-to-window-next")    { tabToNextWindow(); }
-  else if (command === "04-tab-to-window-display") {
-    tabToWindow(options.get("menuButtonType"), true);
-  }
+       if (command === "01-tab-to-window-normal")  { tabToWindowNormal(); }
+  else if (command === "02-tab-to-window-popup")   { tabToWindowPopup();  }
+  else if (command === "03-tab-to-window-next")    { tabToNextWindow();   }
+  else if (command === "04-tab-to-window-display") { tabToNextDisplay();  }
 });
 
 chrome.runtime.onInstalled.addListener(details => {
@@ -481,18 +488,30 @@ Promise.all([options.loadPromise, commandsPromise]).then(([_options, commands]) 
     contexts: ["link"]
   });
 
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "link to popup",
+    title:    "Link To New Popup",
+    contexts: ["link"]
+  });
+
+  chrome.contextMenus.create({
+    type:     "normal",
+    id:       "link to display",
+    title:    "Link To Next Display",
+    contexts: ["link"]
+  });
+
   // Context Menu action
   chrome.contextMenus.onClicked.addListener(info => {
     // actions
-         if (info.menuItemId === "tab to window")  { tabToWindow("normal"); }
-    else if (info.menuItemId === "tab to popup")   { tabToWindow("popup"); }
-    else if (info.menuItemId === "tab to next")    { tabToNextWindow(); }
-    else if (info.menuItemId === "tab to display") {
-      tabToWindow(options.get("menuButtonType"), true);
-    }
-    else if (info.menuItemId === "link to window") {
-      urlToWindow(info.linkUrl);
-    }
+         if (info.menuItemId === "tab to window")   { tabToWindowNormal(); }
+    else if (info.menuItemId === "tab to popup")    { tabToWindowPopup();  }
+    else if (info.menuItemId === "tab to next")     { tabToNextWindow();   }
+    else if (info.menuItemId === "tab to display")  { tabToNextDisplay();  }
+    else if (info.menuItemId === "link to window")  { urlToWindowNormal(info.linkUrl); }
+    else if (info.menuItemId === "link to popup")   { urlToWindowPopup(info.linkUrl); }
+    else if (info.menuItemId === "link to display") { urlToNextDisplay(info.linkUrl); }
 
     // options
     else if (info.menuItemId === "window option") {
