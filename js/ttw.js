@@ -133,18 +133,27 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
   Promise.all(promises).then(([displays, currentWindow, tabs]) => {
     moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
-    const currentDisplay = displays.find(display => {
-      const displayLeft = display.bounds.left;
-      const displayRight = displayLeft + display.bounds.width;
-      const displayTop = display.bounds.top;
-      const displayBottom = displayTop + display.bounds.height;
-      const isLeftOfFirstDisplay = displayLeft === 0 && currentWindow.left < 0;
+    function calcOverlapArea(display) {
+      const wl = currentWindow.left;
+      const wt = currentWindow.top;
+      const wr = currentWindow.left + currentWindow.width;
+      const wb = currentWindow.top + currentWindow.height;
 
-      return (currentWindow.left >= displayLeft || isLeftOfFirstDisplay) &&
-              currentWindow.left <  displayRight &&
-              currentWindow.top  >= displayTop &&
-              currentWindow.top  <  displayBottom;
-    });
+      const dl = display.bounds.left;
+      const dt = display.bounds.top;
+      const dr = display.bounds.left + display.bounds.width;
+      const db = display.bounds.top + display.bounds.height;
+
+      return Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
+             Math.max(0, Math.min(wb, db) - Math.max(wt, dt));
+    }
+
+    const currentDisplay = displays.reduce((accum, current) => {
+      const accumOverlap = calcOverlapArea(accum);
+      const curOverlap = calcOverlapArea(current);
+      return curOverlap > accumOverlap ? current : accum;
+    }, displays[0]);
+
     const isFullscreen = !moveToNextDisplay &&
                          options.get("copyFullscreen") &&
                          currentWindow.state === "fullscreen";
@@ -168,7 +177,7 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
       const activeTab = tabs.find(tab => tab.active);
 
       function getNextDisplay() {
-        const currentIndex = displays.findIndex(disp => disp === currentDisplay);
+        const currentIndex = displays.indexOf(currentDisplay);
         const nextIndex = (currentIndex + 1) % displays.length;
         return displays[nextIndex];
       }
