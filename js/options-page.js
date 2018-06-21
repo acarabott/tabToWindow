@@ -121,6 +121,24 @@ function setWindowAsCurrent(win) {
   });
 }
 
+function updateMaxDimensions() {
+  const cloneMode = options.get("cloneMode");
+  const $original = $("#original");
+
+  const maxWidth = cloneMode === "clone-mode-horizontal"
+    ? $original.parent().width() * 0.8
+    : Infinity;
+
+  $original.resizable("option", "maxWidth", maxWidth);
+
+  const maxHeight = cloneMode === "clone-mode-vertical"
+    ? $original.parent().height() * 0.8
+    : Infinity;
+
+  $original.resizable("option", "maxHeight", maxHeight);
+}
+
+
 // Main Function
 // -----------------------------------------------------------------------------
 // Each chunk has specifically *not* been broken out into a named function
@@ -226,6 +244,7 @@ function main() {
     updateResizeOriginal();
     updateResizeNew();
     updateFocus();
+    updateMaxDimensions();
     if (isCloning()) { updateClone(); }
   }
 
@@ -240,7 +259,10 @@ function main() {
     };
     getFromClass("clone-mode-option").forEach(el => {
       el.addEventListener("change", () => {
-        if (isCloning()) { updateClone(); }
+        updateMaxDimensions();
+
+        if (isCloning()) {  updateClone();  }
+
         setWindowAsCurrent(getFromId("original"));
         updateResizeNew();
       }, false);
