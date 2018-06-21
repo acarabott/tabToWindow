@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tab to Window/Popup - Keyboard Shortcut</title>
+  <style>
+    @font-face {
+      font-family: 'Oxygen';
+      font-style: normal;
+      font-weight: 300;
+      src: local('Oxygen Light'), local('Oxygen-Light'), url(fonts/oxygenLight.woff) format('woff');
+    }
+    @font-face {
+      font-family: 'Oxygen';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Oxygen'), local('Oxygen-Regular'), url(fonts/oxygenRegular.woff) format('woff');
+    }
+    @font-face {
+      font-family: 'Oxygen';
+      font-style: normal;
+      font-weight: 700;
+      src: local('Oxygen Bold'), local('Oxygen-Bold'), url(fonts/oxygenBold.woff) format('woff');
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      height: 100%;
+      /*background-color: rgb(200, 200, 200);*/
+      background-color: rgb(43, 156, 212);
+      font-family:'Oxygen', sans-serif;
+    }
+
+    h1 {
+      border-bottom: 1px rgb(200, 200, 200) solid;
+      padding-bottom: 10px;
+    }
+
+    #container {
+      width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 5px 20px 20px;
+    }
+
+    kbd {
+      background-color: rgb(243,243,243);
+      border: solid 1px #ccc;
+      box-sizing: border-box;
+      border-bottom-color: #bbb;
+      border-radius: 3px;
+      box-shadow: inset 0 -1px 0 #bbb;
+      color: rgb(33,33,33);
+      font-family: monospace;
+      margin-left: 2px;
+      padding: 1px 4px;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding-left: 10px;
+    }
+
+    li {
+      margin-bottom: 7px;
+    }
+
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Tab to Window / Popup</h1>
+
+    <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
+
+    <!-- TODO video -->
+
+    <h2>Moving Tabs</h2>
+
+    <p>Tabs can be moved to a new window with either a key command or by clicking the extension button.</p>
+
+    <img src="button.jpg" alt="Menu Button" width="400" height="auto">
+
+    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
+
+    <h3>Moving between windows</h3>
+
+    <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
+
+    <!-- TODO video -->
+
+    <h2>Window Type</h2>
+    <p>New windows can also be a Popup window. This can be assigned to a separate key command, or selected in the extension button menu.</p>
+
+    <img src="type.jpg" alt="Changing Window Type" width="400" height="auto">
+
+    <h2>Window Arrangement</h2>
+    <p>The window arrangement can be customised in the options page.</p>
+    <p>Resizing the original window is optional.</p>
+    <p>You can also choose whether to focus on the Original or New window after splitting.</p>
+
+    <img src="options.jpg" alt="Options Page" width="400" height="auto">
+
+    <h2>Multiple Displays</h2>
+    <p>Multiple displays are supported! The windows will stay on their current display.</p>
+    <p>A tab can be moved to a new window on the <em>next</em> display with the <strong>Tab to Next Display</strong> command.</p>
+
+    <h2>Key Commands</h2>
+    <p>The key commands can be customised by following the link on the options page.</p>
+    <p>The defaults are:</p>
+    <h3>Mac</h3>
+    <ul>
+      <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+      <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+      <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+      <li><kbd>Alt</kbd><kbd>D</kbd> - Next Display</li>
+    </ul>
+
+    <h3>Windows</h3>
+    <ul>
+      <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+      <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+      <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>d</kbd> - Next Display</li>
+    </ul>
+
+    <h3>Linux</h3>
+    <ul>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Tab to Window</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Tab to Popup</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Tab to Next Window</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>d</kbd> - Tab to Next Display</li>
+    </ul>
+
+    <h2>Author</h2>
+    <p><a href="https://www.arthurcarabott.com">Arthur Carabott</a></p>
+
+    <p>
+      <a href="https://www.buymeacoffee.com/f1NHjKL6t">
+        <img src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png" alt="Buy me a coffee">
+      </a>
+    </p>
+  </div>
+</body>
+</html>
