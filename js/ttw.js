@@ -87,15 +87,24 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused)
     type:      windowType,
     focused:   isFocused,
     incognito: tab.incognito,
-    state:     isFullscreen ? "fullscreen" : "normal",
   };
 
-  // shouldn't set width/height/left/top if fullscreen
-  if (!isFullscreen) {
-    Object.keys(windowBounds).forEach(key => opts[key] = windowBounds[key]);
+  Object.keys(windowBounds).forEach(key => opts[key] = windowBounds[key]);
+
+  if (isFullscreen) {
+    return new Promise(resolve => {
+      chrome.windows.create(opts, newWin => {
+        // this timeout is gross but necessary.
+        // updating immediately fails
+        setTimeout(() => {
+          chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
+            resolve([newWin, tab]);
+          });
+        }, 1000);
+      });
+    });
   }
 
-  // Move it to a new window
   return new Promise(resolve => {
     chrome.windows.create(opts, newWin => resolve([newWin, tab]));
   });
@@ -154,8 +163,7 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
       return curOverlap > accumOverlap ? current : accum;
     }, displays[0]);
 
-    const isFullscreen = !moveToNextDisplay &&
-                         options.get("copyFullscreen") &&
+    const isFullscreen = options.get("copyFullscreen") &&
                          currentWindow.state === "fullscreen";
     const isFocused = options.get("focus") === "new";
 
