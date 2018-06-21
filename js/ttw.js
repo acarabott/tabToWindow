@@ -202,7 +202,7 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
     });
 
     // move highlighted tabs
-    const othersMoved = bothMoved.then(([newWin, movedTab]) => {
+    const othersMoved = bothMoved.then(async ([newWin, movedTab]) => {
       // save parent id in case we want to pop in
       if (!destroyingOriginalWindow) {
         originWindowCache.set(movedTab, currentWindow);
@@ -214,13 +214,22 @@ function tabToWindow(windowType, moveToNextDisplay=false) {
         otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
 
         if (windowType === "normal") {
-          return new Promise(resolve => {
-            // move all tabs at once
+          // move all tabs at once
+          const movedTabs = await new Promise(resolve => {
             chrome.tabs.move(otherTabs.map(tab => tab.id), {
               windowId: newWin.id,
               index: 1
             }, tabs => resolve(tabs));
           });
+
+          // highlight tabs in new window
+          const tabPromises = movedTabs.map(tab => {
+            return new Promise(resolve => {
+              chrome.tabs.update(tab.id, { highlighted: true }, resolve(tab));
+            });
+          });
+
+          return Promise.all(tabPromises);
         }
         else if (windowType === "popup") {
           // can't move tabs to a popup window, so create individual ones
