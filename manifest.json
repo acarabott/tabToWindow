@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Tab to Window/Popup - Keyboard Shortcut",
-	"short_name": "Tab 2 Window",
+	"short_name": "Tab to Window",
 	"version": "3.0.0",
 	"author": "Arthur Carabott",
 
@@ -29,28 +29,29 @@
 				"default": "Alt+X",
 				"linux": "Alt+Shift+X"
 			},
-			"description": "Tab to Window"
+			"description": "Window"
 		},
 		"02-tab-to-window-popup": {
 			"suggested_key": {
 				"default": "Alt+C",
 				"linux": "Alt+Shift+C"
 			},
-			"description": "Tab to Popup Window"
+			"description": "Popup"
 		},
 		"03-tab-to-window-next": {
 			"suggested_key": {
 				"default": "Alt+Z",
 				"linux": "Alt+Shift+Z"
 			},
-			"description": "Tab to Next Window"
+			"description": "Next Window"
 		},
 		"04-tab-to-window-display": {
 			"suggested_key": {
 				"default": "Alt+D",
-				"linux": "Alt+Shift+D"
+				"linux": "Alt+Shift+D",
+				"windows": "Alt+Shift+D"
 			},
-			"description": "Tab to Next Display"
+			"description": "Next Display"
 		}
 	},
 	"permissions": ["tabs", "storage", "system.display", "contextMenus"],
