@@ -33,7 +33,7 @@
       font-family:'Oxygen', sans-serif;
     }
 
-    h1 {
+    h1, h2 {
       border-bottom: 1px rgb(200, 200, 200) solid;
       padding-bottom: 10px;
     }
@@ -58,14 +58,32 @@
       padding: 1px 4px;
     }
 
+    p, ul {
+      margin: 16px 0;
+    }
+
     ul {
       list-style-type: none;
-      margin: 0;
       padding-left: 10px;
     }
 
     li {
       margin-bottom: 7px;
+    }
+
+
+    #options-img {
+      border: 1px solid;
+      border-radius: 10px;
+    }
+
+    .key-label {
+      display: inline-block;
+      width: 80px;
+    }
+
+    img, video {
+      border: 1px black solid;
     }
 
   </style>
@@ -76,37 +94,81 @@
 
     <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
 
-    <!-- TODO video -->
+    <video playsinline controls loop width="100%" height="auto">
+      <source src="01-basic.mp4" type="video/mp4"/>
+      <source src="01-basic.webm" type="video/webm"/>
+    </video>
 
     <h2>Moving Tabs</h2>
+    <p>Tabs can be moved to a new window with either a key command:</p>
 
-    <p>Tabs can be moved to a new window with either a key command or by clicking the extension button.</p>
+    <ul>
+      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
+      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
+      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd></li>
+    </ul>
+
+    <p>Or by clicking the extension button:</p>
 
     <img src="button.jpg" alt="Menu Button" width="400" height="auto">
 
-    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
+    <h2>Popup Window</h2>
+    <p>New windows can also be a Popup window (no UI).</p>
 
-    <h3>Moving between windows</h3>
+    <img id="popup" src="popup.jpg" alt="Popup Window" width="100%" height="auto">
 
-    <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
+    <p>This can be done with a key command:</p>
 
-    <!-- TODO video -->
+    <ul>
+      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
+      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
+      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd></li>
+    </ul>
 
-    <h2>Window Type</h2>
-    <p>New windows can also be a Popup window. This can be assigned to a separate key command, or selected in the extension button menu.</p>
+    <p>Or by changing the Window Type for the button (right click):</p>
 
     <img src="type.jpg" alt="Changing Window Type" width="400" height="auto">
 
-    <h2>Window Arrangement</h2>
-    <p>The window arrangement can be customised in the options page.</p>
-    <p>Resizing the original window is optional.</p>
-    <p>You can also choose whether to focus on the Original or New window after splitting.</p>
+    <h2>Moving Between Windows</h2>
+    <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
 
-    <img src="options.jpg" alt="Options Page" width="400" height="auto">
+    <ul>
+      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
+      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
+      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd></li>
+    </ul>
+
+    <video playsinline controls loop width="100%" height="auto">
+      <source src="02-window.mp4" type="video/mp4"/>
+      <source src="02-window.webm" type="video/webm"/>
+    </video>
+
+
+    <h2>Moving Multiple</h2>
+    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
+
+    <video playsinline controls loop width="100%" height="auto">
+      <source src="03-multiple.mp4" type="video/mp4"/>
+      <source src="03-multiple.webm" type="video/webm"/>
+    </video>
+
+
+
+    <h2>Arrangement</h2>
+    <p>The window arrangement and other settings can be customised in the options page.</p>
+
+    <img id="options-img" src="options.jpg" alt="Options Page" width="400" height="auto">
 
     <h2>Multiple Displays</h2>
-    <p>Multiple displays are supported! The windows will stay on their current display.</p>
+    <p>Multiple displays are supported! Windows are split on their current display.</p>
     <p>A tab can be moved to a new window on the <em>next</em> display with the <strong>Tab to Next Display</strong> command.</p>
+
+    <ul>
+      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>D</kbd></li>
+      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
+      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
+    </ul>
+
 
     <h2>Key Commands</h2>
     <p>The key commands can be customised by following the link on the options page.</p>
@@ -124,15 +186,15 @@
       <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
       <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
       <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>d</kbd> - Next Display</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
     </ul>
 
     <h3>Linux</h3>
     <ul>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Tab to Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Tab to Popup</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Tab to Next Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>d</kbd> - Tab to Next Display</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Window</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Popup</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
+      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
     </ul>
 
     <h2>Author</h2>
