@@ -38,7 +38,8 @@
     }
 
     .container {
-      width: 800px;
+      max-width: 800px;
+      min-width: 600px;
       margin: 10px auto;
       background: white;
       padding: 5px 20px;
@@ -71,10 +72,8 @@
       margin-bottom: 7px;
     }
 
-
-    #options-img {
-      border: 1px solid;
-      border-radius: 10px;
+    img, video {
+      border: 1px black solid;
     }
 
     .key-label {
@@ -82,10 +81,10 @@
       width: 80px;
     }
 
-    img, video {
-      border: 1px black solid;
+    .command-sets {
+      display: flex;
+      justify-content: space-between;
     }
-
   </style>
 </head>
 <body>
@@ -117,7 +116,7 @@
 
     <div class="container">
     <h2>Popup Window</h2>
-    <p>New windows can also be a Popup window (no UI).</p>
+    <p>New windows can also be a Popup window (no UI):</p>
 
     <img id="popup" src="docs/popup.jpg" alt="Popup Window" width="100%" height="auto">
 
@@ -152,7 +151,7 @@
 
   <div class="container">
     <h2>Moving Multiple Tabs</h2>
-    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
+    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>):</p>
 
     <video playsinline controls loop width="100%" height="auto">
       <source src="docs/03-multiple.mp4" type="video/mp4"/>
@@ -160,14 +159,17 @@
     </video>
     </div>
 
-    <div class="container">
+  <div class="container">
     <h2>Arrangement</h2>
-    <p>The window arrangement and other settings can be customised in the options page.</p>
+    <p>The window arrangement and other settings can be customised in the options page:</p>
 
-    <img id="options-img" src="docs/options.jpg" alt="Options Page" width="400" height="auto">
-    </div>
+    <img src="docs/options.jpg" alt="Options Page" width="400" height="auto">
 
-    <div class="container">
+    <p>Get to it by right clicking the extension button:</p>
+    <img src="docs/options-menu.jpg" alt="Options Menu" width="400" height="auto">
+  </div>
+
+  <div class="container">
     <h2>Multiple Displays</h2>
     <p>Multiple displays are supported! Windows are split on their current display.</p>
     <p>A tab can be moved to a new window on the <em>next</em> display with the <strong>Tab to Next Display</strong> command.</p>
@@ -180,32 +182,51 @@
   </div>
 
   <div class="container">
+    <h2>Context Menu</h2>
+
+    <p>Right click a link to open it in a new window:</p>
+    <img src="docs/menu-link.jpg" alt="Link Menu" width="600" height="auto">
+
+    <p>Also works on pages:</p>
+    <img src="docs/menu-page.jpg" alt="Page Menu" width="600" height="auto">
+  </div>
+
+  <div class="container">
     <h2>Key Commands</h2>
     <p>The key commands can be customised by following the link on the options page.</p>
     <p>The defaults are:</p>
-    <h3>Mac</h3>
-    <ul>
-      <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
-      <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
-      <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
-      <li><kbd>Alt</kbd><kbd>D</kbd> - Next Display</li>
-    </ul>
 
-    <h3>Windows</h3>
-    <ul>
-      <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
-      <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
-      <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
-    </ul>
+    <div class="command-sets">
+      <div class="key-command-set">
+        <h3>Mac</h3>
+        <ul>
+          <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+          <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+          <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+          <li><kbd>Alt</kbd><kbd>D</kbd> - Next Display</li>
+        </ul>
+      </div>
 
-    <h3>Linux</h3>
-    <ul>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Popup</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
-      <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
-    </ul>
+      <div class="key-command-set">
+        <h3>Windows</h3>
+        <ul>
+          <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+          <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+          <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
+        </ul>
+      </div>
+
+      <div class="key-command-set">
+        <h3>Linux</h3>
+        <ul>
+          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Window</li>
+          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Popup</li>
+          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
+          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
+        </ul>
+      </div>
+    </div>
   </div>
 
   <div class="container">
