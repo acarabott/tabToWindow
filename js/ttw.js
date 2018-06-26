@@ -262,17 +262,6 @@ async function tabToWindow(windowType, moveToNextDisplay=false) {
 function tabToWindowNormal() { tabToWindow("normal");        }
 function tabToWindowPopup()  { tabToWindow("popup");         }
 function tabToNextDisplay()  { tabToWindow(undefined, true); }
-
-function urlToWindow(url, windowType, moveToNextDisplay=false) {
-  chrome.tabs.create({ url, active: true }, () => {
-    tabToWindow(windowType, moveToNextDisplay);
-  });
-}
-
-function urlToWindowNormal(url) { urlToWindow(url, "normal");        }
-function urlToWindowPopup(url)  { urlToWindow(url, "popup");         }
-function urlToNextDisplay(url)  { urlToWindow(url, undefined, true); }
-
 async function tabToNextWindow() {
   const tabsPromise = new Promise(resolve => {
     chrome.tabs.query({
@@ -324,6 +313,49 @@ async function tabToNextWindow() {
       chrome.tabs.update(tab.id, { highlighted: false });
     });
   }
+}
+
+function urlToWindow(url, windowType, moveToNextDisplay=false) {
+  chrome.tabs.create({ url, active: true }, () => {
+    tabToWindow(windowType, moveToNextDisplay);
+  });
+}
+
+function urlToWindowNormal(url) { urlToWindow(url, "normal");        }
+function urlToWindowPopup(url)  { urlToWindow(url, "popup");         }
+function urlToNextDisplay(url)  { urlToWindow(url, undefined, true); }
+async function urlToNextWindow(url) {
+  const currentWindowPromise = await new Promise(resolve => {
+    chrome.windows.getCurrent({}, windows => resolve(windows));
+  });
+
+  const windowsPromise = new Promise(resolve => {
+    chrome.windows.getAll({}, windows => resolve(windows));
+  });
+
+  const promises = [currentWindowPromise, windowsPromise];
+  const [currentWindow, allWindows] = await Promise.all(promises);
+
+  const windowIndex = allWindows.findIndex(win => win.id === currentWindow.id);
+  if (windowIndex === -1) { return; }
+
+  const nextWindowIndex = (windowIndex + 1) % allWindows.length;
+  if (nextWindowIndex === windowIndex) { return; }
+
+  const windowId = allWindows[nextWindowIndex].id;
+
+  const tabsToUnhighlight = await new Promise(resolve => {
+    chrome.tabs.query({ windowId, highlighted: true }, tabs => {
+      const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
+      resolve(tabsArray);
+    });
+  });
+  tabsToUnhighlight.forEach(tab => {
+    chrome.tabs.update(tab.id, { highlighted: false });
+  });
+
+  const opts = { windowId, url };
+  chrome.tabs.create(opts);
 }
 
 
@@ -492,6 +524,13 @@ async function createMenu() {
 
   chrome.contextMenus.create({
     type:     "normal",
+    id:       "link to next",
+    title:    "Link To Next Window",
+    contexts: ["link"]
+  });
+
+  chrome.contextMenus.create({
+    type:     "normal",
     id:       "link to display",
     title:    "Link To Next Display",
     contexts: ["link"]
@@ -506,6 +545,7 @@ async function createMenu() {
     else if (info.menuItemId === "tab to display")  { tabToNextDisplay();  }
     else if (info.menuItemId === "link to window")  { urlToWindowNormal(info.linkUrl); }
     else if (info.menuItemId === "link to popup")   { urlToWindowPopup(info.linkUrl); }
+    else if (info.menuItemId === "link to next")    { urlToNextWindow(info.linkUrl); }
     else if (info.menuItemId === "link to display") { urlToNextDisplay(info.linkUrl); }
 
     // options
