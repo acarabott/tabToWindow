@@ -1,10 +1,14 @@
 # Tab To Window
 
-Chrome extension to move the current tab to a new window using the command API
+Chrome extension to move the current tab to a new window.
 
-Position of the windows can be changed via the options page
+<kbd>
+    <img src="docs/01-basic.gif" alt="Screencast">
+</kbd>
 
-Key commands can be changed at chrome://extensions/shorcuts
+Get it from the [Chrome Store](https://chrome.google.com/webstore/detail/tab-to-windowpopup-keyboa/adbkphmimfcaeonicpmamfddbbnphikh)
+
+[Read More](https://acarabott.github.io/tabToWindow/)
 
 ## Privacy Policy
 
