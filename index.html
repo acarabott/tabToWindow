@@ -7,19 +7,19 @@
       font-family: 'Oxygen';
       font-style: normal;
       font-weight: 300;
-      src: local('Oxygen Light'), local('Oxygen-Light'), url(fonts/oxygenLight.woff) format('woff');
+      src: local('Oxygen Light'), local('Oxygen-Light'), url(css/fonts/oxygenLight.woff) format('woff');
     }
     @font-face {
       font-family: 'Oxygen';
       font-style: normal;
       font-weight: 400;
-      src: local('Oxygen'), local('Oxygen-Regular'), url(fonts/oxygenRegular.woff) format('woff');
+      src: local('Oxygen'), local('Oxygen-Regular'), url(css/fonts/oxygenRegular.woff) format('woff');
     }
     @font-face {
       font-family: 'Oxygen';
       font-style: normal;
       font-weight: 700;
-      src: local('Oxygen Bold'), local('Oxygen-Bold'), url(fonts/oxygenBold.woff) format('woff');
+      src: local('Oxygen Bold'), local('Oxygen-Bold'), url(css/fonts/oxygenBold.woff) format('woff');
     }
 
     html {
@@ -28,7 +28,6 @@
 
     body {
       height: 100%;
-      /*background-color: rgb(200, 200, 200);*/
       background-color: rgb(43, 156, 212);
       font-family:'Oxygen', sans-serif;
     }
@@ -40,9 +39,9 @@
 
     #container {
       width: 800px;
-      margin: 0 auto;
+      margin: 10px auto;
       background: white;
-      padding: 5px 20px 20px;
+      padding: 5px 20px;
     }
 
     kbd {
@@ -95,8 +94,8 @@
     <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
 
     <video playsinline controls loop width="100%" height="auto">
-      <source src="01-basic.mp4" type="video/mp4"/>
-      <source src="01-basic.webm" type="video/webm"/>
+      <source src="docs/01-basic.mp4" type="video/mp4"/>
+      <source src="docs/01-basic.webm" type="video/webm"/>
     </video>
 
     <h2>Moving Tabs</h2>
@@ -110,12 +109,12 @@
 
     <p>Or by clicking the extension button:</p>
 
-    <img src="button.jpg" alt="Menu Button" width="400" height="auto">
+    <img src="docs/button.jpg" alt="Menu Button" width="400" height="auto">
 
     <h2>Popup Window</h2>
     <p>New windows can also be a Popup window (no UI).</p>
 
-    <img id="popup" src="popup.jpg" alt="Popup Window" width="100%" height="auto">
+    <img id="popup" src="docs/popup.jpg" alt="Popup Window" width="100%" height="auto">
 
     <p>This can be done with a key command:</p>
 
@@ -127,7 +126,7 @@
 
     <p>Or by changing the Window Type for the button (right click):</p>
 
-    <img src="type.jpg" alt="Changing Window Type" width="400" height="auto">
+    <img src="docs/type.jpg" alt="Changing Window Type" width="400" height="auto">
 
     <h2>Moving Between Windows</h2>
     <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
@@ -139,8 +138,8 @@
     </ul>
 
     <video playsinline controls loop width="100%" height="auto">
-      <source src="02-window.mp4" type="video/mp4"/>
-      <source src="02-window.webm" type="video/webm"/>
+      <source src="docs/02-window.mp4" type="video/mp4"/>
+      <source src="docs/02-window.webm" type="video/webm"/>
     </video>
 
 
@@ -148,8 +147,8 @@
     <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
 
     <video playsinline controls loop width="100%" height="auto">
-      <source src="03-multiple.mp4" type="video/mp4"/>
-      <source src="03-multiple.webm" type="video/webm"/>
+      <source src="docs/03-multiple.mp4" type="video/mp4"/>
+      <source src="docs/03-multiple.webm" type="video/webm"/>
     </video>
 
 
@@ -157,7 +156,7 @@
     <h2>Arrangement</h2>
     <p>The window arrangement and other settings can be customised in the options page.</p>
 
-    <img id="options-img" src="options.jpg" alt="Options Page" width="400" height="auto">
+    <img id="options-img" src="docs/options.jpg" alt="Options Page" width="400" height="auto">
 
     <h2>Multiple Displays</h2>
     <p>Multiple displays are supported! Windows are split on their current display.</p>
