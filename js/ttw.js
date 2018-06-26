@@ -110,6 +110,18 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused)
   });
 }
 
+function moveTabs(tabs, windowId, index) {
+  return new Promise(resolve => {
+    chrome.tabs.move(tabs.map(tab => tab.id), {
+      windowId,
+      index
+    }, movedTabs => {
+      const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
+      resolve(tabsArray);
+    });
+  });
+}
+
 // Primary Functions
 // -----------------------------------------------------------------------------
 
@@ -211,12 +223,8 @@ async function tabToWindow(windowType, moveToNextDisplay=false) {
 
     if (windowType === "normal") {
       // move all tabs at once
-      const movedTabs = await new Promise(resolve => {
-        chrome.tabs.move(otherTabs.map(tab => tab.id), {
-          windowId: newWin.id,
-          index: 1
-        }, tabs => resolve(tabs));
-      });
+      const moveIndex = 1;
+      const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
 
       // highlight tabs in new window
       const tabPromises = movedTabs.map(tab => {
@@ -298,15 +306,8 @@ async function tabToNextWindow() {
       });
     });
 
-    const movedTabs = await new Promise(resolve => {
-      chrome.tabs.move(tabsToMove.map(tab => tab.id), {
-        windowId,
-        index: -1
-      }, movedTabs => {
-        const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
-        resolve(tabsArray);
-      });
-    });
+    const moveIndex = -1;
+    const movedTabs = await moveTabs(tabsToMove, windowId, moveIndex);
 
     const highlightTabPromises = movedTabs.map((tab, i) => {
       return new Promise(tabResolve => {
