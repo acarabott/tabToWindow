@@ -413,8 +413,8 @@ async function createMenu() {
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to window",
-    title:    `${normalCommand.description} ${normalShortcut}`,
-    contexts: ["browser_action", "page"],   // "link"
+    title:    `Tab to ${normalCommand.description} ${normalShortcut}`,
+    contexts: ["browser_action", "page"],
   });
 
   const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
@@ -425,8 +425,8 @@ async function createMenu() {
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to popup",
-    title:    `${popupCommand.description} ${popupShortcut}`,
-    contexts: ["browser_action", "page"],   // "link"
+    title:    `Tab to ${popupCommand.description} ${popupShortcut}`,
+    contexts: ["browser_action", "page"],
   });
 
   const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
@@ -437,7 +437,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to next",
-    title:    `${nextCommand.description} ${nextShortcut}`,
+    title:    `Tab to ${nextCommand.description} ${nextShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -449,7 +449,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type:     "normal",
     id:       "tab to display",
-    title:    `${displayCommand.description} ${displayShortcut}`,
+    title:    `Tab to ${displayCommand.description} ${displayShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
