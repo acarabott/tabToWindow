@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tab to Window/Popup - Keyboard Shortcut</title>
+  <title>Tab to Window</title>
   <style>
     @font-face {
       font-family: 'Oxygen';
@@ -37,11 +37,12 @@
       padding-bottom: 10px;
     }
 
-    #container {
+    .container {
       width: 800px;
       margin: 10px auto;
       background: white;
       padding: 5px 20px;
+      border-radius: 10px;
     }
 
     kbd {
@@ -88,8 +89,8 @@
   </style>
 </head>
 <body>
-  <div id="container">
-    <h1>Tab to Window / Popup</h1>
+  <div class="container">
+    <h1>Tab to Window</h1>
 
     <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
 
@@ -97,7 +98,9 @@
       <source src="docs/01-basic.mp4" type="video/mp4"/>
       <source src="docs/01-basic.webm" type="video/webm"/>
     </video>
+  </div>
 
+  <div class="container">
     <h2>Moving Tabs</h2>
     <p>Tabs can be moved to a new window with either a key command:</p>
 
@@ -110,7 +113,9 @@
     <p>Or by clicking the extension button:</p>
 
     <img src="docs/button.jpg" alt="Menu Button" width="400" height="auto">
+    </div>
 
+    <div class="container">
     <h2>Popup Window</h2>
     <p>New windows can also be a Popup window (no UI).</p>
 
@@ -127,7 +132,9 @@
     <p>Or by changing the Window Type for the button (right click):</p>
 
     <img src="docs/type.jpg" alt="Changing Window Type" width="400" height="auto">
+    </div>
 
+    <div class="container">
     <h2>Moving Between Windows</h2>
     <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
 
@@ -141,23 +148,26 @@
       <source src="docs/02-window.mp4" type="video/mp4"/>
       <source src="docs/02-window.webm" type="video/webm"/>
     </video>
+  </div>
 
-
-    <h2>Moving Multiple</h2>
+  <div class="container">
+    <h2>Moving Multiple Tabs</h2>
     <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>).</p>
 
     <video playsinline controls loop width="100%" height="auto">
       <source src="docs/03-multiple.mp4" type="video/mp4"/>
       <source src="docs/03-multiple.webm" type="video/webm"/>
     </video>
+    </div>
 
-
-
+    <div class="container">
     <h2>Arrangement</h2>
     <p>The window arrangement and other settings can be customised in the options page.</p>
 
     <img id="options-img" src="docs/options.jpg" alt="Options Page" width="400" height="auto">
+    </div>
 
+    <div class="container">
     <h2>Multiple Displays</h2>
     <p>Multiple displays are supported! Windows are split on their current display.</p>
     <p>A tab can be moved to a new window on the <em>next</em> display with the <strong>Tab to Next Display</strong> command.</p>
@@ -167,8 +177,9 @@
       <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
       <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
     </ul>
+  </div>
 
-
+  <div class="container">
     <h2>Key Commands</h2>
     <p>The key commands can be customised by following the link on the options page.</p>
     <p>The defaults are:</p>
@@ -195,7 +206,9 @@
       <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
       <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
     </ul>
+  </div>
 
+  <div class="container">
     <h2>Author</h2>
     <p><a href="https://www.arthurcarabott.com">Arthur Carabott</a></p>
 
