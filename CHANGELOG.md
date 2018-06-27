@@ -3,17 +3,13 @@
 ## 3.0
 
 - Multi-display support!
-    + Windows will stay on their current display
-    + Tabs can be moved to the next display
-- Moving multiple tabs at once
-- Tab to *next* window: tabs can be moved to existing windows
-- Settings now synced with your Chrome profile
-- Menu button: move tabs by clicking the menu button
-    - Common options available in menu button context menu
-- Open link in new tab: right click a link to access via context menu
-- Open tabs using the extension button context menu
-- Sending to a popup on a single tab now converts it in the same position
-- Refactored into ES2016 with modules
+- Move tabs by clicking the menu button
+- Tabs can be moved between existing windows
+- Move multiple tabs at once
+- Link to tab: right click a link and use the menu
+- Convert a window to popup without moving with the Tab to Popup command
+- Settings now synced with Chrome profile
+- Common options available in menu button menu
 
 ## 2.3
 
