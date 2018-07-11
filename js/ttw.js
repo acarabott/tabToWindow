@@ -395,7 +395,7 @@ chrome.browserAction.onClicked.addListener(() => {
 // Context Menu Creation
 // Options
 // -------
-async function createMenu() {
+async function createMenu(masterMenuContexts) {
   const commandsPromise = new Promise(resolve => {
     chrome.commands.getAll(commands => resolve(commands));
   });
@@ -414,7 +414,7 @@ async function createMenu() {
     type:     "normal",
     id:       "tab to window",
     title:    `Tab to ${normalCommand.description} ${normalShortcut}`,
-    contexts: ["browser_action", "page"],
+    contexts: masterMenuContexts,
   });
 
   const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
@@ -426,7 +426,7 @@ async function createMenu() {
     type:     "normal",
     id:       "tab to popup",
     title:    `Tab to ${popupCommand.description} ${popupShortcut}`,
-    contexts: ["browser_action", "page"],
+    contexts: masterMenuContexts,
   });
 
   const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
@@ -438,7 +438,7 @@ async function createMenu() {
     type:     "normal",
     id:       "tab to next",
     title:    `Tab to ${nextCommand.description} ${nextShortcut}`,
-    contexts: ["browser_action", "page"],
+    contexts: masterMenuContexts,
   });
 
   const displayCommand = commands.find(cmd => cmd.name === "04-tab-to-window-display");
@@ -450,7 +450,7 @@ async function createMenu() {
     type:     "normal",
     id:       "tab to display",
     title:    `Tab to ${displayCommand.description} ${displayShortcut}`,
-    contexts: ["browser_action", "page"],
+    contexts: masterMenuContexts,
   });
 
 
@@ -568,4 +568,4 @@ async function createMenu() {
   });
 }
 
-createMenu();
+createMenu(options.get("showMenu") ? ["browser_action", "page"] : ["browser_action"]);
