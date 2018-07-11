@@ -22,7 +22,9 @@ const defaults = {
   newWidth:       0.5,
   newHeight:      1.0,
   newLeft:        0.5,
-  newTop:         0.0
+  newTop:         0.0,
+  // whether to show context menu (or create, actually)
+  showMenu:     true
 };
 
 // retrieve the storage key for a particular window property
@@ -61,6 +63,7 @@ function validateOptions(options) {
 
   if (!isValidStringOption("focus", ["original", "new"])) { return false; }
   if (!isValidBoolOption("resizeOriginal")) { return false; }
+  if (!isValidBoolOption("showMenu")) { return false; }
   if (!isValidStringOption("cloneMode", ["clone-mode-no",
                                          "clone-mode-same",
                                          "clone-mode-horizontal",

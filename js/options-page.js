@@ -29,6 +29,7 @@ function getFocusedName() {
 function save() {
   options.set("focus", getFocusedName());
   options.set("resizeOriginal", getFromId("resize-original").checked);
+  options.set("showMenu", getFromId("show-menu").checked);
   options.set("copyFullscreen", getFromId("copy-fullscreen").checked);
   options.set("cloneMode",  getFromClass("clone-mode-option").find(cp => cp.checked).id);
   options.set("menuButtonType", getFromClass("menu-button-option").find(mb => mb.checked).getAttribute("data-value"));
@@ -113,6 +114,11 @@ function updateFocus() {
   });
 }
 
+function updateShowMenu() {
+  // TODO: show hide context menu
+  // for now save/reload is required
+}
+
 function setWindowAsCurrent(win) {
   getFromClass("window").forEach(_win => {
     _win === win
@@ -185,6 +191,7 @@ function main() {
       opt.checked = opt.id.includes(options.get("focus"));
     });
     getFromId("resize-original").checked = options.get("resizeOriginal");
+    getFromId("show-menu").checked = options.get("showMenu");
     const curCloneOption = getFromClass("clone-mode-option").find(cp =>
       cp.id === options.get("cloneMode"));
     curCloneOption.checked = true;
@@ -252,6 +259,7 @@ function main() {
   // add input handlers
   {
     getFromId("resize-original").onchange = updateResizeOriginal;
+    getFromId("show-menu").onchange = updateShowMenu;
     getFromClass("focus-option").forEach(el => el.onchange = updateFocus);
     getFromTag("input").forEach(el => el.onclick = save);
     getFromId("commandsUrl").onclick = event => {
