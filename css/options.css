@@ -1,236 +1,250 @@
 @font-face {
-  font-family: 'Oxygen';
+  font-family: "Oxygen";
   font-style: normal;
   font-weight: 300;
-  src: local('Oxygen Light'), local('Oxygen-Light'), url(fonts/oxygenLight.woff) format('woff');
+  src: local("Oxygen Light"), local("Oxygen-Light"), url(fonts/oxygenLight.woff) format("woff");
 }
 @font-face {
-  font-family: 'Oxygen';
+  font-family: "Oxygen";
   font-style: normal;
   font-weight: 400;
-  src: local('Oxygen'), local('Oxygen-Regular'), url(fonts/oxygenRegular.woff) format('woff');
+  src: local("Oxygen"), local("Oxygen-Regular"), url(fonts/oxygenRegular.woff) format("woff");
 }
 @font-face {
-  font-family: 'Oxygen';
+  font-family: "Oxygen";
   font-style: normal;
   font-weight: 700;
-  src: local('Oxygen Bold'), local('Oxygen-Bold'), url(fonts/oxygenBold.woff) format('woff');
+  src: local("Oxygen Bold"), local("Oxygen-Bold"), url(fonts/oxygenBold.woff) format("woff");
 }
 
 html {
-	height: 100%;
+  height: 100%;
 }
 
 body {
-	height: 100%;
-	background-color: white;
-	font-family:'Oxygen', sans-serif;
+  height: 100%;
+  background-color: white;
+  font-family: "Oxygen", sans-serif;
 }
 
-#container, #credit {
-	width: 408px;
-	margin: 0 auto;
-	padding: 0 20px 10px;
+#container,
+#credit {
+  width: 408px;
+  margin: 0 auto;
+  padding: 0 20px 10px;
 }
 
 #container {
-	position: relative;
-	overflow: hidden;
-	padding: 0 20px 20px;
-	background-color: white;
-	border-bottom: 1px solid #aaa;
+  position: relative;
+  overflow: hidden;
+  padding: 0 20px 20px;
+  background-color: white;
+  border-bottom: 1px solid #aaa;
 }
 
-h1, h2 {
-	margin-top: 0;
+h1,
+h2 {
+  margin-top: 0;
 }
 
 h1 {
-	font-size: 22px;
-	border-bottom: 1px solid #aaa;
-	padding-bottom: 10px;
-	width: 100%;
+  font-size: 22px;
+  border-bottom: 1px solid #aaa;
+  padding-bottom: 10px;
+  width: 100%;
 }
 
-h2, h4 {
-	font-size: 16px;
-	font-weight: bold;
+h2,
+h4 {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 h3 {
-	font-size: 14px;
-	color:#777;
-	margin-bottom: 5px;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 5px;
 }
 
-label, input {
-	display: inline-block;
-	margin-bottom: 5px;
+label,
+input {
+  display: inline-block;
+  margin-bottom: 5px;
 }
 
 #container input {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 .option-set {
-	height: 23px;
+  height: 23px;
 }
 
 .option-set label {
-	margin-left: 10px;
+  margin-left: 10px;
 }
 
 .option-set:not(.prefix) label:first-child {
-	margin-left: 0;
+  margin-left: 0;
 }
 
 ul {
-	list-style-type: none;
+  list-style-type: none;
 }
 
 #options {
-	display: flex;
+  display: flex;
 }
 
 #shortcuts,
 #global {
-	width: 50%;
-	display: inline-block;
+  width: 50%;
+  display: inline-block;
 }
 
 #shortcuts {
-	font-size: 16px;
-	margin-top: 0px;
-	margin-bottom: 12px;
+  font-size: 16px;
+  margin-top: 0px;
+  margin-bottom: 12px;
 }
 
 #shortcuts ul {
-	font-size: 14px;
-	margin: 0;
-	padding: 0;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
 }
 
 #shortcuts li {
-	margin: 2px 0;
+  margin: 2px 0;
 }
 
 #shortcuts .shortcut-label {
-	display: inline-block;
-	width: 55%;
+  display: inline-block;
+  width: 55%;
 }
 
 #shortcuts .shortcut {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 #opens-in {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 #credit {
-	font-size: 14px;
-	margin-top: 10px;
+  font-size: 14px;
+  margin-top: 10px;
 }
 
 #monitor {
-	position: relative;
-	width: 400px;
-	height: 160px;
-	border: 4px solid rgb(161, 163, 162);
-	border-bottom-width: 20px;
-	border-radius: 10px;
+  position: relative;
+  width: 400px;
+  height: 160px;
+  border: 4px solid rgb(161, 163, 162);
+  border-bottom-width: 20px;
+  border-radius: 10px;
 }
 
 #screen {
-	height: 100%;
-	width: 100%;
-	background: rgb(240, 240, 240);
-	background-image: repeating-linear-gradient(
-		0deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%),
-	repeating-linear-gradient(
-		-90deg, rgb(180, 180, 180), rgb(180, 180, 180) 2px, transparent 2px, transparent 25%);
-	user-select: none;
+  height: 100%;
+  width: 100%;
+  background: rgb(240, 240, 240);
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgb(180, 180, 180),
+      rgb(180, 180, 180) 2px,
+      transparent 2px,
+      transparent 25%
+    ),
+    repeating-linear-gradient(
+      -90deg,
+      rgb(180, 180, 180),
+      rgb(180, 180, 180) 2px,
+      transparent 2px,
+      transparent 25%
+    );
+  user-select: none;
 }
 
 .window {
-	position: absolute;
-	width: 200px;
-	height: 50%;
-	top: 0;
-	opacity: 0.925;
-	border: 0;
-	z-index: 10;
+  position: absolute;
+  width: 200px;
+  height: 50%;
+  top: 0;
+  opacity: 0.925;
+  border: 0;
+  z-index: 10;
 }
 
 .window.current {
-	z-index: 20;
+  z-index: 20;
 }
 
 .window.disabled {
-	background: rgba(220, 220, 220, 0.7);
-	color: rgba(0, 0, 0, 0.5);
-	opacity: 0.7;
+  background: rgba(220, 220, 220, 0.7);
+  color: rgba(0, 0, 0, 0.5);
+  opacity: 0.7;
 }
 
 .window.blurred {
-	color: rgb(125, 125, 125);
+  color: rgb(125, 125, 125);
 }
 
 .window.blurred .button {
-	opacity: 0.3;
+  opacity: 0.3;
 }
 
 .inner-window {
-	box-sizing: border-box;
-	width: 100%;
-	height: 100%;
-	border: 1px solid rgb(125, 125, 125);
-	border-top-width:10px;
-	border-radius:3px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgb(125, 125, 125);
+  border-top-width: 10px;
+  border-radius: 3px;
 }
 
 .inner-window h4 {
-	margin-bottom: 5px;
-	margin-top: 5px;
-	display: inline-block;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  display: inline-block;
 }
 
 .inner-window h4,
 .inner-window label {
-	margin-left: 5px;
+  margin-left: 5px;
 }
 
 .button {
-	display: inline-block;
-	border-radius: 5px;
-	border: 3px solid;
-	position: absolute;
-	top:2px;
+  display: inline-block;
+  border-radius: 5px;
+  border: 3px solid;
+  position: absolute;
+  top: 2px;
 }
 
 .button.red {
-	border-color: rgb(203, 53, 54);
-	left:2px;
+  border-color: rgb(203, 53, 54);
+  left: 2px;
 }
 
 .button.yellow {
-	border-color: rgb(255, 255, 86);
-	left:12px;
+  border-color: rgb(255, 255, 86);
+  left: 12px;
 }
 
 .button.green {
-	border-color: rgb(80, 180, 80);
-	left:22px;
+  border-color: rgb(80, 180, 80);
+  left: 22px;
 }
 
 #icon {
-	position: absolute;
-	background-color: white;
-	opacity: 0.65;
-	margin: 0 auto;
-	bottom:-15px;
-	margin-left: 50%;
-	left:-5px;
-	border-radius: 10px;
-	border: 5px solid white;
+  position: absolute;
+  background-color: white;
+  opacity: 0.65;
+  margin: 0 auto;
+  bottom: -15px;
+  margin-left: 50%;
+  left: -5px;
+  border-radius: 10px;
+  border: 5px solid white;
 }

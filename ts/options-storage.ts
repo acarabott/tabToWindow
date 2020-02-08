@@ -15,21 +15,24 @@ const defaults = {
   // "normal", "popup"
   menuButtonType: "normal",
   // these are all percentage 0.0 - 1.0
-  originalWidth:  0.5,
+  originalWidth: 0.5,
   originalHeight: 1.0,
-  originalLeft:   0.0,
-  originalTop:    0.0,
-  newWidth:       0.5,
-  newHeight:      1.0,
-  newLeft:        0.5,
-  newTop:         0.0
+  originalLeft: 0.0,
+  originalTop: 0.0,
+  newWidth: 0.5,
+  newHeight: 1.0,
+  newLeft: 0.5,
+  newTop: 0.0,
 };
 
 // retrieve the storage key for a particular window property
 // @windowId: "original", "new"
 // @propertyKey: "width", "height", "left", "top"
 function getStorageWindowPropKey(windowId, propKey) {
-  return `${windowId}${propKey.slice(0).charAt().toUpperCase()}${propKey.slice(1)}`;
+  return `${windowId}${propKey
+    .slice(0)
+    .charAt()
+    .toUpperCase()}${propKey.slice(1)}`;
 }
 
 function validateOptions(options) {
@@ -41,43 +44,72 @@ function validateOptions(options) {
 
   function isValidStringOption(option, validOptions) {
     const result = validOptions.includes(options[option]);
-    if (!result) { console.error(`"${option}" is invalid, should be in ${validOptions}`); }
+    if (!result) {
+      console.error(`"${option}" is invalid, should be in ${validOptions}`);
+    }
     return result;
   }
 
   function isValidBoolOption(key) {
     const result = typeof options[key] === "boolean";
-    if (!result) { console.error(`"${key}" option is invalid, should be boolean`); }
+    if (!result) {
+      console.error(`"${key}" option is invalid, should be boolean`);
+    }
     return result;
   }
 
   function isValidNumberOption(key, min, max) {
-    const result = typeof options[key] === "number" &&
-                          options[key] >= min &&
-                          options[key] <= max;
-    if (!result) { console.error(`${key} should be between ${min} and ${max}`); }
+    const result = typeof options[key] === "number" && options[key] >= min && options[key] <= max;
+    if (!result) {
+      console.error(`${key} should be between ${min} and ${max}`);
+    }
     return result;
   }
 
-  if (!isValidStringOption("focus", ["original", "new"])) { return false; }
-  if (!isValidBoolOption("resizeOriginal")) { return false; }
-  if (!isValidStringOption("cloneMode", ["clone-mode-no",
-                                         "clone-mode-same",
-                                         "clone-mode-horizontal",
-                                         "clone-mode-vertical"])) { return false; }
-  if (!isValidBoolOption("copyFullscreen")) { return false; }
-  if (!isValidStringOption("menuButtonType", ["normal", "popup"])) { return false; }
+  if (!isValidStringOption("focus", ["original", "new"])) {
+    return false;
+  }
+  if (!isValidBoolOption("resizeOriginal")) {
+    return false;
+  }
+  if (
+    !isValidStringOption("cloneMode", [
+      "clone-mode-no",
+      "clone-mode-same",
+      "clone-mode-horizontal",
+      "clone-mode-vertical",
+    ])
+  ) {
+    return false;
+  }
+  if (!isValidBoolOption("copyFullscreen")) {
+    return false;
+  }
+  if (!isValidStringOption("menuButtonType", ["normal", "popup"])) {
+    return false;
+  }
 
-  const numberOpts = ["originalWidth", "originalHeight", "originalLeft",
-                      "originalTop", "newWidth", "newHeight", "newLeft",
-                      "newTop"];
-  if (numberOpts.some(opt => !isValidNumberOption(opt, 0.0, 1.0))) { return false; }
+  const numberOpts = [
+    "originalWidth",
+    "originalHeight",
+    "originalLeft",
+    "originalTop",
+    "newWidth",
+    "newHeight",
+    "newLeft",
+    "newTop",
+  ];
+  if (numberOpts.some(opt => !isValidNumberOption(opt, 0.0, 1.0))) {
+    return false;
+  }
 
   return true;
 }
 
 function saveOptions(options) {
-  if (!validateOptions(options)) { return; }
+  if (!validateOptions(options)) {
+    return;
+  }
 
   chrome.storage.sync.set(options, () => {
     if (chrome.runtime.lastError !== undefined) {
@@ -118,10 +150,11 @@ export const options = {
           values[key] = value;
         });
         resolve(options);
+      } else {
+        reject(chrome.runtime.lastError);
       }
-      else { reject(chrome.runtime.lastError); }
     });
-  })
+  }),
 };
 
 export function isCloning() {

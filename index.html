@@ -1,253 +1,272 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Tab to Window</title>
-  <style>
-    @font-face {
-      font-family: 'Oxygen';
-      font-style: normal;
-      font-weight: 300;
-      src: local('Oxygen Light'), local('Oxygen-Light'), url(css/fonts/oxygenLight.woff) format('woff');
-    }
-    @font-face {
-      font-family: 'Oxygen';
-      font-style: normal;
-      font-weight: 400;
-      src: local('Oxygen'), local('Oxygen-Regular'), url(css/fonts/oxygenRegular.woff) format('woff');
-    }
-    @font-face {
-      font-family: 'Oxygen';
-      font-style: normal;
-      font-weight: 700;
-      src: local('Oxygen Bold'), local('Oxygen-Bold'), url(css/fonts/oxygenBold.woff) format('woff');
-    }
+  <head>
+    <title>Tab to Window</title>
+    <style>
+      @font-face {
+        font-family: "Oxygen";
+        font-style: normal;
+        font-weight: 300;
+        src: local("Oxygen Light"), local("Oxygen-Light"),
+          url(css/fonts/oxygenLight.woff) format("woff");
+      }
+      @font-face {
+        font-family: "Oxygen";
+        font-style: normal;
+        font-weight: 400;
+        src: local("Oxygen"), local("Oxygen-Regular"),
+          url(css/fonts/oxygenRegular.woff) format("woff");
+      }
+      @font-face {
+        font-family: "Oxygen";
+        font-style: normal;
+        font-weight: 700;
+        src: local("Oxygen Bold"), local("Oxygen-Bold"),
+          url(css/fonts/oxygenBold.woff) format("woff");
+      }
 
-    html {
-      height: 100%;
-    }
+      html {
+        height: 100%;
+      }
 
-    body {
-      height: 100%;
-      background-color: rgb(43, 156, 212);
-      font-family:'Oxygen', sans-serif;
-    }
+      body {
+        height: 100%;
+        background-color: rgb(43, 156, 212);
+        font-family: "Oxygen", sans-serif;
+      }
 
-    h1, h2 {
-      border-bottom: 1px rgb(200, 200, 200) solid;
-      padding-bottom: 10px;
-    }
+      h1,
+      h2 {
+        border-bottom: 1px rgb(200, 200, 200) solid;
+        padding-bottom: 10px;
+      }
 
-    .container {
-      max-width: 800px;
-      min-width: 600px;
-      margin: 10px auto;
-      background: white;
-      padding: 5px 20px;
-      border-radius: 10px;
-    }
+      .container {
+        max-width: 800px;
+        min-width: 600px;
+        margin: 10px auto;
+        background: white;
+        padding: 5px 20px;
+        border-radius: 10px;
+      }
 
-    kbd {
-      background-color: rgb(243,243,243);
-      border: solid 1px #ccc;
-      box-sizing: border-box;
-      border-bottom-color: #bbb;
-      border-radius: 3px;
-      box-shadow: inset 0 -1px 0 #bbb;
-      color: rgb(33,33,33);
-      font-family: monospace;
-      margin-left: 2px;
-      padding: 1px 4px;
-    }
+      kbd {
+        background-color: rgb(243, 243, 243);
+        border: solid 1px #ccc;
+        box-sizing: border-box;
+        border-bottom-color: #bbb;
+        border-radius: 3px;
+        box-shadow: inset 0 -1px 0 #bbb;
+        color: rgb(33, 33, 33);
+        font-family: monospace;
+        margin-left: 2px;
+        padding: 1px 4px;
+      }
 
-    p, ul {
-      margin: 16px 0;
-    }
+      p,
+      ul {
+        margin: 16px 0;
+      }
 
-    ul {
-      list-style-type: none;
-      padding-left: 10px;
-    }
+      ul {
+        list-style-type: none;
+        padding-left: 10px;
+      }
 
-    li {
-      margin-bottom: 7px;
-    }
+      li {
+        margin-bottom: 7px;
+      }
 
-    img, video {
-      border: 1px black solid;
-    }
+      img,
+      video {
+        border: 1px black solid;
+      }
 
-    .key-label {
-      display: inline-block;
-      width: 80px;
-    }
+      .key-label {
+        display: inline-block;
+        width: 80px;
+      }
 
-    .command-sets {
-      display: flex;
-      justify-content: space-between;
-    }
-  </style>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-15144028-2"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+      .command-sets {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-15144028-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-    gtag('config', 'UA-15144028-2');
-  </script>
-</head>
+      gtag("config", "UA-15144028-2");
+    </script>
+  </head>
 
-<body>
-  <div class="container">
-    <h1>Tab to Window</h1>
+  <body>
+    <div class="container">
+      <h1>Tab to Window</h1>
 
-    <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
+      <p>Dragging is a drag, move your tabs to a new window in an instant!</p>
 
-    <video playsinline controls loop width="100%" height="auto">
-      <source src="docs/01-basic.mp4" type="video/mp4"/>
-      <source src="docs/01-basic.webm" type="video/webm"/>
-    </video>
-  </div>
-
-  <div class="container">
-    <h2>Moving Tabs</h2>
-    <p>Tabs can be moved to a new window with either a key command:</p>
-
-    <ul>
-      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
-      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
-      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd></li>
-    </ul>
-
-    <p>Or by clicking the extension button:</p>
-
-    <img src="docs/button.jpg" alt="Menu Button" width="400" height="auto">
+      <video playsinline controls loop width="100%" height="auto">
+        <source src="docs/01-basic.mp4" type="video/mp4" />
+        <source src="docs/01-basic.webm" type="video/webm" />
+      </video>
     </div>
 
     <div class="container">
-    <h2>Popup Window</h2>
-    <p>New windows can also be a Popup window (no UI):</p>
+      <h2>Moving Tabs</h2>
+      <p>Tabs can be moved to a new window with either a key command:</p>
 
-    <img id="popup" src="docs/popup.jpg" alt="Popup Window" width="100%" height="auto">
+      <ul>
+        <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
+        <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>X</kbd></li>
+        <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd></li>
+      </ul>
 
-    <p>This can be done with a key command:</p>
+      <p>Or by clicking the extension button:</p>
 
-    <ul>
-      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
-      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
-      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd></li>
-    </ul>
-
-    <p>Or by changing the Window Type for the button (right click):</p>
-
-    <img src="docs/type.jpg" alt="Changing Window Type" width="400" height="auto">
+      <img src="docs/button.jpg" alt="Menu Button" width="400" height="auto" />
     </div>
 
     <div class="container">
-    <h2>Moving Between Windows</h2>
-    <p>Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.</p>
+      <h2>Popup Window</h2>
+      <p>New windows can also be a Popup window (no UI):</p>
 
-    <ul>
-      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
-      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
-      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd></li>
-    </ul>
+      <img id="popup" src="docs/popup.jpg" alt="Popup Window" width="100%" height="auto" />
 
-    <video playsinline controls loop width="100%" height="auto">
-      <source src="docs/02-window.mp4" type="video/mp4"/>
-      <source src="docs/02-window.webm" type="video/webm"/>
-    </video>
-  </div>
+      <p>This can be done with a key command:</p>
 
-  <div class="container">
-    <h2>Moving Multiple Tabs</h2>
-    <p>You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or <kbd>command</kbd>/<kbd>control</kbd>):</p>
+      <ul>
+        <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
+        <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>C</kbd></li>
+        <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd></li>
+      </ul>
 
-    <video playsinline controls loop width="100%" height="auto">
-      <source src="docs/03-multiple.mp4" type="video/mp4"/>
-      <source src="docs/03-multiple.webm" type="video/webm"/>
-    </video>
+      <p>Or by changing the Window Type for the button (right click):</p>
+
+      <img src="docs/type.jpg" alt="Changing Window Type" width="400" height="auto" />
     </div>
 
-  <div class="container">
-    <h2>Arrangement</h2>
-    <p>The window arrangement and other settings can be customised in the options page:</p>
+    <div class="container">
+      <h2>Moving Between Windows</h2>
+      <p>
+        Tabs can also be moved between windows with the <strong>Tab to Next Window</strong> command.
+      </p>
 
-    <img src="docs/options.jpg" alt="Options Page" width="400" height="auto">
+      <ul>
+        <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
+        <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Z</kbd></li>
+        <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd></li>
+      </ul>
 
-    <p>Get to it by right clicking the extension button:</p>
-    <img src="docs/options-menu.jpg" alt="Options Menu" width="400" height="auto">
-  </div>
+      <video playsinline controls loop width="100%" height="auto">
+        <source src="docs/02-window.mp4" type="video/mp4" />
+        <source src="docs/02-window.webm" type="video/webm" />
+      </video>
+    </div>
 
-  <div class="container">
-    <h2>Multiple Displays</h2>
-    <p>Multiple displays are supported! Windows are split on their current display.</p>
-    <p>A tab can be moved to a new window on the <em>next</em> display with the <strong>Tab to Next Display</strong> command.</p>
+    <div class="container">
+      <h2>Moving Multiple Tabs</h2>
+      <p>
+        You can move multiple tabs by selecting them first (by holding <kbd>shift</kbd> or
+        <kbd>command</kbd>/<kbd>control</kbd>):
+      </p>
 
-    <ul>
-      <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>D</kbd></li>
-      <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
-      <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
-    </ul>
-  </div>
+      <video playsinline controls loop width="100%" height="auto">
+        <source src="docs/03-multiple.mp4" type="video/mp4" />
+        <source src="docs/03-multiple.webm" type="video/webm" />
+      </video>
+    </div>
 
-  <div class="container">
-    <h2>Context Menu</h2>
+    <div class="container">
+      <h2>Arrangement</h2>
+      <p>The window arrangement and other settings can be customised in the options page:</p>
 
-    <p>Right click a link to open it in a new window:</p>
-    <img src="docs/menu-link.jpg" alt="Link Menu" width="600" height="auto">
+      <img src="docs/options.jpg" alt="Options Page" width="400" height="auto" />
 
-    <p>Also works on pages:</p>
-    <img src="docs/menu-page.jpg" alt="Page Menu" width="600" height="auto">
-  </div>
+      <p>Get to it by right clicking the extension button:</p>
+      <img src="docs/options-menu.jpg" alt="Options Menu" width="400" height="auto" />
+    </div>
 
-  <div class="container">
-    <h2>Key Commands</h2>
-    <p>The key commands can be customised by following the link on the options page.</p>
-    <p>The defaults are:</p>
+    <div class="container">
+      <h2>Multiple Displays</h2>
+      <p>Multiple displays are supported! Windows are split on their current display.</p>
+      <p>
+        A tab can be moved to a new window on the <em>next</em> display with the
+        <strong>Tab to Next Display</strong> command.
+      </p>
 
-    <div class="command-sets">
-      <div class="key-command-set">
-        <h3>Mac</h3>
-        <ul>
-          <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
-          <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
-          <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
-          <li><kbd>Alt</kbd><kbd>D</kbd> - Next Display</li>
-        </ul>
-      </div>
+      <ul>
+        <li><span class="key-label">Mac:</span> <kbd>Alt</kbd><kbd>D</kbd></li>
+        <li><span class="key-label">Windows:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
+        <li><span class="key-label">Linux:</span> <kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd></li>
+      </ul>
+    </div>
 
-      <div class="key-command-set">
-        <h3>Windows</h3>
-        <ul>
-          <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
-          <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
-          <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
-          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
-        </ul>
-      </div>
+    <div class="container">
+      <h2>Context Menu</h2>
 
-      <div class="key-command-set">
-        <h3>Linux</h3>
-        <ul>
-          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Window</li>
-          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Popup</li>
-          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
-          <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
-        </ul>
+      <p>Right click a link to open it in a new window:</p>
+      <img src="docs/menu-link.jpg" alt="Link Menu" width="600" height="auto" />
+
+      <p>Also works on pages:</p>
+      <img src="docs/menu-page.jpg" alt="Page Menu" width="600" height="auto" />
+    </div>
+
+    <div class="container">
+      <h2>Key Commands</h2>
+      <p>The key commands can be customised by following the link on the options page.</p>
+      <p>The defaults are:</p>
+
+      <div class="command-sets">
+        <div class="key-command-set">
+          <h3>Mac</h3>
+          <ul>
+            <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+            <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+            <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+            <li><kbd>Alt</kbd><kbd>D</kbd> - Next Display</li>
+          </ul>
+        </div>
+
+        <div class="key-command-set">
+          <h3>Windows</h3>
+          <ul>
+            <li><kbd>Alt</kbd><kbd>X</kbd> - Window</li>
+            <li><kbd>Alt</kbd><kbd>C</kbd> - Popup</li>
+            <li><kbd>Alt</kbd><kbd>Z</kbd> - Next Window</li>
+            <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
+          </ul>
+        </div>
+
+        <div class="key-command-set">
+          <h3>Linux</h3>
+          <ul>
+            <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>X</kbd> - Window</li>
+            <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>C</kbd> - Popup</li>
+            <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>Z</kbd> - Next Window</li>
+            <li><kbd>Alt</kbd><kbd>Shift</kbd><kbd>D</kbd> - Next Display</li>
+          </ul>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="container">
-    <h2>Author</h2>
-    <p><a href="https://www.arthurcarabott.com">Arthur Carabott</a></p>
+    <div class="container">
+      <h2>Author</h2>
+      <p><a href="https://www.arthurcarabott.com">Arthur Carabott</a></p>
 
-    <p>
-      <a href="https://www.buymeacoffee.com/f1NHjKL6t">
-        <img src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png" alt="Buy me a coffee">
-      </a>
-    </p>
-  </div>
-</body>
+      <p>
+        <a href="https://www.buymeacoffee.com/f1NHjKL6t">
+          <img
+            src="https://www.buymeacoffee.com/assets/img/custom_images/white_img.png"
+            alt="Buy me a coffee"
+          />
+        </a>
+      </p>
+    </div>
+  </body>
 </html>

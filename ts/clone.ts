@@ -1,13 +1,11 @@
-function getPosAndLength (winPos, winLength, displayPos, displayLength) {
+function getPosAndLength(winPos, winLength, displayPos, displayLength) {
   const normWinPos = winPos - displayPos;
   const oppositeEdge = normWinPos + winLength;
   const oppositeGap = displayLength - oppositeEdge;
   const doesFit = winLength <= oppositeGap;
   const useOppositeGap = doesFit || normWinPos < oppositeGap;
 
-  const pos = useOppositeGap
-    ? displayPos + oppositeEdge
-    : winPos - Math.min(winLength, normWinPos);
+  const pos = useOppositeGap ? displayPos + oppositeEdge : winPos - Math.min(winLength, normWinPos);
 
   const length = Math.min(winLength, useOppositeGap ? oppositeGap : normWinPos);
 
@@ -15,13 +13,11 @@ function getPosAndLength (winPos, winLength, displayPos, displayLength) {
 }
 
 function getHorzPosAndLength(winBounds, displayBounds) {
-  return getPosAndLength(winBounds.left, winBounds.width,
-                         displayBounds.left, displayBounds.width);
+  return getPosAndLength(winBounds.left, winBounds.width, displayBounds.left, displayBounds.width);
 }
 
 function getVertPosAndLength(winBounds, displayBounds) {
-  return getPosAndLength(winBounds.top, winBounds.height,
-                         displayBounds.top, displayBounds.height);
+  return getPosAndLength(winBounds.top, winBounds.height, displayBounds.top, displayBounds.height);
 }
 
 // find the position that has the most space and return the position
@@ -37,8 +33,7 @@ export function getCloneBounds(winBounds, displayBounds, cloneMode) {
     const { pos, length } = getHorzPosAndLength(bounds, displayBounds);
     bounds.left = pos;
     bounds.width = length;
-  }
-  else if (cloneMode === "clone-mode-vertical") {
+  } else if (cloneMode === "clone-mode-vertical") {
     const { pos, length } = getVertPosAndLength(bounds, displayBounds);
     bounds.top = pos;
     bounds.height = length;

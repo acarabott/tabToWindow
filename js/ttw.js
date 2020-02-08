@@ -18,7 +18,7 @@ const originWindowCache = {
     },
     delete(tab) {
         sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
-    }
+    },
 };
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -32,7 +32,7 @@ function getSizeAndPos(winKey, displayBounds) {
         left: Math.round(values.left * displayBounds.width + displayBounds.left),
         top: Math.round(values.top * displayBounds.height + displayBounds.top),
         width: Math.round(values.width * displayBounds.width),
-        height: Math.round(values.height * displayBounds.height)
+        height: Math.round(values.height * displayBounds.height),
     };
 }
 function resizeOriginalWindow(originalWindow, displayBounds) {
@@ -42,7 +42,7 @@ function resizeOriginalWindow(originalWindow, displayBounds) {
             width: vals.width,
             height: vals.height,
             left: vals.left,
-            top: vals.top
+            top: vals.top,
         }, win => resolve(win));
     });
 }
@@ -68,7 +68,7 @@ function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused)
         focused: isFocused,
         incognito: tab.incognito,
     };
-    Object.keys(windowBounds).forEach(key => opts[key] = windowBounds[key]);
+    Object.keys(windowBounds).forEach(key => (opts[key] = windowBounds[key]));
     if (isFullscreen) {
         return new Promise(resolve => {
             chrome.windows.create(opts, newWin => {
@@ -90,7 +90,7 @@ function moveTabs(tabs, windowId, index) {
     return new Promise(resolve => {
         chrome.tabs.move(tabs.map(tab => tab.id), {
             windowId,
-            index
+            index,
         }, movedTabs => {
             const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
             resolve(tabsArray);
@@ -134,16 +134,15 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
         const dt = display.bounds.top;
         const dr = display.bounds.left + display.bounds.width;
         const db = display.bounds.top + display.bounds.height;
-        return Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
-            Math.max(0, Math.min(wb, db) - Math.max(wt, dt));
+        return (Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
+            Math.max(0, Math.min(wb, db) - Math.max(wt, dt)));
     }
     const currentDisplay = displays.reduce((accum, current) => {
         const accumOverlap = calcOverlapArea(accum);
         const curOverlap = calcOverlapArea(current);
         return curOverlap > accumOverlap ? current : accum;
     }, displays[0]);
-    const isFullscreen = options.get("copyFullscreen") &&
-        currentWindow.state === "fullscreen";
+    const isFullscreen = options.get("copyFullscreen") && currentWindow.state === "fullscreen";
     const isFocused = options.get("focus") === "new";
     // (maybe) move and resize original window
     let origWindow = currentWindow;
@@ -163,8 +162,10 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
     }
     // if it's just one tab, the only use case is to convert it into a popup
     // window, so just leave it where it was
-    const windowBounds = moveToNextDisplay ? getNextDisplay().bounds
-        : tabs.length === 1 ? getWindowBounds(origWindow)
+    const windowBounds = moveToNextDisplay
+        ? getNextDisplay().bounds
+        : tabs.length === 1
+            ? getWindowBounds(origWindow)
             : getNewWindowBounds(origWindow, currentDisplay.workArea);
     if (windowType === undefined) {
         windowType = currentWindow.type;
@@ -212,9 +213,15 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
         });
     }
 }
-function tabToWindowNormal() { tabToWindow("normal"); }
-function tabToWindowPopup() { tabToWindow("popup"); }
-function tabToNextDisplay() { tabToWindow(undefined, true); }
+function tabToWindowNormal() {
+    tabToWindow("normal");
+}
+function tabToWindowPopup() {
+    tabToWindow("popup");
+}
+function tabToNextDisplay() {
+    tabToWindow(undefined, true);
+}
 async function tabToNextWindow() {
     const tabsPromise = new Promise(resolve => {
         chrome.tabs.query({
@@ -252,7 +259,7 @@ async function tabToNextWindow() {
             return new Promise(tabResolve => {
                 chrome.tabs.update(tab.id, {
                     highlighted: true,
-                    active: i === movedTabs.legth - 1
+                    active: i === movedTabs.legth - 1,
                 }, tab => tabResolve(tab));
             });
         });
@@ -267,9 +274,15 @@ function urlToWindow(url, windowType, moveToNextDisplay = false) {
         tabToWindow(windowType, moveToNextDisplay);
     });
 }
-function urlToWindowNormal(url) { urlToWindow(url, "normal"); }
-function urlToWindowPopup(url) { urlToWindow(url, "popup"); }
-function urlToNextDisplay(url) { urlToWindow(url, undefined, true); }
+function urlToWindowNormal(url) {
+    urlToWindow(url, "normal");
+}
+function urlToWindowPopup(url) {
+    urlToWindow(url, "popup");
+}
+function urlToNextDisplay(url) {
+    urlToWindow(url, undefined, true);
+}
 async function urlToNextWindow(url) {
     const currentWindowPromise = await new Promise(resolve => {
         chrome.windows.getCurrent({}, windows => resolve(windows));
@@ -321,8 +334,7 @@ chrome.commands.onCommand.addListener(command => {
 });
 chrome.runtime.onInstalled.addListener(details => {
     const previousMajorVersion = parseInt(details.previousVersion, 10);
-    const showUpdate = details.reason === "install" ||
-        (details.reason === "update" && previousMajorVersion < 3);
+    const showUpdate = details.reason === "install" || (details.reason === "update" && previousMajorVersion < 3);
     if (showUpdate) {
         const url = "https://acarabott.github.io/tabToWindow";
         chrome.tabs.create({ url, active: true });
@@ -345,9 +357,7 @@ async function createMenu() {
     // Actions
     // -------
     const normalCommand = commands.find(cmd => cmd.name === "01-tab-to-window-normal");
-    const normalShortcut = normalCommand === undefined
-        ? ""
-        : `(${normalCommand.shortcut})`;
+    const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
     chrome.contextMenus.create({
         type: "normal",
         id: "tab to window",
@@ -355,9 +365,7 @@ async function createMenu() {
         contexts: ["browser_action", "page"],
     });
     const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
-    const popupShortcut = popupCommand === undefined
-        ? ""
-        : `(${popupCommand.shortcut})`;
+    const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
     chrome.contextMenus.create({
         type: "normal",
         id: "tab to popup",
@@ -365,9 +373,7 @@ async function createMenu() {
         contexts: ["browser_action", "page"],
     });
     const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
-    const nextShortcut = nextCommand === undefined
-        ? ""
-        : `(${nextCommand.shortcut})`;
+    const nextShortcut = nextCommand === undefined ? "" : `(${nextCommand.shortcut})`;
     chrome.contextMenus.create({
         type: "normal",
         id: "tab to next",
@@ -375,9 +381,7 @@ async function createMenu() {
         contexts: ["browser_action", "page"],
     });
     const displayCommand = commands.find(cmd => cmd.name === "04-tab-to-window-display");
-    const displayShortcut = displayCommand === undefined
-        ? ""
-        : `(${displayCommand.shortcut})`;
+    const displayShortcut = displayCommand === undefined ? "" : `(${displayCommand.shortcut})`;
     chrome.contextMenus.create({
         type: "normal",
         id: "tab to display",
@@ -389,7 +393,7 @@ async function createMenu() {
         type: "normal",
         id: "type parent",
         title: "Window Type",
-        contexts: ["browser_action"]
+        contexts: ["browser_action"],
     });
     chrome.contextMenus.create({
         type: "radio",
@@ -412,7 +416,7 @@ async function createMenu() {
         type: "normal",
         id: "focus parent",
         title: "Focus",
-        contexts: ["browser_action"]
+        contexts: ["browser_action"],
     });
     chrome.contextMenus.create({
         type: "radio",
@@ -435,25 +439,25 @@ async function createMenu() {
         type: "normal",
         id: "link to window",
         title: "Link To New Window",
-        contexts: ["link"]
+        contexts: ["link"],
     });
     chrome.contextMenus.create({
         type: "normal",
         id: "link to popup",
         title: "Link To New Popup",
-        contexts: ["link"]
+        contexts: ["link"],
     });
     chrome.contextMenus.create({
         type: "normal",
         id: "link to next",
         title: "Link To Next Window",
-        contexts: ["link"]
+        contexts: ["link"],
     });
     chrome.contextMenus.create({
         type: "normal",
         id: "link to display",
         title: "Link To Next Display",
-        contexts: ["link"]
+        contexts: ["link"],
     });
     // Context Menu action
     chrome.contextMenus.onClicked.addListener(info => {
