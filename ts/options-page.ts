@@ -1,6 +1,6 @@
 /* global chrome, $ */
 
-import { options, isCloning } from "./options-storage.js";
+import { options, isCloning, WindowProperty } from "./options-storage.js";
 import { getCloneBounds } from "./clone.js";
 
 // Helper functions
@@ -199,7 +199,7 @@ function main() {
   {
     getFromClass("window").forEach(win => {
       // Restore positions from options
-      ["width", "height", "left", "top"].forEach(prop => {
+      (["width", "height", "left", "top"] as WindowProperty[]).forEach(prop => {
         win.style[prop] = `${options.getForWindow(win.id, prop) * 100}%`;
       });
 

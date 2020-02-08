@@ -1,5 +1,5 @@
 /* global chrome */
-import { options, isCloning } from "./options-storage.js";
+import { options, isCloning, windowProperties } from "./options-storage.js";
 import { getCloneBounds } from "./clone.js";
 // Session storage interface
 // -----------------------------------------------------------------------------
@@ -25,7 +25,7 @@ const originWindowCache = {
 function getSizeAndPos(winKey, displayBounds) {
     // Convert percentages to pixel values
     const values = {};
-    ["left", "top", "width", "height"].forEach(propKey => {
+    windowProperties.forEach(propKey => {
         values[propKey] = options.getForWindow(winKey, propKey);
     });
     return {
@@ -55,7 +55,7 @@ function getNewWindowBounds(origWindow, displayBounds) {
         ? getCloneBounds(getWindowBounds(origWindow), displayBounds, cloneMode)
         : getSizeAndPos("new", displayBounds);
     // ensure all values are integers for Chrome APIs
-    ["width", "height", "left", "top"].forEach(key => {
+    windowProperties.forEach(key => {
         newBounds[key] = Math.round(newBounds[key]);
     });
     return newBounds;

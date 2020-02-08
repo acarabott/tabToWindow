@@ -1,7 +1,11 @@
 /* global chrome */
 
+export type WindowID = "original" | "new";
+export const windowProperties = ["width", "height", "left", "top"] as const;
+export type WindowProperty = typeof windowProperties[any];
+
 export interface IOptions {
-  focus: "original" | "new";
+  focus: WindowID;
   resizeOriginal: boolean;
   cloneMode: "clone-mode-no" | "clone-mode-same" | "clone-mode-horizontal" | "clone-mode-vertical";
   copyFullscreen: boolean;
@@ -33,9 +37,7 @@ const defaults: IOptions = {
 };
 
 // retrieve the storage key for a particular window property
-// @windowId: "original", "new"
-// @propertyKey: "width", "height", "left", "top"
-function getStorageWindowPropKey(windowId: string, propKey: "width" | "height" | "left" | "top") {
+function getStorageWindowPropKey(windowId: WindowID, propKey: WindowProperty) {
   return `${windowId}${propKey
     .slice(0)
     .charAt(0)
