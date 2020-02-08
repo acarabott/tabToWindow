@@ -1,20 +1,27 @@
 /* global chrome */
 
-const defaults = {
-  // "original" or "new"
+export interface IOptions {
+  focus: "original" | "new";
+  resizeOriginal: boolean;
+  cloneMode: "clone-mode-no" | "clone-mode-same" | "clone-mode-horizontal" | "clone-mode-vertical";
+  copyFullscreen: boolean;
+  menuButtonType: "normal" | "popup";
+  originalWidth: number;
+  originalHeight: number;
+  originalLeft: number;
+  originalTop: number;
+  newWidth: number;
+  newHeight: number;
+  newLeft: number;
+  newTop: number;
+}
+
+const defaults: IOptions = {
   focus: "new",
-  // boolean
   resizeOriginal: true,
-  // "clone-mode-no"
-  // "clone-mode-same"
-  // "clone-mode-horizontal"
-  // "clone-mode-vertical"
   cloneMode: "clone-mode-no",
-  // boolean
   copyFullscreen: true,
-  // "normal", "popup"
   menuButtonType: "normal",
-  // these are all percentage 0.0 - 1.0
   originalWidth: 0.5,
   originalHeight: 1.0,
   originalLeft: 0.0,
@@ -35,7 +42,7 @@ function getStorageWindowPropKey(windowId, propKey) {
     .toUpperCase()}${propKey.slice(1)}`;
 }
 
-function validateOptions(options) {
+function validateOptions(options: IOptions) {
   if (!Object.keys(options).every(key => Object.keys(defaults).includes(key))) {
     console.error("not all options are present!");
     console.error(Object.keys(options).filter(key => !Object.keys(defaults).includes(key)));
@@ -106,7 +113,7 @@ function validateOptions(options) {
   return true;
 }
 
-function saveOptions(options) {
+function saveOptions(options: IOptions) {
   if (!validateOptions(options)) {
     return;
   }
