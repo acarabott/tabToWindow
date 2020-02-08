@@ -1,0 +1,30 @@
+{
+  "name": "tabtowindow",
+  "version": "3.1.0",
+  "description": "Chrome Extension to move tabs out of windows with a keyboard shortcut",
+  "main": "index.html",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acarabott/tabToWindow.git"
+  },
+  "author": "Arthur Carabott",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/acarabott/tabToWindow/issues"
+  },
+  "homepage": "https://github.com/acarabott/tabToWindow#readme",
+  "devDependencies": {
+    "@types/chrome": "0.0.93",
+    "@types/jquery": "^3.3.32",
+    "@types/jqueryui": "^1.12.10",
+    "eslint": "^6.8.0",
+    "typescript": "^3.7.5"
+  }
+}
