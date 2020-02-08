@@ -35,10 +35,10 @@ const defaults: IOptions = {
 // retrieve the storage key for a particular window property
 // @windowId: "original", "new"
 // @propertyKey: "width", "height", "left", "top"
-function getStorageWindowPropKey(windowId, propKey) {
+function getStorageWindowPropKey(windowId: string, propKey: "width" | "height" | "left" | "top") {
   return `${windowId}${propKey
     .slice(0)
-    .charAt()
+    .charAt(0)
     .toUpperCase()}${propKey.slice(1)}`;
 }
 
