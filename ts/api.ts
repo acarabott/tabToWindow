@@ -2,6 +2,8 @@ export type WindowID = "original" | "new";
 export const windowProperties = ["width", "height", "left", "top"] as const;
 export type WindowProperty = typeof windowProperties[any];
 
+export type WindowType = "normal" | "popup";
+
 export interface IBounds {
   left: number;
   top: number;
@@ -24,3 +26,13 @@ export interface IOptions {
   newLeft: number;
   newTop: number;
 }
+
+export type StoredWindowProperty =
+  | "originalWidth"
+  | "originalHeight"
+  | "originalLeft"
+  | "originalTop"
+  | "newWidth"
+  | "newHeight"
+  | "newLeft"
+  | "newTop";

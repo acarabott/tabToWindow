@@ -1,29 +1,30 @@
 /* global chrome */
 
-import { options, isCloning, windowProperties } from "./options-storage.js";
+import { options, isCloning } from "./options-storage.js";
 import { getCloneBounds } from "./clone.js";
+import { WindowID, IBounds, windowProperties, WindowType, IOptions } from "./api.js";
 
 // Session storage interface
 // -----------------------------------------------------------------------------
 
 const originWindowCache = {
-  getOriginId(id) {
+  getOriginId(id: chrome.tabs.Tab["id"]) {
     return `popOrigin_${id}`;
   },
 
-  has(tab) {
+  has(tab: chrome.tabs.Tab) {
     return sessionStorage.hasOwnProperty(originWindowCache.getOriginId(tab.id));
   },
 
-  set(tab, win) {
+  set(tab: chrome.tabs.Tab, win: chrome.windows.Window) {
     sessionStorage[originWindowCache.getOriginId(tab.id)] = win.id;
   },
 
-  get(tab) {
+  get(tab: chrome.tabs.Tab) {
     return parseInt(sessionStorage[originWindowCache.getOriginId(tab.id)], 10);
   },
 
-  delete(tab) {
+  delete(tab: chrome.tabs.Tab) {
     sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
   },
 };
@@ -31,23 +32,21 @@ const originWindowCache = {
 // Helper functions
 // -----------------------------------------------------------------------------
 
-function getSizeAndPos(winKey, displayBounds) {
+function getSizeAndPos(winKey: WindowID, displayBounds: IBounds) {
   // Convert percentages to pixel values
-  const values = {};
-  windowProperties.forEach(propKey => {
-    values[propKey] = options.getForWindow(winKey, propKey);
-  });
   return {
-    left: Math.round(values.left * displayBounds.width + displayBounds.left),
-    top: Math.round(values.top * displayBounds.height + displayBounds.top),
-    width: Math.round(values.width * displayBounds.width),
-    height: Math.round(values.height * displayBounds.height),
+    left: Math.round(
+      options.getForWindow(winKey, "left") * displayBounds.width + displayBounds.left,
+    ),
+    top: Math.round(options.getForWindow(winKey, "top") * displayBounds.height + displayBounds.top),
+    width: Math.round(options.getForWindow(winKey, "width") * displayBounds.width),
+    height: Math.round(options.getForWindow(winKey, "height") * displayBounds.height),
   };
 }
 
-function resizeOriginalWindow(originalWindow, displayBounds) {
+function resizeOriginalWindow(originalWindow: chrome.windows.Window, displayBounds: IBounds) {
   const vals = getSizeAndPos("original", displayBounds);
-  return new Promise(resolve => {
+  return new Promise<chrome.windows.Window>(resolve => {
     chrome.windows.update(
       originalWindow.id,
       {
@@ -61,11 +60,11 @@ function resizeOriginalWindow(originalWindow, displayBounds) {
   });
 }
 
-function getWindowBounds(win) {
-  return { left: win.left, top: win.top, width: win.width, height: win.height };
+function getWindowBounds(win: chrome.windows.Window): IBounds {
+  return { left: win.left!, top: win.top!, width: win.width!, height: win.height! };
 }
 
-function getNewWindowBounds(origWindow, displayBounds) {
+function getNewWindowBounds(origWindow: chrome.windows.Window, displayBounds: IBounds) {
   const cloneMode = options.get("cloneMode");
   const newBounds = isCloning()
     ? getCloneBounds(getWindowBounds(origWindow), displayBounds, cloneMode)
@@ -79,44 +78,48 @@ function getNewWindowBounds(origWindow, displayBounds) {
   return newBounds;
 }
 
-function createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused) {
+function createNewWindow(
+  tab: chrome.tabs.Tab,
+  windowType: WindowType,
+  windowBounds: IBounds,
+  isFullscreen: boolean,
+  isFocused: boolean,
+): Promise<[chrome.windows.Window, chrome.tabs.Tab]> {
   // new window options
-  const opts = {
+  const opts: chrome.windows.CreateData = {
     tabId: tab.id,
     type: windowType,
     focused: isFocused,
     incognito: tab.incognito,
+    ...windowBounds,
   };
-
-  Object.keys(windowBounds).forEach(key => (opts[key] = windowBounds[key]));
 
   if (isFullscreen) {
     return new Promise(resolve => {
       chrome.windows.create(opts, newWin => {
-        // this timeout is gross but necessary.
-        // updating immediately fails
-        setTimeout(() => {
-          chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
-            resolve([newWin, tab]);
-          });
-        }, 1000);
+        if (newWin !== undefined) {
+          // this timeout is gross but necessary.
+          // updating immediately fails
+          setTimeout(() => {
+            chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
+              resolve([newWin, tab]);
+            });
+          }, 1000);
+        }
       });
     });
   }
 
   return new Promise(resolve => {
-    chrome.windows.create(opts, newWin => resolve([newWin, tab]));
+    chrome.windows.create(opts, newWin => resolve([newWin!, tab]));
   });
 }
 
-function moveTabs(tabs, windowId, index) {
-  return new Promise(resolve => {
+function moveTabs(tabs: chrome.tabs.Tab[], windowId: number, index: number) {
+  return new Promise<chrome.tabs.Tab[]>(resolve => {
     chrome.tabs.move(
-      tabs.map(tab => tab.id),
-      {
-        windowId,
-        index,
-      },
+      tabs.map(tab => tab.id!),
+      { windowId, index },
       movedTabs => {
         const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
         resolve(tabsArray);
@@ -128,12 +131,12 @@ function moveTabs(tabs, windowId, index) {
 // Primary Functions
 // -----------------------------------------------------------------------------
 
-async function tabToWindow(windowType, moveToNextDisplay = false) {
-  const displaysPromise = new Promise(resolve => {
+async function tabToWindow(windowType: WindowType | undefined, moveToNextDisplay = false) {
+  const displaysPromise = new Promise<chrome.system.display.DisplayInfo[]>(resolve => {
     chrome.system.display.getInfo(displays => resolve(displays));
   });
 
-  const currentWindowPromise = new Promise((resolve, reject) => {
+  const currentWindowPromise = new Promise<chrome.windows.Window>((resolve, reject) => {
     chrome.windows.getCurrent({}, win => {
       if (chrome.runtime.lastError === undefined) {
         resolve(win);
@@ -143,7 +146,7 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
     });
   });
 
-  const tabsPromise = new Promise(resolve => {
+  const tabsPromise = new Promise<chrome.tabs.Tab[]>(resolve => {
     chrome.tabs.query(
       {
         currentWindow: true,
@@ -156,17 +159,19 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
     );
   });
 
-  const promises = [displaysPromise, currentWindowPromise, tabsPromise];
-
-  const [displays, currentWindow, tabs] = await Promise.all(promises);
+  const [displays, currentWindow, tabs] = await Promise.all([
+    displaysPromise,
+    currentWindowPromise,
+    tabsPromise,
+  ]);
 
   moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
-  function calcOverlapArea(display) {
-    const wl = currentWindow.left;
-    const wt = currentWindow.top;
-    const wr = currentWindow.left + currentWindow.width;
-    const wb = currentWindow.top + currentWindow.height;
+  function calcOverlapArea(display: chrome.system.display.DisplayInfo) {
+    const wl = currentWindow.left!;
+    const wt = currentWindow.top!;
+    const wr = currentWindow.left! + currentWindow.width!;
+    const wb = currentWindow.top! + currentWindow.height!;
 
     const dl = display.bounds.left;
     const dt = display.bounds.top;
@@ -201,7 +206,7 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
   }
 
   // move and resize new window
-  const activeTab = tabs.find(tab => tab.active);
+  const activeTab = tabs.find(tab => tab.active)!;
 
   function getNextDisplay() {
     const currentIndex = displays.indexOf(currentDisplay);
@@ -217,12 +222,12 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
     ? getWindowBounds(origWindow)
     : getNewWindowBounds(origWindow, currentDisplay.workArea);
 
-  if (windowType === undefined) {
-    windowType = currentWindow.type;
-  }
+  const newWindowType =
+    windowType === undefined ? (currentWindow.type === "popup" ? "popup" : "normal") : windowType;
+
   const [newWin, movedTab] = await createNewWindow(
     activeTab,
-    windowType,
+    newWindowType,
     windowBounds,
     isFullscreen,
     isFocused,
@@ -239,23 +244,29 @@ async function tabToWindow(windowType, moveToNextDisplay = false) {
   if (otherTabs.length > 0) {
     otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
 
-    if (windowType === "normal") {
+    if (newWindowType === "normal") {
       // move all tabs at once
       const moveIndex = 1;
       const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
 
       // highlight tabs in new window
       const tabPromises = movedTabs.map(tab => {
-        return new Promise(resolve => {
-          chrome.tabs.update(tab.id, { highlighted: true }, resolve(tab));
+        return new Promise<chrome.tabs.Tab>(resolve => {
+          chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
         });
       });
 
       await Promise.all(tabPromises);
-    } else if (windowType === "popup") {
+    } else if (newWindowType === "popup") {
       // can't move tabs to a popup window, so create individual ones
       const tabPromises = otherTabs.map(tab => {
-        return createNewWindow(tab, windowType, getWindowBounds(newWin), isFullscreen, isFocused);
+        return createNewWindow(
+          tab,
+          newWindowType,
+          getWindowBounds(newWin),
+          isFullscreen,
+          isFocused,
+        );
       });
       await Promise.all(tabPromises);
     }
@@ -284,7 +295,7 @@ function tabToNextDisplay() {
   tabToWindow(undefined, true);
 }
 async function tabToNextWindow() {
-  const tabsPromise = new Promise(resolve => {
+  const tabsPromise = new Promise<chrome.tabs.Tab[]>(resolve => {
     chrome.tabs.query(
       {
         currentWindow: true,
@@ -298,7 +309,7 @@ async function tabToNextWindow() {
     );
   });
 
-  const windowsPromise = new Promise(resolve => {
+  const windowsPromise = new Promise<chrome.windows.Window[]>(resolve => {
     chrome.windows.getAll({}, windows => resolve(windows));
   });
 
@@ -316,7 +327,7 @@ async function tabToNextWindow() {
       chrome.windows.update(windowId, { focused: true }, win => resolve(win));
     });
 
-    const tabsToUnhighlight = await new Promise(resolve => {
+    const tabsToUnhighlight = await new Promise<chrome.tabs.Tab[]>(resolve => {
       chrome.tabs.query({ windowId, highlighted: true }, tabs => {
         const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
         resolve(tabsArray);
@@ -329,10 +340,10 @@ async function tabToNextWindow() {
     const highlightTabPromises = movedTabs.map((tab, i) => {
       return new Promise(tabResolve => {
         chrome.tabs.update(
-          tab.id,
+          tab.id!,
           {
             highlighted: true,
-            active: i === movedTabs.legth - 1,
+            active: i === movedTabs.length - 1,
           },
           tab => tabResolve(tab),
         );
@@ -342,37 +353,36 @@ async function tabToNextWindow() {
     await Promise.all(highlightTabPromises);
 
     tabsToUnhighlight.forEach(tab => {
-      chrome.tabs.update(tab.id, { highlighted: false });
+      chrome.tabs.update(tab.id!, { highlighted: false });
     });
   }
 }
 
-function urlToWindow(url, windowType, moveToNextDisplay = false) {
+function urlToWindow(url: string, windowType: WindowType | undefined, moveToNextDisplay = false) {
   chrome.tabs.create({ url, active: true }, () => {
     tabToWindow(windowType, moveToNextDisplay);
   });
 }
 
-function urlToWindowNormal(url) {
+function urlToWindowNormal(url: string) {
   urlToWindow(url, "normal");
 }
-function urlToWindowPopup(url) {
+function urlToWindowPopup(url: string) {
   urlToWindow(url, "popup");
 }
-function urlToNextDisplay(url) {
+function urlToNextDisplay(url: string) {
   urlToWindow(url, undefined, true);
 }
-async function urlToNextWindow(url) {
-  const currentWindowPromise = await new Promise(resolve => {
-    chrome.windows.getCurrent({}, windows => resolve(windows));
+async function urlToNextWindow(url: string) {
+  const currentWindowPromise = await new Promise<chrome.windows.Window>(resolve => {
+    chrome.windows.getCurrent({}, window => resolve(window));
   });
 
-  const windowsPromise = new Promise(resolve => {
+  const windowsPromise = new Promise<chrome.windows.Window[]>(resolve => {
     chrome.windows.getAll({}, windows => resolve(windows));
   });
 
-  const promises = [currentWindowPromise, windowsPromise];
-  const [currentWindow, allWindows] = await Promise.all(promises);
+  const [currentWindow, allWindows] = await Promise.all([currentWindowPromise, windowsPromise]);
 
   const windowIndex = allWindows.findIndex(win => win.id === currentWindow.id);
   if (windowIndex === -1) {
@@ -386,14 +396,15 @@ async function urlToNextWindow(url) {
 
   const windowId = allWindows[nextWindowIndex].id;
 
-  const tabsToUnhighlight = await new Promise(resolve => {
+  const tabsToUnhighlight = await new Promise<chrome.tabs.Tab[]>(resolve => {
     chrome.tabs.query({ windowId, highlighted: true }, tabs => {
       const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
       resolve(tabsArray);
     });
   });
+
   tabsToUnhighlight.forEach(tab => {
-    chrome.tabs.update(tab.id, { highlighted: false });
+    chrome.tabs.update(tab.id!, { highlighted: false });
   });
 
   const opts = { windowId, url };
@@ -404,7 +415,10 @@ async function urlToNextWindow(url) {
 // -----------------------------------------------------------------------------
 
 chrome.storage.onChanged.addListener(changes => {
-  Object.entries(changes).forEach(([k, v]) => options.set(k, v.newValue));
+  const entries = Object.entries(changes) as Array<[keyof IOptions, chrome.storage.StorageChange]>;
+  for (const [key, change] of entries) {
+    options.set(key, change.newValue);
+  }
 });
 
 chrome.commands.onCommand.addListener(command => {
@@ -420,7 +434,7 @@ chrome.commands.onCommand.addListener(command => {
 });
 
 chrome.runtime.onInstalled.addListener(details => {
-  const previousMajorVersion = parseInt(details.previousVersion, 10);
+  const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
   const showUpdate =
     details.reason === "install" || (details.reason === "update" && previousMajorVersion < 3);
 
@@ -441,7 +455,7 @@ chrome.browserAction.onClicked.addListener(() => {
 // Options
 // -------
 async function createMenu() {
-  const commandsPromise = new Promise(resolve => {
+  const commandsPromise = new Promise<chrome.commands.Command[]>(resolve => {
     chrome.commands.getAll(commands => resolve(commands));
   });
 
@@ -456,7 +470,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type: "normal",
     id: "tab to window",
-    title: `Tab to ${normalCommand.description} ${normalShortcut}`,
+    title: `Tab to ${normalCommand!.description} ${normalShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -466,7 +480,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type: "normal",
     id: "tab to popup",
-    title: `Tab to ${popupCommand.description} ${popupShortcut}`,
+    title: `Tab to ${popupCommand!.description} ${popupShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -476,7 +490,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type: "normal",
     id: "tab to next",
-    title: `Tab to ${nextCommand.description} ${nextShortcut}`,
+    title: `Tab to ${nextCommand!.description} ${nextShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -486,7 +500,7 @@ async function createMenu() {
   chrome.contextMenus.create({
     type: "normal",
     id: "tab to display",
-    title: `Tab to ${displayCommand.description} ${displayShortcut}`,
+    title: `Tab to ${displayCommand!.description} ${displayShortcut}`,
     contexts: ["browser_action", "page"],
   });
 
@@ -583,13 +597,13 @@ async function createMenu() {
     } else if (info.menuItemId === "tab to display") {
       tabToNextDisplay();
     } else if (info.menuItemId === "link to window") {
-      urlToWindowNormal(info.linkUrl);
+      urlToWindowNormal(info.linkUrl!);
     } else if (info.menuItemId === "link to popup") {
-      urlToWindowPopup(info.linkUrl);
+      urlToWindowPopup(info.linkUrl!);
     } else if (info.menuItemId === "link to next") {
-      urlToNextWindow(info.linkUrl);
+      urlToNextWindow(info.linkUrl!);
     } else if (info.menuItemId === "link to display") {
-      urlToNextDisplay(info.linkUrl);
+      urlToNextDisplay(info.linkUrl!);
     }
 
     // options

@@ -1,4 +1,4 @@
-import { IOptions, WindowID, WindowProperty } from "./api";
+import { IOptions, WindowID, WindowProperty, StoredWindowProperty } from "./api";
 
 const defaults: IOptions = {
   focus: "new",
@@ -21,7 +21,7 @@ function getStorageWindowPropKey(windowId: WindowID, propKey: WindowProperty) {
   return `${windowId}${propKey
     .slice(0)
     .charAt(0)
-    .toUpperCase()}${propKey.slice(1)}` as keyof IOptions;
+    .toUpperCase()}${propKey.slice(1)}` as StoredWindowProperty;
 }
 
 function validateOptions(options: IOptions) {
@@ -110,10 +110,8 @@ function saveOptions(options: IOptions) {
 let values = defaults;
 
 export const options = {
-  defaults,
-
-  get(key: keyof IOptions) {
-    return values[key];
+  get<K extends keyof IOptions, V extends IOptions[K]>(key: K) {
+    return values[key] as V;
   },
 
   getForWindow(windowId: WindowID, key: WindowProperty) {
@@ -132,16 +130,18 @@ export const options = {
     saveOptions(values);
   },
 
-  loadPromise: new Promise((resolve, reject) => {
-    chrome.storage.sync.get(defaults, loadedOptions => {
-      if (chrome.runtime.lastError === undefined) {
-        values = { ...values, ...(loadedOptions as IOptions) };
-        resolve(options);
-      } else {
-        reject(chrome.runtime.lastError);
-      }
+  get loadPromise() {
+    return new Promise<typeof options>((resolve, reject) => {
+      chrome.storage.sync.get(defaults, loadedOptions => {
+        if (chrome.runtime.lastError === undefined) {
+          values = { ...values, ...(loadedOptions as IOptions) };
+          resolve(options);
+        } else {
+          reject(chrome.runtime.lastError);
+        }
+      });
     });
-  }),
+  },
 };
 
 export function isCloning() {
