@@ -1,4 +1,11 @@
-function getPosAndLength(winPos: number, winLength: number, displayPos: number, displayLength: number) {
+import { IBounds, IOptions } from "./api";
+
+function getPosAndLength(
+  winPos: number,
+  winLength: number,
+  displayPos: number,
+  displayLength: number,
+) {
   const normWinPos = winPos - displayPos;
   const oppositeEdge = normWinPos + winLength;
   const oppositeGap = displayLength - oppositeEdge;
@@ -12,11 +19,11 @@ function getPosAndLength(winPos: number, winLength: number, displayPos: number, 
   return { pos, length };
 }
 
-function getHorzPosAndLength(winBounds, displayBounds) {
+function getHorzPosAndLength(winBounds: IBounds, displayBounds: IBounds) {
   return getPosAndLength(winBounds.left, winBounds.width, displayBounds.left, displayBounds.width);
 }
 
-function getVertPosAndLength(winBounds, displayBounds) {
+function getVertPosAndLength(winBounds: IBounds, displayBounds: IBounds) {
   return getPosAndLength(winBounds.top, winBounds.height, displayBounds.top, displayBounds.height);
 }
 
@@ -26,7 +33,11 @@ function getVertPosAndLength(winBounds, displayBounds) {
 // there is more space on the right side than the left, so use the right
 // pos is left/top opposite is right/bottom
 
-export function getCloneBounds(winBounds, displayBounds, cloneMode) {
+export function getCloneBounds(
+  winBounds: IBounds,
+  displayBounds: IBounds,
+  cloneMode: IOptions["cloneMode"],
+) {
   // copying all values covers the case of clone-mode-same
   const bounds = Object.assign({}, winBounds);
   if (cloneMode === "clone-mode-horizontal") {
