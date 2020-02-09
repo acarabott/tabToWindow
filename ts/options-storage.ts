@@ -21,7 +21,7 @@ function getStorageWindowPropKey(windowId: WindowID, propKey: WindowProperty) {
   return `${windowId}${propKey
     .slice(0)
     .charAt(0)
-    .toUpperCase()}${propKey.slice(1)}`;
+    .toUpperCase()}${propKey.slice(1)}` as keyof IOptions;
 }
 
 function validateOptions(options: IOptions) {
@@ -31,7 +31,7 @@ function validateOptions(options: IOptions) {
     return false;
   }
 
-  function isValidStringOption(option, validOptions) {
+  function isValidStringOption(option: keyof IOptions, validOptions: any[]) {
     const result = validOptions.includes(options[option]);
     if (!result) {
       console.error(`"${option}" is invalid, should be in ${validOptions}`);
@@ -39,7 +39,7 @@ function validateOptions(options: IOptions) {
     return result;
   }
 
-  function isValidBoolOption(key) {
+  function isValidBoolOption(key: keyof IOptions) {
     const result = typeof options[key] === "boolean";
     if (!result) {
       console.error(`"${key}" option is invalid, should be boolean`);
@@ -47,7 +47,7 @@ function validateOptions(options: IOptions) {
     return result;
   }
 
-  function isValidNumberOption(key, min, max) {
+  function isValidNumberOption(key: keyof IOptions, min: number, max: number) {
     const result = typeof options[key] === "number" && options[key] >= min && options[key] <= max;
     if (!result) {
       console.error(`${key} should be between ${min} and ${max}`);
@@ -87,7 +87,7 @@ function validateOptions(options: IOptions) {
     "newHeight",
     "newLeft",
     "newTop",
-  ];
+  ] as const;
   if (numberOpts.some(opt => !isValidNumberOption(opt, 0.0, 1.0))) {
     return false;
   }
@@ -107,24 +107,24 @@ function saveOptions(options: IOptions) {
   });
 }
 
-const values = defaults;
+let values = defaults;
 
 export const options = {
   defaults,
 
-  get(key) {
+  get(key: keyof IOptions) {
     return values[key];
   },
 
-  getForWindow(windowId, key) {
+  getForWindow(windowId: WindowID, key: WindowProperty) {
     return options.get(getStorageWindowPropKey(windowId, key));
   },
 
-  set(key, value) {
+  set<T extends keyof IOptions, V extends IOptions[T]>(key: T, value: V) {
     values[key] = value;
   },
 
-  setForWindow(windowId, key, value) {
+  setForWindow(windowId: WindowID, key: WindowProperty, value: number) {
     options.set(getStorageWindowPropKey(windowId, key), value);
   },
 
@@ -135,9 +135,7 @@ export const options = {
   loadPromise: new Promise((resolve, reject) => {
     chrome.storage.sync.get(defaults, loadedOptions => {
       if (chrome.runtime.lastError === undefined) {
-        Object.entries(loadedOptions).forEach(([key, value]) => {
-          values[key] = value;
-        });
+        values = { ...values, ...(loadedOptions as IOptions) };
         resolve(options);
       } else {
         reject(chrome.runtime.lastError);

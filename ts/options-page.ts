@@ -1,53 +1,57 @@
 import { options, isCloning } from "./options-storage.js";
 import { getCloneBounds } from "./clone.js";
+import { WindowID } from "./api.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
 // -----------------------------------------------------------------------------
 
-function getFromId(id: string, root = document) {
-  return root.getElementById(id);
+function getFromId<T extends HTMLElement>(id: string, root = document) {
+  return root.getElementById(id) as T;
 }
 
-function getFromClass(className: string, root = document) {
-  return Array.from(root.getElementsByClassName(className));
+function getFromClass<T extends HTMLElement>(className: string, root = document) {
+  return Array.from(root.getElementsByClassName(className)) as T[];
 }
 
-function getFromTag(tagName: string, root = document) {
-  return Array.from(root.getElementsByTagName(tagName));
+function getFromTag<T extends HTMLElement>(tagName: string, root = document) {
+  return Array.from(root.getElementsByTagName(tagName)) as T[];
 }
 
 // window that will be focused on pop-out
 function getFocusedName() {
-  const focused = getFromClass("focus-option").find(option => option.checked);
+  const focused = getFromClass<HTMLInputElement>("focus-option").find(option => option.checked);
   return focused === undefined ? "original" : focused.id.replace("focus-", "");
 }
 
 // save current state
 function save() {
   options.set("focus", getFocusedName());
-  options.set("resizeOriginal", getFromId("resize-original").checked);
-  options.set("copyFullscreen", getFromId("copy-fullscreen").checked);
-  options.set("cloneMode", getFromClass("clone-mode-option").find(cp => cp.checked).id);
+  options.set("resizeOriginal", getFromId<HTMLInputElement>("resize-original").checked);
+  options.set("copyFullscreen", getFromId<HTMLInputElement>("copy-fullscreen").checked);
+  options.set(
+    "cloneMode",
+    getFromClass<HTMLInputElement>("clone-mode-option").find(cp => cp.checked)?.id,
+  );
   options.set(
     "menuButtonType",
-    getFromClass("menu-button-option")
+    getFromClass<HTMLInputElement>("menu-button-option")
       .find(mb => mb.checked)
-      .getAttribute("data-value"),
+      ?.getAttribute("data-value"),
   );
 
   // dimensions
   getFromClass("window").forEach(win => {
-    [
-      ["Width", "Width"],
-      ["Height", "Height"],
-      ["Left", "Width"],
-      ["Top", "Height"],
-    ].forEach(([prop, dim]) => {
-      const windowDimension = win[`offset${prop}`];
-      const screenDimension = getFromId("screen")[`offset${dim}`];
+    ([
+      ["offsetWidth", "offsetWidth", "width"],
+      ["offsetHeight", "offsetHeight", "height"],
+      ["offsetLeft", "offsetWidth", "left"],
+      ["offsetTop", "offsetHeight", "top"],
+    ] as const).forEach(([prop, dim, setProp]) => {
+      const windowDimension = win[prop];
+      const screenDimension = getFromId("screen")[dim];
       const value = windowDimension / screenDimension;
-      options.setForWindow(win.id, prop, value);
+      options.setForWindow(win.id, setProp, value);
     });
   });
 
@@ -56,8 +60,8 @@ function save() {
 
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
-function updateWindowHandling(inputId, windowId, enableIfChecked) {
-  const checked = getFromId(inputId).checked;
+function updateWindowHandling(inputId: string, windowId: WindowID, enableIfChecked: boolean) {
+  const checked = getFromId<HTMLInputElement>(inputId).checked;
   const action = enableIfChecked === checked ? "enable" : "disable";
   const $win = $(`#${windowId}`);
   $win.draggable(action);
