@@ -1,21 +1,19 @@
-/* global chrome, $ */
-
-import { options, isCloning, WindowProperty } from "./options-storage.js";
+import { options, isCloning } from "./options-storage.js";
 import { getCloneBounds } from "./clone.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
 // -----------------------------------------------------------------------------
 
-function getFromId(id, root = document) {
+function getFromId(id: string, root = document) {
   return root.getElementById(id);
 }
 
-function getFromClass(className, root = document) {
+function getFromClass(className: string, root = document) {
   return Array.from(root.getElementsByClassName(className));
 }
 
-function getFromTag(tagName, root = document) {
+function getFromTag(tagName: string, root = document) {
   return Array.from(root.getElementsByTagName(tagName));
 }
 
