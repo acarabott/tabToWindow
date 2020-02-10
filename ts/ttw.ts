@@ -457,45 +457,24 @@ getOptions().then(options => {
 
     // Actions
     // -------
-    const normalCommand = commands.find(cmd => cmd.name === COMMAND_NORMAL);
-    const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
+    const actionDefs = [
+      { commandName: COMMAND_NORMAL, menuId: MENU_TAB_TO_WINDOW_ID },
+      { commandName: COMMAND_POPUP, menuId: MENU_TAB_TO_POPUP_ID },
+      { commandName: COMMAND_NEXT, menuId: MENU_TAB_TO_NEXT_ID },
+      { commandName: COMMAND_DISPLAY, menuId: MENU_TAB_TO_DISPLAY_ID },
+    ];
 
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_TAB_TO_WINDOW_ID,
-      title: `Tab to ${normalCommand!.description} ${normalShortcut}`,
-      contexts: ["browser_action", "page"],
-    });
-
-    const popupCommand = commands.find(cmd => cmd.name === COMMAND_POPUP);
-    const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
-
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_TAB_TO_POPUP_ID,
-      title: `Tab to ${popupCommand!.description} ${popupShortcut}`,
-      contexts: ["browser_action", "page"],
-    });
-
-    const nextCommand = commands.find(cmd => cmd.name === COMMAND_NEXT);
-    const nextShortcut = nextCommand === undefined ? "" : `(${nextCommand.shortcut})`;
-
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_TAB_TO_NEXT_ID,
-      title: `Tab to ${nextCommand!.description} ${nextShortcut}`,
-      contexts: ["browser_action", "page"],
-    });
-
-    const displayCommand = commands.find(cmd => cmd.name === COMMAND_DISPLAY);
-    const displayShortcut = displayCommand === undefined ? "" : `(${displayCommand.shortcut})`;
-
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_TAB_TO_DISPLAY_ID,
-      title: `Tab to ${displayCommand!.description} ${displayShortcut}`,
-      contexts: ["browser_action", "page"],
-    });
+    for (const { commandName: commandId, menuId } of actionDefs) {
+      const command = commands.find(cmd => cmd.name === commandId);
+      if (command !== undefined) {
+        chrome.contextMenus.create({
+          type: "normal",
+          id: menuId,
+          title: `Tab to ${command.description} ${command.shortcut}`,
+          contexts: ["browser_action", "page"],
+        });
+      }
+    }
 
     // Type
     chrome.contextMenus.create({
