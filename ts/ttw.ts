@@ -529,33 +529,21 @@ getOptions().then(options => {
     });
 
     // links on page
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_LINK_TO_WINDOW_ID,
-      title: "Link To New Window",
-      contexts: ["link"],
-    });
+    const linkDefs = [
+      { id: MENU_LINK_TO_WINDOW_ID, title: "Link To New Window" },
+      { id: MENU_LINK_TO_POPUP_ID, title: "Link To New Popup" },
+      { id: MENU_LINK_TO_NEXT_ID, title: "Link To Next Window" },
+      { id: MENU_LINK_TO_DISPLAY_ID, title: "Link To Next Display" },
+    ];
 
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_LINK_TO_POPUP_ID,
-      title: "Link To New Popup",
-      contexts: ["link"],
-    });
-
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_LINK_TO_NEXT_ID,
-      title: "Link To Next Window",
-      contexts: ["link"],
-    });
-
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_LINK_TO_DISPLAY_ID,
-      title: "Link To Next Display",
-      contexts: ["link"],
-    });
+    for (const { id, title } of linkDefs) {
+      chrome.contextMenus.create({
+        type: "normal",
+        id,
+        title,
+        contexts: ["link"],
+      });
+    }
 
     // Context Menu action
     chrome.contextMenus.onClicked.addListener(info => {
