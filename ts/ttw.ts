@@ -268,16 +268,46 @@ getOptions().then(options => {
     }
   };
 
-  const getAllNormalWindows = () =>
-    new Promise<chrome.windows.Window[]>(resolve => {
+  const getNextWindowId = async (currentWindowId: number) => {
+    const windows = await new Promise<chrome.windows.Window[]>(resolve => {
       chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
     });
+
+    const currentIndex = windows.findIndex(win => win.id === currentWindowId);
+    if (currentIndex === -1) {
+      return;
+    }
+
+    const nextIndex = (currentIndex + 1) % windows.length;
+    if (nextIndex === currentIndex) {
+      return undefined;
+    }
+
+    return windows[nextIndex].id;
+  };
+
+  const getTabsToUnhighlight = (windowId: number) => {
+    return new Promise<chrome.tabs.Tab[]>(resolve => {
+      chrome.tabs.query({ windowId, highlighted: true }, tabs => {
+        const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
+        resolve(tabsArray);
+      });
+    });
+  };
+
+  const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
+    for (const tab of tabs) {
+      if (tab.id !== undefined) {
+        chrome.tabs.update(tab.id!, { highlighted: false });
+      }
+    }
+  };
 
   const tabToWindowNormal = () => tabToWindow("normal");
   const tabToWindowPopup = () => tabToWindow("popup");
   const tabToNextDisplay = () => tabToWindow(undefined, true);
   const tabToNextWindow = async () => {
-    const tabsPromise = new Promise<chrome.tabs.Tab[]>(resolve => {
+    const tabsToMove = await new Promise<chrome.tabs.Tab[]>(resolve => {
       chrome.tabs.query(
         {
           currentWindow: true,
@@ -291,50 +321,35 @@ getOptions().then(options => {
       );
     });
 
-    const windowsPromise = getAllNormalWindows();
-    const [tabsToMove, windows] = await Promise.all([tabsPromise, windowsPromise]);
-    const windowIndex = windows.findIndex(win => win.id === tabsToMove[0].windowId);
-    if (windowIndex === -1) {
+    const nextWindowId = await getNextWindowId(tabsToMove[0].windowId);
+    if (nextWindowId === undefined) {
       return;
     }
 
-    const nextWindowIndex = (windowIndex + 1) % windows.length;
-    if (nextWindowIndex !== windowIndex) {
-      const windowId = windows[nextWindowIndex].id;
+    await new Promise(resolve => {
+      chrome.windows.update(nextWindowId, { focused: true }, win => resolve(win));
+    });
 
-      await new Promise(resolve => {
-        chrome.windows.update(windowId, { focused: true }, win => resolve(win));
+    const tabsToUnhighlight = await getTabsToUnhighlight(nextWindowId);
+    const moveIndex = -1;
+    const movedTabs = await moveTabs(tabsToMove, nextWindowId, moveIndex);
+
+    const highlightTabPromises = movedTabs.map((tab, i) => {
+      return new Promise(tabResolve => {
+        chrome.tabs.update(
+          tab.id!,
+          {
+            highlighted: true,
+            active: i === movedTabs.length - 1,
+          },
+          tab => tabResolve(tab),
+        );
       });
+    });
 
-      const tabsToUnhighlight = await new Promise<chrome.tabs.Tab[]>(resolve => {
-        chrome.tabs.query({ windowId, highlighted: true }, tabs => {
-          const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
-          resolve(tabsArray);
-        });
-      });
+    await Promise.all(highlightTabPromises);
 
-      const moveIndex = -1;
-      const movedTabs = await moveTabs(tabsToMove, windowId, moveIndex);
-
-      const highlightTabPromises = movedTabs.map((tab, i) => {
-        return new Promise(tabResolve => {
-          chrome.tabs.update(
-            tab.id!,
-            {
-              highlighted: true,
-              active: i === movedTabs.length - 1,
-            },
-            tab => tabResolve(tab),
-          );
-        });
-      });
-
-      await Promise.all(highlightTabPromises);
-
-      tabsToUnhighlight.forEach(tab => {
-        chrome.tabs.update(tab.id!, { highlighted: false });
-      });
-    }
+    unhighlightTabs(tabsToUnhighlight);
   };
 
   const urlToWindow = (
@@ -351,38 +366,18 @@ getOptions().then(options => {
   const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
   const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
   const urlToNextWindow = async (url: string) => {
-    const currentWindowPromise = await new Promise<chrome.windows.Window>(resolve => {
+    const currentWindow = await new Promise<chrome.windows.Window>(resolve => {
       chrome.windows.getCurrent({}, window => resolve(window));
     });
 
-    const windowsPromise = getAllNormalWindows();
-
-    const [currentWindow, allWindows] = await Promise.all([currentWindowPromise, windowsPromise]);
-
-    const windowIndex = allWindows.findIndex(win => win.id === currentWindow.id);
-    if (windowIndex === -1) {
+    const nextWindowId = await getNextWindowId(currentWindow.id);
+    if (nextWindowId === undefined) {
       return;
     }
 
-    const nextWindowIndex = (windowIndex + 1) % allWindows.length;
-    if (nextWindowIndex === windowIndex) {
-      return;
-    }
+    unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
 
-    const windowId = allWindows[nextWindowIndex].id;
-
-    const tabsToUnhighlight = await new Promise<chrome.tabs.Tab[]>(resolve => {
-      chrome.tabs.query({ windowId, highlighted: true }, tabs => {
-        const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
-        resolve(tabsArray);
-      });
-    });
-
-    tabsToUnhighlight.forEach(tab => {
-      chrome.tabs.update(tab.id!, { highlighted: false });
-    });
-
-    const opts = { windowId, url };
+    const opts = { windowId: nextWindowId, url };
     chrome.tabs.create(opts);
   };
 
