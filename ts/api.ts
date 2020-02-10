@@ -16,7 +16,7 @@ export interface IOptions {
   resizeOriginal: boolean;
   cloneMode: "clone-mode-no" | "clone-mode-same" | "clone-mode-horizontal" | "clone-mode-vertical";
   copyFullscreen: boolean;
-  menuButtonType: "normal" | "popup";
+  menuButtonType: WindowType;
   originalWidth: number;
   originalHeight: number;
   originalLeft: number;
