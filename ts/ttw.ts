@@ -106,20 +106,26 @@ getOptions().then(options => {
       });
     }
 
-    return new Promise(resolve => {
-      chrome.windows.create(opts, newWin => resolve([newWin!, tab]));
+    return new Promise((resolve, reject) => {
+      chrome.windows.create(opts, newWin => {
+        if (newWin !== undefined) {
+          resolve([newWin, tab]);
+        } else {
+          reject("Could not create new window");
+        }
+      });
     });
   };
 
   const moveTabs = (tabs: chrome.tabs.Tab[], windowId: number, index: number) => {
     return new Promise<chrome.tabs.Tab[]>(resolve => {
-      chrome.tabs.move(
-        tabs.map(tab => tab.id!),
-        { windowId, index },
-        movedTabs => {
-          const tabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
-          resolve(tabsArray);
-        },
+      const tabIds = tabs.reduce(
+        (accum, tab) => (tab.id === undefined ? accum : [...accum, tab.id]),
+        [] as number[],
+      );
+
+      chrome.tabs.move(tabIds, { windowId, index }, movedTabs =>
+        resolve(Array.isArray(movedTabs) ? movedTabs : [movedTabs]),
       );
     });
   };
@@ -164,10 +170,10 @@ getOptions().then(options => {
     moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
     const calcOverlapArea = (display: chrome.system.display.DisplayInfo) => {
-      const wl = currentWindow.left!;
-      const wt = currentWindow.top!;
-      const wr = currentWindow.left! + currentWindow.width!;
-      const wb = currentWindow.top! + currentWindow.height!;
+      const wl = currentWindow.left ?? 0;
+      const wt = currentWindow.top ?? 0;
+      const wr = wl + (currentWindow.width ?? screen.availWidth);
+      const wb = wt + (currentWindow.height ?? screen.availWidth);
 
       const dl = display.bounds.left;
       const dt = display.bounds.top;
