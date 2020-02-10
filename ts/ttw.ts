@@ -287,7 +287,7 @@ getOptions().then(options => {
     });
 
     const windowsPromise = new Promise<chrome.windows.Window[]>(resolve => {
-      chrome.windows.getAll({}, windows => resolve(windows));
+      chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
     });
 
     const [tabsToMove, windows] = await Promise.all([tabsPromise, windowsPromise]);
