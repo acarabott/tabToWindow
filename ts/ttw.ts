@@ -593,14 +593,14 @@ getOptions().then(options => {
         tabToNextWindow();
       } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
         tabToNextDisplay();
-      } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID) {
-        urlToWindowNormal(info.linkUrl!);
-      } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID) {
-        urlToWindowPopup(info.linkUrl!);
-      } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID) {
-        urlToNextWindow(info.linkUrl!);
-      } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID) {
-        urlToNextDisplay(info.linkUrl!);
+      } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID && info.linkUrl !== undefined) {
+        urlToWindowNormal(info.linkUrl);
+      } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID && info.linkUrl !== undefined) {
+        urlToWindowPopup(info.linkUrl);
+      } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID && info.linkUrl !== undefined) {
+        urlToNextWindow(info.linkUrl);
+      } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID && info.linkUrl !== undefined) {
+        urlToNextDisplay(info.linkUrl);
       }
 
       // options
