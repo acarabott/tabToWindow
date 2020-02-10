@@ -4,31 +4,6 @@ import { options, isCloning } from "./options-storage.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import { WindowID, IBounds, windowProperties, WindowType, IOptions } from "./api.js";
 
-// Session storage interface
-// -----------------------------------------------------------------------------
-
-const originWindowCache = {
-  getOriginId(id: chrome.tabs.Tab["id"]) {
-    return `popOrigin_${id}`;
-  },
-
-  has(tab: chrome.tabs.Tab) {
-    return sessionStorage.hasOwnProperty(originWindowCache.getOriginId(tab.id));
-  },
-
-  set(tab: chrome.tabs.Tab, win: chrome.windows.Window) {
-    sessionStorage[originWindowCache.getOriginId(tab.id)] = win.id;
-  },
-
-  get(tab: chrome.tabs.Tab) {
-    return parseInt(sessionStorage[originWindowCache.getOriginId(tab.id)], 10);
-  },
-
-  delete(tab: chrome.tabs.Tab) {
-    sessionStorage.removeItem(originWindowCache.getOriginId(tab.id));
-  },
-};
-
 // Helper functions
 // -----------------------------------------------------------------------------
 
@@ -233,17 +208,9 @@ const tabToWindow = async (windowType: WindowType | undefined, moveToNextDisplay
     isFocused,
   );
 
-  // move highlighted tabs
-  // save parent id in case we want to pop in
-  if (!destroyingOriginalWindow) {
-    originWindowCache.set(movedTab, currentWindow);
-  }
-
   // move other highlighted tabs
   const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
   if (otherTabs.length > 0) {
-    otherTabs.forEach(tab => originWindowCache.set(tab, currentWindow));
-
     if (newWindowType === "normal") {
       // move all tabs at once
       const moveIndex = 1;
