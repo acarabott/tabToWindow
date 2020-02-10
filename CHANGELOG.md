@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.2
+
+- No longer tries to move tabs into popup or app windows
+- Ported to TypeScript
+
 ## 3.0
 
 - Multi-display support!
