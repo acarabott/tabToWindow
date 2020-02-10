@@ -1,7 +1,7 @@
 /* global chrome */
 
 import { options, isCloning } from "./options-storage.js";
-import { getCloneBounds } from "./clone.js";
+import { getCloneBounds } from "./getCloneBounds.js";
 import { WindowID, IBounds, windowProperties, WindowType, IOptions } from "./api.js";
 
 // Session storage interface

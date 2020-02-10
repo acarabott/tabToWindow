@@ -1,5 +1,5 @@
 import { options, isCloning } from "./options-storage.js";
-import { getCloneBounds } from "./clone.js";
+import { getCloneBounds } from "./getCloneBounds.js";
 import { WindowID, IOptions, WindowType, WindowProperty } from "./api.js";
 
 // Helper functions
