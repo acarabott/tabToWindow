@@ -4,9 +4,10 @@ import {
   WindowProperty,
   StoredWindowProperty,
   storedWindowBounds,
+  isIOptions,
 } from "./api.js";
 
-const defaults: IOptions = {
+const defaultOptions: IOptions = {
   focus: "new",
   resizeOriginal: true,
   cloneMode: "clone-mode-no",
@@ -23,7 +24,10 @@ const defaults: IOptions = {
 };
 
 // retrieve the storage key for a particular window property
-const getStorageWindowPropKey = (id: WindowID, key: WindowProperty): StoredWindowProperty => {
+export const getStorageWindowPropKey = (
+  id: WindowID,
+  key: WindowProperty,
+): StoredWindowProperty => {
   return ({
     original: {
       left: "originalLeft",
@@ -40,58 +44,49 @@ const getStorageWindowPropKey = (id: WindowID, key: WindowProperty): StoredWindo
   } as const)[id][key];
 };
 
-const saveOptions = (options: IOptions) => {
-  // clamp number values
-  for (const key of storedWindowBounds) {
-    options[key] = Math.max(0, Math.min(options[key], 1));
-  }
-
-  return new Promise<boolean>((resolve, reject) => {
-    chrome.storage.sync.set(options, () => {
-      if (chrome.runtime.lastError === undefined) {
-        resolve(true);
-      } else {
+export const getOptions = async () => {
+  let options = await new Promise<IOptions>((resolve, reject) =>
+    chrome.storage.sync.get(defaultOptions, loadedOptions => {
+      if (chrome.runtime.lastError !== undefined) {
         reject(chrome.runtime.lastError);
+        return;
       }
-    });
-  });
-};
 
-let values = defaults;
+      if (!isIOptions(loadedOptions)) {
+        reject("Loaded options are not IOptions");
+        return;
+      }
 
-export const options = {
-  get<K extends keyof IOptions, V extends IOptions[K]>(key: K) {
-    return values[key] as V;
-  },
+      resolve(loadedOptions);
+    }),
+  );
 
-  getForWindow(windowId: WindowID, key: WindowProperty) {
-    return options.get(getStorageWindowPropKey(windowId, key));
-  },
+  return {
+    get<K extends keyof IOptions, V extends IOptions[K]>(key: K) {
+      return options[key] as V;
+    },
 
-  set<T extends keyof IOptions, V extends IOptions[T]>(key: T, value: V) {
-    values[key] = value;
-  },
+    update(update: Partial<IOptions>) {
+      options = { ...options, ...update };
 
-  setForWindow(windowId: WindowID, key: WindowProperty, value: number) {
-    options.set(getStorageWindowPropKey(windowId, key), value);
-  },
+      // clamp number values
+      for (const key of storedWindowBounds) {
+        options[key] = Math.max(0, Math.min(options[key], 1));
+      }
 
-  save() {
-    saveOptions(values).catch(console.error);
-  },
-
-  get loadPromise() {
-    return new Promise<typeof options>((resolve, reject) => {
-      chrome.storage.sync.get(defaults, loadedOptions => {
-        if (chrome.runtime.lastError === undefined) {
-          values = { ...values, ...(loadedOptions as IOptions) };
-          resolve(options);
-        } else {
-          reject(chrome.runtime.lastError);
-        }
+      return new Promise<boolean>((resolve, reject) => {
+        chrome.storage.sync.set(options, () => {
+          if (chrome.runtime.lastError === undefined) {
+            resolve(true);
+          } else {
+            reject(chrome.runtime.lastError);
+          }
+        });
       });
-    });
-  },
-};
+    },
 
-export const isCloning = () => options.get("cloneMode") !== "clone-mode-no";
+    get isCloneEnabled() {
+      return options.cloneMode !== "clone-mode-no";
+    },
+  };
+};

@@ -1,3 +1,5 @@
+import { getOptions } from "./options-storage";
+
 export const windowIds = ["original", "new"] as const;
 export type WindowID = typeof windowIds[any];
 
@@ -70,3 +72,6 @@ export const isIOptions = (obj: any): obj is IOptions => {
     typeof cast.resizeOriginal === "boolean"
   );
 };
+
+type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
+export type Options = ThenArg<ReturnType<typeof getOptions>>;
