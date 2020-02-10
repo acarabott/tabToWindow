@@ -73,12 +73,7 @@ const updateResizeOriginal = () => {
   isResizing ? originalWin.classList.remove("disabled") : originalWin.classList.add("disabled");
 };
 
-const updateResizeNew = () => {
-  const inputId = "clone-mode-no";
-  const windowId = "new";
-  const enableIfChecked = true;
-  updateWindowHandling(inputId, windowId, enableIfChecked);
-};
+const updateResizeNew = () => updateWindowHandling("clone-mode-no", "new", true);
 
 const updateClone = () => {
   const originalWin = getFromId("original");
@@ -277,7 +272,7 @@ const main = () => {
       );
     });
   }
-}
+};
 
 // Loading
 // -----------------------------------------------------------------------------
