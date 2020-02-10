@@ -268,6 +268,11 @@ getOptions().then(options => {
     }
   };
 
+  const getAllNormalWindows = () =>
+    new Promise<chrome.windows.Window[]>(resolve => {
+      chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
+    });
+
   const tabToWindowNormal = () => tabToWindow("normal");
   const tabToWindowPopup = () => tabToWindow("popup");
   const tabToNextDisplay = () => tabToWindow(undefined, true);
@@ -286,10 +291,7 @@ getOptions().then(options => {
       );
     });
 
-    const windowsPromise = new Promise<chrome.windows.Window[]>(resolve => {
-      chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
-    });
-
+    const windowsPromise = getAllNormalWindows();
     const [tabsToMove, windows] = await Promise.all([tabsPromise, windowsPromise]);
     const windowIndex = windows.findIndex(win => win.id === tabsToMove[0].windowId);
     if (windowIndex === -1) {
@@ -353,9 +355,7 @@ getOptions().then(options => {
       chrome.windows.getCurrent({}, window => resolve(window));
     });
 
-    const windowsPromise = new Promise<chrome.windows.Window[]>(resolve => {
-      chrome.windows.getAll({}, windows => resolve(windows));
-    });
+    const windowsPromise = getAllNormalWindows();
 
     const [currentWindow, allWindows] = await Promise.all([currentWindowPromise, windowsPromise]);
 
