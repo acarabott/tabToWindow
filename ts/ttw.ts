@@ -149,16 +149,11 @@ getOptions().then(options => {
     });
 
     const tabsPromise = new Promise<chrome.tabs.Tab[]>(resolve => {
-      chrome.tabs.query(
-        {
-          currentWindow: true,
-        },
-        tabs => {
-          if (tabs.length > 0) {
-            resolve(tabs);
-          }
-        },
-      );
+      chrome.tabs.query({ currentWindow: true }, tabs => {
+        if (tabs.length > 0) {
+          resolve(tabs);
+        }
+      });
     });
 
     const [displays, currentWindow, tabs] = await Promise.all([
