@@ -1,4 +1,10 @@
-import { IOptions, WindowID, WindowProperty, StoredWindowProperty } from "./api";
+import {
+  IOptions,
+  WindowID,
+  WindowProperty,
+  StoredWindowProperty,
+  storedWindowBounds,
+} from "./api.js";
 
 const defaults: IOptions = {
   focus: "new",
@@ -34,86 +40,20 @@ const getStorageWindowPropKey = (id: WindowID, key: WindowProperty): StoredWindo
   } as const)[id][key];
 };
 
-const validateOptions = (options: IOptions) => {
-  if (!Object.keys(options).every(key => Object.keys(defaults).includes(key))) {
-    console.error("not all options are present!");
-    console.error(Object.keys(options).filter(key => !Object.keys(defaults).includes(key)));
-    return false;
-  }
-
-  const isValidStringOption = (option: keyof IOptions, validOptions: any[]) => {
-    const result = validOptions.includes(options[option]);
-    if (!result) {
-      console.error(`"${option}" is invalid, should be in ${validOptions}`);
-    }
-    return result;
-  };
-
-  const isValidBoolOption = (key: keyof IOptions) => {
-    const result = typeof options[key] === "boolean";
-    if (!result) {
-      console.error(`"${key}" option is invalid, should be boolean`);
-    }
-    return result;
-  };
-
-  const isValidNumberOption = (key: keyof IOptions, min: number, max: number) => {
-    const result = typeof options[key] === "number" && options[key] >= min && options[key] <= max;
-    if (!result) {
-      console.error(`${key} should be between ${min} and ${max}`);
-    }
-    return result;
-  };
-
-  if (!isValidStringOption("focus", ["original", "new"])) {
-    return false;
-  }
-  if (!isValidBoolOption("resizeOriginal")) {
-    return false;
-  }
-  if (
-    !isValidStringOption("cloneMode", [
-      "clone-mode-no",
-      "clone-mode-same",
-      "clone-mode-horizontal",
-      "clone-mode-vertical",
-    ])
-  ) {
-    return false;
-  }
-  if (!isValidBoolOption("copyFullscreen")) {
-    return false;
-  }
-  if (!isValidStringOption("menuButtonType", ["normal", "popup"])) {
-    return false;
-  }
-
-  const numberOpts = [
-    "originalWidth",
-    "originalHeight",
-    "originalLeft",
-    "originalTop",
-    "newWidth",
-    "newHeight",
-    "newLeft",
-    "newTop",
-  ] as const;
-  if (numberOpts.some(opt => !isValidNumberOption(opt, 0.0, 1.0))) {
-    return false;
-  }
-
-  return true;
-};
-
 const saveOptions = (options: IOptions) => {
-  if (!validateOptions(options)) {
-    return;
+  // clamp number values
+  for (const key of storedWindowBounds) {
+    options[key] = Math.max(0, Math.min(options[key], 1));
   }
 
-  chrome.storage.sync.set(options, () => {
-    if (chrome.runtime.lastError !== undefined) {
-      console.error(chrome.runtime.lastError);
-    }
+  return new Promise<boolean>((resolve, reject) => {
+    chrome.storage.sync.set(options, () => {
+      if (chrome.runtime.lastError === undefined) {
+        resolve(true);
+      } else {
+        reject(chrome.runtime.lastError);
+      }
+    });
   });
 };
 
@@ -137,7 +77,7 @@ export const options = {
   },
 
   save() {
-    saveOptions(values);
+    saveOptions(values).catch(console.error);
   },
 
   get loadPromise() {
