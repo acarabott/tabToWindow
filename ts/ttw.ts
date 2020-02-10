@@ -1,5 +1,3 @@
-/* global chrome */
-
 import { getStorageWindowPropKey, getOptions } from "./options-storage.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import {
