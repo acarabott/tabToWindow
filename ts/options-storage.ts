@@ -52,12 +52,7 @@ export const getOptions = async () => {
         return;
       }
 
-      if (!isIOptions(loadedOptions)) {
-        reject("Loaded options are not IOptions");
-        return;
-      }
-
-      resolve(loadedOptions);
+      resolve(isIOptions(loadedOptions) ? loadedOptions : defaultOptions);
     }),
   );
 
