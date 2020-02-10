@@ -201,7 +201,7 @@ getOptions().then(options => {
         });
 
         let saveTimeout: number;
-        function update() {
+        const update = () => {
           const shouldUpdateClone = win.id === "original" && options.isCloneEnabled;
           if (shouldUpdateClone) {
             updateClone();
@@ -209,7 +209,7 @@ getOptions().then(options => {
 
           clearTimeout(saveTimeout);
           saveTimeout = setTimeout(save, 200);
-        }
+        };
 
         const $win = $(win);
 
