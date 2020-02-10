@@ -1,4 +1,4 @@
-import { IBounds, IOptions } from "./api";
+import { IBounds, CloneMode } from "./api";
 
 /**
   * find the position that has the most space and return the position
@@ -10,7 +10,7 @@ import { IBounds, IOptions } from "./api";
 export const getCloneBounds = (
   winBounds: IBounds,
   displayBounds: IBounds,
-  cloneMode: IOptions["cloneMode"],
+  cloneMode: CloneMode,
 ) => {
   const getPosAndLength = (
     winPos: number,

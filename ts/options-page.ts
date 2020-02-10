@@ -1,6 +1,6 @@
-import { options, isCloning } from "./options-storage.js";
+import { CloneMode, WindowID, WindowProperty, WindowType } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
-import { WindowID, IOptions, WindowType, WindowProperty } from "./api.js";
+import { isCloning, options } from "./options-storage.js";
 
 // Helper functions
 // These should be functions that are called in more than one place
@@ -28,8 +28,7 @@ const save = () => {
   options.set("copyFullscreen", getFromId<HTMLInputElement>("copy-fullscreen").checked);
   options.set(
     "cloneMode",
-    getFromClass<HTMLInputElement>("clone-mode-option").find(cp => cp.checked)!
-      .id as IOptions["cloneMode"],
+    getFromClass<HTMLInputElement>("clone-mode-option").find(cp => cp.checked)!.id as CloneMode,
   );
   options.set(
     "menuButtonType",

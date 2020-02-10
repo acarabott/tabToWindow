@@ -3,6 +3,11 @@ export const windowProperties = ["width", "height", "left", "top"] as const;
 export type WindowProperty = typeof windowProperties[any];
 
 export type WindowType = "normal" | "popup";
+export type CloneMode =
+  | "clone-mode-no"
+  | "clone-mode-same"
+  | "clone-mode-horizontal"
+  | "clone-mode-vertical";
 
 export interface IBounds {
   left: number;
@@ -14,7 +19,7 @@ export interface IBounds {
 export interface IOptions {
   focus: WindowID;
   resizeOriginal: boolean;
-  cloneMode: "clone-mode-no" | "clone-mode-same" | "clone-mode-horizontal" | "clone-mode-vertical";
+  cloneMode: CloneMode;
   copyFullscreen: boolean;
   menuButtonType: WindowType;
   originalWidth: number;
