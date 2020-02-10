@@ -2,7 +2,27 @@
 
 import { getStorageWindowPropKey, getOptions } from "./options-storage.js";
 import { getCloneBounds } from "./getCloneBounds.js";
-import { WindowID, IBounds, windowProperties, WindowType, IOptions } from "./api.js";
+import {
+  WindowID,
+  IBounds,
+  windowProperties,
+  WindowType,
+  IOptions,
+  MENU_TAB_TO_WINDOW_ID,
+  MENU_TAB_TO_POPUP_ID,
+  MENU_TAB_TO_NEXT_ID,
+  MENU_TAB_TO_DISPLAY_ID,
+  MENU_LINK_TO_WINDOW_ID,
+  MENU_LINK_TO_POPUP_ID,
+  MENU_LINK_TO_NEXT_ID,
+  MENU_LINK_TO_DISPLAY_ID,
+  MENU_WINDOW_OPTION_ID,
+  MENU_POPUP_OPTION_ID,
+  MENU_FOCUS_PARENT_ID,
+  MENU_TYPE_PARENT_ID,
+  MENU_FOCUS_ORIGINAL_OPTION_ID,
+  MENU_FOCUS_NEW_OPTION_ID,
+} from "./api.js";
 
 getOptions().then(options => {
   // Helper functions
@@ -442,7 +462,7 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "tab to window",
+      id: MENU_TAB_TO_WINDOW_ID,
       title: `Tab to ${normalCommand!.description} ${normalShortcut}`,
       contexts: ["browser_action", "page"],
     });
@@ -452,7 +472,7 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "tab to popup",
+      id: MENU_TAB_TO_POPUP_ID,
       title: `Tab to ${popupCommand!.description} ${popupShortcut}`,
       contexts: ["browser_action", "page"],
     });
@@ -462,7 +482,7 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "tab to next",
+      id: MENU_TAB_TO_NEXT_ID,
       title: `Tab to ${nextCommand!.description} ${nextShortcut}`,
       contexts: ["browser_action", "page"],
     });
@@ -472,7 +492,7 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "tab to display",
+      id: MENU_TAB_TO_DISPLAY_ID,
       title: `Tab to ${displayCommand!.description} ${displayShortcut}`,
       contexts: ["browser_action", "page"],
     });
@@ -480,15 +500,15 @@ getOptions().then(options => {
     // Type
     chrome.contextMenus.create({
       type: "normal",
-      id: "type parent",
+      id: MENU_TYPE_PARENT_ID,
       title: "Window Type",
       contexts: ["browser_action"],
     });
 
     chrome.contextMenus.create({
       type: "radio",
-      id: "window option",
-      parentId: "type parent",
+      id: MENU_WINDOW_OPTION_ID,
+      parentId: MENU_TYPE_PARENT_ID,
       title: "Window",
       checked: options.get("menuButtonType") === "normal",
       contexts: ["browser_action"],
@@ -496,8 +516,8 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "radio",
-      id: "popup option",
-      parentId: "type parent",
+      id: MENU_POPUP_OPTION_ID,
+      parentId: MENU_TYPE_PARENT_ID,
       title: "Popup",
       checked: options.get("menuButtonType") === "popup",
       contexts: ["browser_action"],
@@ -506,15 +526,15 @@ getOptions().then(options => {
     // Focus
     chrome.contextMenus.create({
       type: "normal",
-      id: "focus parent",
+      id: MENU_FOCUS_PARENT_ID,
       title: "Focus",
       contexts: ["browser_action"],
     });
 
     chrome.contextMenus.create({
       type: "radio",
-      id: "focus original option",
-      parentId: "focus parent",
+      id: MENU_FOCUS_ORIGINAL_OPTION_ID,
+      parentId: MENU_FOCUS_PARENT_ID,
       title: "Original",
       checked: options.get("focus") === "original",
       contexts: ["browser_action"],
@@ -522,8 +542,8 @@ getOptions().then(options => {
 
     chrome.contextMenus.create({
       type: "radio",
-      id: "focus new option",
-      parentId: "focus parent",
+      id: MENU_FOCUS_NEW_OPTION_ID,
+      parentId: MENU_FOCUS_PARENT_ID,
       title: "New",
       checked: options.get("focus") === "new",
       contexts: ["browser_action"],
@@ -532,28 +552,28 @@ getOptions().then(options => {
     // links on page
     chrome.contextMenus.create({
       type: "normal",
-      id: "link to window",
+      id: MENU_LINK_TO_WINDOW_ID,
       title: "Link To New Window",
       contexts: ["link"],
     });
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "link to popup",
+      id: MENU_LINK_TO_POPUP_ID,
       title: "Link To New Popup",
       contexts: ["link"],
     });
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "link to next",
+      id: MENU_LINK_TO_NEXT_ID,
       title: "Link To Next Window",
       contexts: ["link"],
     });
 
     chrome.contextMenus.create({
       type: "normal",
-      id: "link to display",
+      id: MENU_LINK_TO_DISPLAY_ID,
       title: "Link To Next Display",
       contexts: ["link"],
     });
@@ -561,32 +581,32 @@ getOptions().then(options => {
     // Context Menu action
     chrome.contextMenus.onClicked.addListener(info => {
       // actions
-      if (info.menuItemId === "tab to window") {
+      if (info.menuItemId === MENU_TAB_TO_WINDOW_ID) {
         tabToWindowNormal();
-      } else if (info.menuItemId === "tab to popup") {
+      } else if (info.menuItemId === MENU_TAB_TO_POPUP_ID) {
         tabToWindowPopup();
-      } else if (info.menuItemId === "tab to next") {
+      } else if (info.menuItemId === MENU_TAB_TO_NEXT_ID) {
         tabToNextWindow();
-      } else if (info.menuItemId === "tab to display") {
+      } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
         tabToNextDisplay();
-      } else if (info.menuItemId === "link to window") {
+      } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID) {
         urlToWindowNormal(info.linkUrl!);
-      } else if (info.menuItemId === "link to popup") {
+      } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID) {
         urlToWindowPopup(info.linkUrl!);
-      } else if (info.menuItemId === "link to next") {
+      } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID) {
         urlToNextWindow(info.linkUrl!);
-      } else if (info.menuItemId === "link to display") {
+      } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID) {
         urlToNextDisplay(info.linkUrl!);
       }
 
       // options
-      else if (info.menuItemId === "window option") {
+      else if (info.menuItemId === MENU_WINDOW_OPTION_ID) {
         options.update({ menuButtonType: "normal" });
-      } else if (info.menuItemId === "popup option") {
+      } else if (info.menuItemId === MENU_POPUP_OPTION_ID) {
         options.update({ menuButtonType: "popup" });
-      } else if (info.menuItemId === "focus original option") {
+      } else if (info.menuItemId === MENU_FOCUS_ORIGINAL_OPTION_ID) {
         options.update({ focus: "original" });
-      } else if (info.menuItemId === "focus new option") {
+      } else if (info.menuItemId === MENU_FOCUS_NEW_OPTION_ID) {
         options.update({ focus: "new" });
       }
     });

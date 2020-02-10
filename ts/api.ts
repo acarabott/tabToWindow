@@ -75,3 +75,19 @@ export const isIOptions = (obj: any): obj is IOptions => {
 
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 export type Options = ThenArg<ReturnType<typeof getOptions>>;
+
+// Constants
+export const MENU_TAB_TO_WINDOW_ID = "tab to window";
+export const MENU_TAB_TO_POPUP_ID = "tab to popup";
+export const MENU_TAB_TO_NEXT_ID = "tab to next";
+export const MENU_TAB_TO_DISPLAY_ID = "tab to display";
+export const MENU_TYPE_PARENT_ID = "type parent";
+export const MENU_WINDOW_OPTION_ID = "window option";
+export const MENU_POPUP_OPTION_ID = "popup option";
+export const MENU_FOCUS_PARENT_ID = "focus parent";
+export const MENU_FOCUS_ORIGINAL_OPTION_ID = "focus original option";
+export const MENU_FOCUS_NEW_OPTION_ID = "focus new option";
+export const MENU_LINK_TO_WINDOW_ID = "link to window";
+export const MENU_LINK_TO_POPUP_ID = "link to popup";
+export const MENU_LINK_TO_NEXT_ID = "link to next";
+export const MENU_LINK_TO_DISPLAY_ID = "link to display";
