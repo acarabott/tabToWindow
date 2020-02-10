@@ -17,11 +17,22 @@ const defaults: IOptions = {
 };
 
 // retrieve the storage key for a particular window property
-const getStorageWindowPropKey = (windowId: WindowID, propKey: WindowProperty) =>
-  `${windowId}${propKey
-    .slice(0)
-    .charAt(0)
-    .toUpperCase()}${propKey.slice(1)}` as StoredWindowProperty;
+const getStorageWindowPropKey = (id: WindowID, key: WindowProperty): StoredWindowProperty => {
+  return ({
+    original: {
+      left: "originalLeft",
+      top: "originalTop",
+      width: "originalWidth",
+      height: "originalHeight",
+    },
+    new: {
+      left: "newLeft",
+      top: "newTop",
+      width: "newWidth",
+      height: "newHeight",
+    },
+  } as const)[id][key];
+};
 
 const validateOptions = (options: IOptions) => {
   if (!Object.keys(options).every(key => Object.keys(defaults).includes(key))) {
