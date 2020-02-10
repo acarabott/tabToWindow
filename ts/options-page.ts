@@ -130,14 +130,15 @@ getOptions().then(options => {
   };
 
   // Main Function
-  // -----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // Each chunk has specifically *not* been broken out into a named function
   // as then it's more difficult to tell when / where they are being called
   // and if it's more than one
 
   const main = (options: Options) => {
-    // display shortcuts
     {
+      // display shortcuts
+      // -----------------------------------------------------------------------
       chrome.commands.getAll(cmds => {
         if (cmds.length === 0) {
           return;
@@ -163,16 +164,18 @@ getOptions().then(options => {
     }
 
     const gridsize = 20; // px to use for window grid
-    // Set monitor aspect ratio to match user's
     {
+      // Set monitor aspect ratio to match user's
+      // -----------------------------------------------------------------------
       const monitor = getFromId("monitor");
       const ratio = screen.height / screen.width;
       const height = Math.round((monitor.clientWidth * ratio) / gridsize) * gridsize;
       monitor.style.height = `${height}px`;
     }
 
-    // restore options
     {
+      // restore options
+      // -----------------------------------------------------------------------
       getFromClass<HTMLInputElement>("focus-option").forEach(opt => {
         opt.checked = opt.id.includes(options.get("focus"));
       });
@@ -187,8 +190,9 @@ getOptions().then(options => {
       });
     }
 
-    // setup windows
     {
+      // setup windows
+      // -----------------------------------------------------------------------
       getFromClass("window").forEach(win => {
         // Restore positions from options
         (["width", "height", "left", "top"] as WindowProperty[]).forEach(prop => {
@@ -245,8 +249,9 @@ getOptions().then(options => {
       }
     }
 
-    // add input handlers
     {
+      // add input handlers
+      // -----------------------------------------------------------------------
       getFromId("resize-original").onchange = updateResizeOriginal;
       getFromClass("focus-option").forEach(el => (el.onchange = updateFocus));
       getFromTag("input").forEach(el => (el.onclick = save));
@@ -273,7 +278,7 @@ getOptions().then(options => {
   };
 
   // Loading
-  // -----------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
   const onReady = (action: () => void) => {
     if (document.readyState !== "loading") {
