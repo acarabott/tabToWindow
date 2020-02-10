@@ -17,43 +17,42 @@ const defaults: IOptions = {
 };
 
 // retrieve the storage key for a particular window property
-function getStorageWindowPropKey(windowId: WindowID, propKey: WindowProperty) {
-  return `${windowId}${propKey
+const getStorageWindowPropKey = (windowId: WindowID, propKey: WindowProperty) =>
+  `${windowId}${propKey
     .slice(0)
     .charAt(0)
     .toUpperCase()}${propKey.slice(1)}` as StoredWindowProperty;
-}
 
-function validateOptions(options: IOptions) {
+const validateOptions = (options: IOptions) => {
   if (!Object.keys(options).every(key => Object.keys(defaults).includes(key))) {
     console.error("not all options are present!");
     console.error(Object.keys(options).filter(key => !Object.keys(defaults).includes(key)));
     return false;
   }
 
-  function isValidStringOption(option: keyof IOptions, validOptions: any[]) {
+  const isValidStringOption = (option: keyof IOptions, validOptions: any[]) => {
     const result = validOptions.includes(options[option]);
     if (!result) {
       console.error(`"${option}" is invalid, should be in ${validOptions}`);
     }
     return result;
-  }
+  };
 
-  function isValidBoolOption(key: keyof IOptions) {
+  const isValidBoolOption = (key: keyof IOptions) => {
     const result = typeof options[key] === "boolean";
     if (!result) {
       console.error(`"${key}" option is invalid, should be boolean`);
     }
     return result;
-  }
+  };
 
-  function isValidNumberOption(key: keyof IOptions, min: number, max: number) {
+  const isValidNumberOption = (key: keyof IOptions, min: number, max: number) => {
     const result = typeof options[key] === "number" && options[key] >= min && options[key] <= max;
     if (!result) {
       console.error(`${key} should be between ${min} and ${max}`);
     }
     return result;
-  }
+  };
 
   if (!isValidStringOption("focus", ["original", "new"])) {
     return false;
@@ -93,9 +92,9 @@ function validateOptions(options: IOptions) {
   }
 
   return true;
-}
+};
 
-function saveOptions(options: IOptions) {
+const saveOptions = (options: IOptions) => {
   if (!validateOptions(options)) {
     return;
   }
@@ -105,7 +104,7 @@ function saveOptions(options: IOptions) {
       console.error(chrome.runtime.lastError);
     }
   });
-}
+};
 
 let values = defaults;
 
@@ -144,6 +143,4 @@ export const options = {
   },
 };
 
-export function isCloning() {
-  return options.get("cloneMode") !== "clone-mode-no";
-}
+export const isCloning = () => options.get("cloneMode") !== "clone-mode-no";
