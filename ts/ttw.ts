@@ -22,6 +22,10 @@ import {
   MENU_TYPE_PARENT_ID,
   MENU_FOCUS_ORIGINAL_OPTION_ID,
   MENU_FOCUS_NEW_OPTION_ID,
+  COMMAND_NORMAL,
+  COMMAND_POPUP,
+  COMMAND_NEXT,
+  COMMAND_DISPLAY,
 } from "./api.js";
 
 getOptions().then(options => {
@@ -413,13 +417,13 @@ getOptions().then(options => {
   });
 
   chrome.commands.onCommand.addListener(command => {
-    if (command === "01-tab-to-window-normal") {
+    if (command === COMMAND_NORMAL) {
       tabToWindowNormal();
-    } else if (command === "02-tab-to-window-popup") {
+    } else if (command === COMMAND_POPUP) {
       tabToWindowPopup();
-    } else if (command === "03-tab-to-window-next") {
+    } else if (command === COMMAND_NEXT) {
       tabToNextWindow();
-    } else if (command === "04-tab-to-window-display") {
+    } else if (command === COMMAND_DISPLAY) {
       tabToNextDisplay();
     }
   });
@@ -457,7 +461,7 @@ getOptions().then(options => {
 
     // Actions
     // -------
-    const normalCommand = commands.find(cmd => cmd.name === "01-tab-to-window-normal");
+    const normalCommand = commands.find(cmd => cmd.name === COMMAND_NORMAL);
     const normalShortcut = normalCommand === undefined ? "" : `(${normalCommand.shortcut})`;
 
     chrome.contextMenus.create({
@@ -467,7 +471,7 @@ getOptions().then(options => {
       contexts: ["browser_action", "page"],
     });
 
-    const popupCommand = commands.find(cmd => cmd.name === "02-tab-to-window-popup");
+    const popupCommand = commands.find(cmd => cmd.name === COMMAND_POPUP);
     const popupShortcut = popupCommand === undefined ? "" : `(${popupCommand.shortcut})`;
 
     chrome.contextMenus.create({
@@ -477,7 +481,7 @@ getOptions().then(options => {
       contexts: ["browser_action", "page"],
     });
 
-    const nextCommand = commands.find(cmd => cmd.name === "03-tab-to-window-next");
+    const nextCommand = commands.find(cmd => cmd.name === COMMAND_NEXT);
     const nextShortcut = nextCommand === undefined ? "" : `(${nextCommand.shortcut})`;
 
     chrome.contextMenus.create({
@@ -487,7 +491,7 @@ getOptions().then(options => {
       contexts: ["browser_action", "page"],
     });
 
-    const displayCommand = commands.find(cmd => cmd.name === "04-tab-to-window-display");
+    const displayCommand = commands.find(cmd => cmd.name === COMMAND_DISPLAY);
     const displayShortcut = displayCommand === undefined ? "" : `(${displayCommand.shortcut})`;
 
     chrome.contextMenus.create({

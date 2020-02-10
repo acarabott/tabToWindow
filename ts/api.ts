@@ -91,3 +91,9 @@ export const MENU_LINK_TO_WINDOW_ID = "link to window";
 export const MENU_LINK_TO_POPUP_ID = "link to popup";
 export const MENU_LINK_TO_NEXT_ID = "link to next";
 export const MENU_LINK_TO_DISPLAY_ID = "link to display";
+
+// Must match those in manifest.json
+export const COMMAND_NORMAL = "01-tab-to-window-normal";
+export const COMMAND_POPUP = "02-tab-to-window-popup";
+export const COMMAND_NEXT = "03-tab-to-window-next";
+export const COMMAND_DISPLAY = "04-tab-to-window-display";
