@@ -1,11 +1,12 @@
 import { IBounds, IOptions } from "./api";
 
-// find the position that has the most space and return the position
-// and length to fill it.
-// e.g. when cloning horizontally and the window is left: 25% width: 25%
-// there is more space on the right side than the left, so use the right
-// pos is left/top opposite is right/bottom
-
+/**
+  * find the position that has the most space and return the position
+  * and length to fill it.
+  * e.g. when cloning horizontally and the window is left: 25% width: 25%
+  * there is more space on the right side than the left, so use the right
+  * pos is left/top opposite is right/bottom
+ */
 export const getCloneBounds = (
   winBounds: IBounds,
   displayBounds: IBounds,
