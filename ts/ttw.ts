@@ -54,26 +54,6 @@ getOptions().then(options => {
     };
   };
 
-  const resizeOriginalWindow = async (
-    originalWindow: chrome.windows.Window,
-    displayBounds: IBounds,
-  ) => {
-    const vals = await getSizeAndPos("original", displayBounds);
-
-    return new Promise<chrome.windows.Window>(resolve => {
-      chrome.windows.update(
-        originalWindow.id,
-        {
-          width: vals.width,
-          height: vals.height,
-          left: vals.left,
-          top: vals.top,
-        },
-        win => resolve(win),
-      );
-    });
-  };
-
   const getWindowBounds = (win: chrome.windows.Window): IBounds => {
     return { left: win.left!, top: win.top!, width: win.width!, height: win.height! };
   };
@@ -217,7 +197,19 @@ getOptions().then(options => {
       !destroyingOriginalWindow &&
       !moveToNextDisplay
     ) {
-      origWindow = await resizeOriginalWindow(currentWindow, currentDisplay.workArea);
+      const vals = await getSizeAndPos("original", currentDisplay.workArea);
+      origWindow = await new Promise<chrome.windows.Window>(resolve => {
+        chrome.windows.update(
+          origWindow.id,
+          {
+            width: vals.width,
+            height: vals.height,
+            left: vals.left,
+            top: vals.top,
+          },
+          win => resolve(win),
+        );
+      });
     }
 
     // move and resize new window
