@@ -6,26 +6,23 @@ import { WindowID, IOptions, WindowType, WindowProperty } from "./api.js";
 // These should be functions that are called in more than one place
 // -----------------------------------------------------------------------------
 
-function getFromId<T extends HTMLElement>(id: string, root = document) {
-  return root.getElementById(id) as T;
-}
+const getFromId = <T extends HTMLElement>(id: string, root = document) =>
+  root.getElementById(id) as T;
 
-function getFromClass<T extends HTMLElement>(className: string, root = document) {
-  return Array.from(root.getElementsByClassName(className)) as T[];
-}
+const getFromClass = <T extends HTMLElement>(className: string, root = document) =>
+  Array.from(root.getElementsByClassName(className)) as T[];
 
-function getFromTag<T extends HTMLElement>(tagName: string, root = document) {
-  return Array.from(root.getElementsByTagName(tagName)) as T[];
-}
+const getFromTag = <T extends HTMLElement>(tagName: string, root = document) =>
+  Array.from(root.getElementsByTagName(tagName)) as T[];
 
 // window that will be focused on pop-out
-function getFocusedName(): WindowID {
+const getFocusedName = (): WindowID => {
   const focused = getFromClass<HTMLInputElement>("focus-option").find(option => option.checked);
   return focused === undefined || focused.id === "focus-original" ? "original" : "new";
-}
+};
 
 // save current state
-function save() {
+const save = () => {
   options.set("focus", getFocusedName());
   options.set("resizeOriginal", getFromId<HTMLInputElement>("resize-original").checked);
   options.set("copyFullscreen", getFromId<HTMLInputElement>("copy-fullscreen").checked);
@@ -57,33 +54,33 @@ function save() {
   });
 
   options.save();
-}
+};
 
 // changing draggable/resizable windows, used when radio buttons override
 // resizing and positioning
-function updateWindowHandling(inputId: string, windowId: WindowID, enableIfChecked: boolean) {
+const updateWindowHandling = (inputId: string, windowId: WindowID, enableIfChecked: boolean) => {
   const checked = getFromId<HTMLInputElement>(inputId).checked;
   const action = enableIfChecked === checked ? "enable" : "disable";
   const $win = $(`#${windowId}`);
   $win.draggable(action);
   $win.resizable(action);
-}
+};
 
-function updateResizeOriginal() {
+const updateResizeOriginal = () => {
   updateWindowHandling("resize-original", "original", true);
   const originalWin = getFromId("original");
   const isResizing = getFromId<HTMLInputElement>("resize-original").checked;
   isResizing ? originalWin.classList.remove("disabled") : originalWin.classList.add("disabled");
-}
+};
 
-function updateResizeNew() {
+const updateResizeNew = () => {
   const inputId = "clone-mode-no";
   const windowId = "new";
   const enableIfChecked = true;
   updateWindowHandling(inputId, windowId, enableIfChecked);
-}
+};
 
-function updateClone() {
+const updateClone = () => {
   const originalWin = getFromId("original");
   const newWin = getFromId("new");
   newWin.style.width = originalWin.style.width;
@@ -109,23 +106,23 @@ function updateClone() {
   (Object.entries(newBounds) as Array<[WindowProperty, number]>).forEach(([key, value]) => {
     newWin.style[key] = `${value}px`;
   });
-}
+};
 
 // update appearance of windows depending on if they are active or not
-function updateFocus() {
+const updateFocus = () => {
   getFromClass("window").forEach(win => {
     const isBlurred = win.id !== getFocusedName();
     isBlurred ? win.classList.add("blurred") : win.classList.remove("blurred");
   });
-}
+};
 
-function setWindowAsCurrent(win: HTMLElement) {
+const setWindowAsCurrent = (win: HTMLElement) => {
   getFromClass("window").forEach(_win => {
     _win === win ? _win.classList.add("current") : _win.classList.remove("current");
   });
-}
+};
 
-function updateMaxDimensions() {
+const updateMaxDimensions = () => {
   const cloneMode = options.get("cloneMode");
   const $original = $("#original");
 
@@ -138,7 +135,7 @@ function updateMaxDimensions() {
     cloneMode === "clone-mode-vertical" ? $original.parent().height()! * 0.8 : Infinity;
 
   $original.resizable("option", "maxHeight", maxHeight);
-}
+};
 
 // Main Function
 // -----------------------------------------------------------------------------
@@ -146,7 +143,7 @@ function updateMaxDimensions() {
 // as then it's more difficult to tell when / where they are being called
 // and if it's more than one
 
-function main() {
+const main = () => {
   // display shortcuts
   {
     chrome.commands.getAll(cmds => {
