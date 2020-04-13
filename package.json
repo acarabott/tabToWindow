@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/acarabott/tabToWindow#readme",
   "devDependencies": {
-    "@types/chrome": "0.0.93",
-    "@types/jquery": "^3.3.32",
+    "@types/chrome": "0.0.104",
+    "@types/jquery": "^3.3.34",
     "@types/jqueryui": "^1.12.10",
     "eslint": "^6.8.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   }
 }
