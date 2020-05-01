@@ -210,6 +210,7 @@ getOptions().then(options => {
             height: vals.height,
             left: vals.left,
             top: vals.top,
+            state: 'normal'
           },
           win => resolve(win),
         );
