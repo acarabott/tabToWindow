@@ -1,4 +1,7 @@
 js/
+build/
+build.zip
+
 .DS_Store
 *.sass-cache
 *.sublime-workspace# Logs
