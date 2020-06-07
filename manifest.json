@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Tab to Window/Popup - Keyboard Shortcut",
 	"short_name": "Tab to Window",
-	"version": "3.2.2",
+	"version": "3.2.3",
 	"author": "Arthur Carabott",
 
 	"description": "Add a keyboard shortcut to move the current tab to a new window or popup.",

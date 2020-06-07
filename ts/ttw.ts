@@ -24,122 +24,135 @@ import {
   COMMAND_POPUP,
   COMMAND_NEXT,
   COMMAND_DISPLAY,
+  Options,
 } from "./api.js";
 
-getOptions().then(options => {
-  // Helper functions
-  // -----------------------------------------------------------------------------
+// Helper functions
+// -----------------------------------------------------------------------------
 
-  /**
-   * Convert normalised values into pixel values
-   */
-  const getSizeAndPos = async (winKey: WindowID, displayBounds: IBounds) => {
-    return {
-      left: Math.round(
-        options.get(getStorageWindowPropKey(winKey, "left")) * displayBounds.width +
-          displayBounds.left,
-      ),
-      top: Math.round(
-        options.get(getStorageWindowPropKey(winKey, "top")) * displayBounds.height +
-          displayBounds.top,
-      ),
-      width: Math.round(
-        options.get(getStorageWindowPropKey(winKey, "width")) * displayBounds.width,
-      ),
-      height: Math.round(
-        options.get(getStorageWindowPropKey(winKey, "height")) * displayBounds.height,
-      ),
-    };
+/**
+ * Convert normalised values into pixel values
+ */
+const getSizeAndPos = async (options: Options, winKey: WindowID, displayBounds: IBounds) => {
+  return {
+    left: Math.round(
+      options.get(getStorageWindowPropKey(winKey, "left")) * displayBounds.width +
+        displayBounds.left,
+    ),
+    top: Math.round(
+      options.get(getStorageWindowPropKey(winKey, "top")) * displayBounds.height +
+        displayBounds.top,
+    ),
+    width: Math.round(options.get(getStorageWindowPropKey(winKey, "width")) * displayBounds.width),
+    height: Math.round(
+      options.get(getStorageWindowPropKey(winKey, "height")) * displayBounds.height,
+    ),
+  };
+};
+
+const getWindowBounds = (win: chrome.windows.Window): IBounds => {
+  return {
+    left: win.left ?? 0,
+    top: win.top ?? 0,
+    width: win.width ?? screen.availWidth,
+    height: win.height ?? screen.availHeight,
+  };
+};
+
+const getNewWindowBounds = async (
+  options: Options,
+  origWindow: chrome.windows.Window,
+  displayBounds: IBounds,
+) => {
+  const newBounds = options.isCloneEnabled
+    ? getCloneBounds(getWindowBounds(origWindow), displayBounds, options.get("cloneMode"))
+    : await getSizeAndPos(options, "new", displayBounds);
+
+  // ensure all values are integers for Chrome APIs
+  windowProperties.forEach((key) => {
+    newBounds[key] = Math.round(newBounds[key]);
+  });
+
+  return newBounds;
+};
+
+const createNewWindow = (
+  tab: chrome.tabs.Tab,
+  windowType: WindowType,
+  windowBounds: IBounds,
+  isFullscreen: boolean,
+  isFocused: boolean,
+): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
+  // new window options
+  const opts: chrome.windows.CreateData = {
+    tabId: tab.id,
+    type: windowType,
+    focused: isFocused,
+    incognito: tab.incognito,
+    ...windowBounds,
   };
 
-  const getWindowBounds = (win: chrome.windows.Window): IBounds => {
-    return {
-      left: win.left ?? 0,
-      top: win.top ?? 0,
-      width: win.width ?? screen.availWidth,
-      height: win.height ?? screen.availHeight,
-    };
-  };
-
-  const getNewWindowBounds = async (origWindow: chrome.windows.Window, displayBounds: IBounds) => {
-    const newBounds = options.isCloneEnabled
-      ? getCloneBounds(getWindowBounds(origWindow), displayBounds, options.get("cloneMode"))
-      : await getSizeAndPos("new", displayBounds);
-
-    // ensure all values are integers for Chrome APIs
-    windowProperties.forEach(key => {
-      newBounds[key] = Math.round(newBounds[key]);
-    });
-
-    return newBounds;
-  };
-
-  const createNewWindow = (
-    tab: chrome.tabs.Tab,
-    windowType: WindowType,
-    windowBounds: IBounds,
-    isFullscreen: boolean,
-    isFocused: boolean,
-  ): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
-    // new window options
-    const opts: chrome.windows.CreateData = {
-      tabId: tab.id,
-      type: windowType,
-      focused: isFocused,
-      incognito: tab.incognito,
-      ...windowBounds,
-    };
-
-    if (isFullscreen) {
-      return new Promise(resolve => {
-        chrome.windows.create(opts, newWin => {
-          if (newWin !== undefined) {
-            // this timeout is gross but necessary.
-            // updating immediately fails
-            setTimeout(() => {
-              chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
-                resolve([newWin, tab]);
-              });
-            }, 1000);
-          }
-        });
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-      chrome.windows.create(opts, newWin => {
+  if (isFullscreen) {
+    return new Promise((resolve) => {
+      chrome.windows.create(opts, (newWin) => {
         if (newWin !== undefined) {
-          resolve([newWin, tab]);
-        } else {
-          reject("Could not create new window");
+          // this timeout is gross but necessary.
+          // updating immediately fails
+          setTimeout(() => {
+            chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
+              resolve([newWin, tab]);
+            });
+          }, 1000);
         }
       });
     });
-  };
+  }
 
-  const moveTabs = (tabs: chrome.tabs.Tab[], windowId: number, index: number) => {
-    return new Promise<chrome.tabs.Tab[]>(resolve => {
-      const tabIds = tabs.reduce(
-        (accum, tab) => (tab.id === undefined ? accum : [...accum, tab.id]),
-        [] as number[],
-      );
-
-      chrome.tabs.move(tabIds, { windowId, index }, movedTabs =>
-        resolve(Array.isArray(movedTabs) ? movedTabs : [movedTabs]),
-      );
+  return new Promise((resolve, reject) => {
+    chrome.windows.create(opts, (newWin) => {
+      if (newWin !== undefined) {
+        resolve([newWin, tab]);
+      } else {
+        reject("Could not create new window");
+      }
     });
-  };
+  });
+};
 
-  // Primary Functions
-  // -----------------------------------------------------------------------------
+const moveTabs = (tabs: chrome.tabs.Tab[], windowId: number, index: number) => {
+  return new Promise<chrome.tabs.Tab[]>((resolve) => {
+    const tabIds = tabs.reduce(
+      (accum, tab) => (tab.id === undefined ? accum : [...accum, tab.id]),
+      [] as number[],
+    );
 
-  const tabToWindow = async (windowType: WindowType | undefined, moveToNextDisplay = false) => {
-    const displaysPromise = new Promise<chrome.system.display.DisplayInfo[]>(resolve => {
-      chrome.system.display.getInfo(displays => resolve(displays));
+    chrome.tabs.move(tabIds, { windowId, index }, (movedTabs) =>
+      resolve(Array.isArray(movedTabs) ? movedTabs : [movedTabs]),
+    );
+  });
+};
+
+/** Helper to perform actions once the background page has been activated
+ * Without this, the first action (e.g. keyboard shortcut) will only wake up
+ * the background page, and not perform the action
+ */
+const doBackgroundAction = (action: () => void) => {
+  chrome.runtime.getBackgroundPage((_backgroundPage) => {
+    action();
+  });
+};
+
+// Primary Functions
+// -----------------------------------------------------------------------------
+
+const tabToWindow = async (windowType: WindowType | undefined, moveToNextDisplay = false) => {
+  doBackgroundAction(async () => {
+    const displaysPromise = new Promise<chrome.system.display.DisplayInfo[]>((resolve) => {
+      chrome.system.display.getInfo((displays) => resolve(displays));
     });
 
     const currentWindowPromise = new Promise<chrome.windows.Window>((resolve, reject) => {
-      chrome.windows.getCurrent({}, win => {
+      chrome.windows.getCurrent({}, (win) => {
         if (chrome.runtime.lastError === undefined) {
           resolve(win);
         } else {
@@ -148,8 +161,8 @@ getOptions().then(options => {
       });
     });
 
-    const tabsPromise = new Promise<chrome.tabs.Tab[]>(resolve => {
-      chrome.tabs.query({ currentWindow: true }, tabs => {
+    const tabsPromise = new Promise<chrome.tabs.Tab[]>((resolve) => {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
         if (tabs.length > 0) {
           resolve(tabs);
         }
@@ -201,8 +214,8 @@ getOptions().then(options => {
       !destroyingOriginalWindow &&
       !moveToNextDisplay
     ) {
-      const vals = await getSizeAndPos("original", currentDisplay.workArea);
-      origWindow = await new Promise<chrome.windows.Window>(resolve => {
+      const vals = await getSizeAndPos(options, "original", currentDisplay.workArea);
+      origWindow = await new Promise<chrome.windows.Window>((resolve) => {
         chrome.windows.update(
           origWindow.id,
           {
@@ -210,15 +223,15 @@ getOptions().then(options => {
             height: vals.height,
             left: vals.left,
             top: vals.top,
-            state: "normal"
+            state: "normal",
           },
-          win => resolve(win),
+          (win) => resolve(win),
         );
       });
     }
 
     // move and resize new window
-    const activeTab = tabs.find(tab => tab.active)!;
+    const activeTab = tabs.find((tab) => tab.active)!;
 
     const getNextDisplay = () => {
       const currentIndex = displays.indexOf(currentDisplay);
@@ -232,7 +245,7 @@ getOptions().then(options => {
       ? getNextDisplay().bounds
       : tabs.length === 1
       ? getWindowBounds(origWindow)
-      : await getNewWindowBounds(origWindow, currentDisplay.workArea);
+      : await getNewWindowBounds(options, origWindow, currentDisplay.workArea);
 
     const newWindowType =
       windowType === undefined ? (currentWindow.type === "popup" ? "popup" : "normal") : windowType;
@@ -246,7 +259,7 @@ getOptions().then(options => {
     );
 
     // move other highlighted tabs
-    const otherTabs = tabs.filter(tab => tab !== movedTab && tab.highlighted);
+    const otherTabs = tabs.filter((tab) => tab !== movedTab && tab.highlighted);
     if (otherTabs.length > 0) {
       if (newWindowType === "normal") {
         // move all tabs at once
@@ -254,8 +267,8 @@ getOptions().then(options => {
         const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
 
         // highlight tabs in new window
-        const tabPromises = movedTabs.map(tab => {
-          return new Promise<chrome.tabs.Tab>(resolve => {
+        const tabPromises = movedTabs.map((tab) => {
+          return new Promise<chrome.tabs.Tab>((resolve) => {
             chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
           });
         });
@@ -263,7 +276,7 @@ getOptions().then(options => {
         await Promise.all(tabPromises);
       } else if (newWindowType === "popup") {
         // can't move tabs to a popup window, so create individual ones
-        const tabPromises = otherTabs.map(tab => {
+        const tabPromises = otherTabs.map((tab) => {
           return createNewWindow(
             tab,
             newWindowType,
@@ -287,49 +300,51 @@ getOptions().then(options => {
         }
       });
     }
-  };
+  });
+};
 
-  const getNextWindowId = async (currentWindowId: number) => {
-    const windows = await new Promise<chrome.windows.Window[]>(resolve => {
-      chrome.windows.getAll({ windowTypes: ["normal"] }, windows => resolve(windows));
+const getNextWindowId = async (currentWindowId: number) => {
+  const windows = await new Promise<chrome.windows.Window[]>((resolve) => {
+    chrome.windows.getAll({ windowTypes: ["normal"] }, (windows) => resolve(windows));
+  });
+
+  const currentIndex = windows.findIndex((win) => win.id === currentWindowId);
+  if (currentIndex === -1) {
+    return;
+  }
+
+  const nextIndex = (currentIndex + 1) % windows.length;
+  if (nextIndex === currentIndex) {
+    return undefined;
+  }
+
+  return windows[nextIndex].id;
+};
+
+const getTabsToUnhighlight = (windowId: number) => {
+  return new Promise<chrome.tabs.Tab[]>((resolve) => {
+    chrome.tabs.query({ windowId, highlighted: true }, (tabs) => {
+      const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
+      resolve(tabsArray);
     });
+  });
+};
 
-    const currentIndex = windows.findIndex(win => win.id === currentWindowId);
-    if (currentIndex === -1) {
-      return;
+const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
+  for (const tab of tabs) {
+    if (tab.id !== undefined) {
+      chrome.tabs.update(tab.id!, { highlighted: false });
     }
+  }
+};
 
-    const nextIndex = (currentIndex + 1) % windows.length;
-    if (nextIndex === currentIndex) {
-      return undefined;
-    }
-
-    return windows[nextIndex].id;
-  };
-
-  const getTabsToUnhighlight = (windowId: number) => {
-    return new Promise<chrome.tabs.Tab[]>(resolve => {
-      chrome.tabs.query({ windowId, highlighted: true }, tabs => {
-        const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
-        resolve(tabsArray);
-      });
-    });
-  };
-
-  const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
-    for (const tab of tabs) {
-      if (tab.id !== undefined) {
-        chrome.tabs.update(tab.id!, { highlighted: false });
-      }
-    }
-  };
-
-  const tabToWindowNormal = () => tabToWindow("normal");
-  const tabToWindowPopup = () => tabToWindow("popup");
-  const tabToNextDisplay = () => tabToWindow(undefined, true);
-  const tabToNextWindow = async () => {
-    const tabsToMove = await new Promise<chrome.tabs.Tab[]>(resolve =>
-      chrome.tabs.query({ currentWindow: true, highlighted: true }, tabs => resolve(tabs)),
+const tabToWindowNormal = () => tabToWindow("normal");
+const tabToWindowPopup = () => tabToWindow("popup");
+const tabToNextDisplay = () => tabToWindow(undefined, true);
+const tabToNextWindow = () => {
+  doBackgroundAction(async () => {
+    const tabsToMove = await new Promise<chrome.tabs.Tab[]>((resolve) =>
+      chrome.tabs.query({ currentWindow: true, highlighted: true }, (tabs) => resolve(tabs)),
     );
 
     if (tabsToMove.length === 0) {
@@ -342,8 +357,8 @@ getOptions().then(options => {
     }
 
     // focus on next window
-    await new Promise(resolve => {
-      chrome.windows.update(nextWindowId, { focused: true }, win => resolve(win));
+    await new Promise((resolve) => {
+      chrome.windows.update(nextWindowId, { focused: true }, (win) => resolve(win));
     });
 
     // store tabs to unhighlight
@@ -354,11 +369,11 @@ getOptions().then(options => {
     const movedTabs = await moveTabs(tabsToMove, nextWindowId, moveIndex);
     await Promise.all(
       movedTabs.map((tab, i) => {
-        return new Promise(tabResolve => {
+        return new Promise((tabResolve) => {
           chrome.tabs.update(
             tab.id!,
             { highlighted: true, active: i === movedTabs.length - 1 },
-            tab => tabResolve(tab),
+            (tab) => tabResolve(tab),
           );
         });
       }),
@@ -366,24 +381,28 @@ getOptions().then(options => {
 
     // unlight old tabs
     unhighlightTabs(tabsToUnhighlight);
-  };
+  });
+};
 
-  const urlToWindow = (
-    url: string,
-    windowType: WindowType | undefined,
-    moveToNextDisplay = false,
-  ) => {
+const urlToWindow = (
+  url: string,
+  windowType: WindowType | undefined,
+  moveToNextDisplay = false,
+) => {
+  doBackgroundAction(() => {
     chrome.tabs.create({ url, active: true }, () => {
       tabToWindow(windowType, moveToNextDisplay);
     });
-  };
+  });
+};
 
-  const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
-  const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
-  const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
-  const urlToNextWindow = async (url: string) => {
-    const currentWindow = await new Promise<chrome.windows.Window>(resolve => {
-      chrome.windows.getCurrent({}, window => resolve(window));
+const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
+const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
+const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
+const urlToNextWindow = (url: string) => {
+  doBackgroundAction(async () => {
+    const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
+      chrome.windows.getCurrent({}, (window) => resolve(window));
     });
 
     const nextWindowId = await getNextWindowId(currentWindow.id);
@@ -395,190 +414,198 @@ getOptions().then(options => {
 
     const opts = { windowId: nextWindowId, url };
     chrome.tabs.create(opts);
-  };
-
-  // Chrome Listeners
-  // -----------------------------------------------------------------------------
-
-  chrome.storage.onChanged.addListener(changes => {
-    const update: Partial<IOptions> = {};
-
-    const entries = Object.entries(changes) as Array<
-      [keyof IOptions, chrome.storage.StorageChange]
-    >;
-    for (const [key, change] of entries) {
-      update[key] = change.newValue;
-    }
-
-    options.update(update);
   });
+};
 
-  chrome.commands.onCommand.addListener(command => {
-    if (command === COMMAND_NORMAL) {
-      tabToWindowNormal();
-    } else if (command === COMMAND_POPUP) {
-      tabToWindowPopup();
-    } else if (command === COMMAND_NEXT) {
-      tabToNextWindow();
-    } else if (command === COMMAND_DISPLAY) {
-      tabToNextDisplay();
-    }
-  });
+// Chrome Listeners
+// -----------------------------------------------------------------------------
 
-  chrome.runtime.onInstalled.addListener(details => {
-    const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
-    const showUpdate =
-      details.reason === "install" || (details.reason === "update" && previousMajorVersion < 3);
+chrome.storage.onChanged.addListener(async(changes) => {
+  const update: Partial<IOptions> = {};
 
-    if (showUpdate) {
-      const url = "https://acarabott.github.io/tabToWindow";
-      chrome.tabs.create({ url, active: true });
+  const entries = Object.entries(changes) as Array<[keyof IOptions, chrome.storage.StorageChange]>;
+  for (const [key, change] of entries) {
+    update[key] = change.newValue;
+  }
+
+  (await getOptions()).update(update);
+});
+
+chrome.commands.onCommand.addListener((command) => {
+  chrome.runtime.getBackgroundPage(() => {
+    switch (command) {
+      case COMMAND_NORMAL:
+        tabToWindowNormal();
+        break;
+      case COMMAND_POPUP:
+        tabToWindowPopup();
+        break;
+      case COMMAND_NEXT:
+        tabToNextWindow();
+        break;
+      case COMMAND_DISPLAY:
+        tabToNextDisplay();
+        break;
+      default:
+        console.assert(false);
+        break;
     }
   });
+});
 
-  // Extension Button
-  // -----------------------------------------------------------------------------
+chrome.runtime.onInstalled.addListener((details) => {
+  const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
+  const showUpdate =
+    details.reason === "install" || (details.reason === "update" && previousMajorVersion < 3);
 
-  chrome.browserAction.onClicked.addListener(async () =>
-    tabToWindow(options.get("menuButtonType")),
-  );
+  if (showUpdate) {
+    const url = "https://acarabott.github.io/tabToWindow";
+    chrome.tabs.create({ url, active: true });
+  }
+});
 
-  // Context Menu Creation
-  // Options
+// Extension Button
+// -----------------------------------------------------------------------------
+
+chrome.browserAction.onClicked.addListener(async () => {
+  tabToWindow((await getOptions()).get("menuButtonType"));
+});
+
+// Context Menu Creation
+// Options
+// -------
+const createMenu = async () => {
+  const optionsPromise = getOptions();
+
+  const commandsPromise = new Promise<chrome.commands.Command[]>((resolve) => {
+    chrome.commands.getAll((commands) => resolve(commands));
+  });
+
+  const [options, commands] = await Promise.all([optionsPromise, commandsPromise]);
+  chrome.contextMenus.removeAll();
+
+  // Actions
   // -------
-  const createMenu = async () => {
-    const optionsPromise = getOptions();
+  const actionDefs = [
+    { commandName: COMMAND_NORMAL, menuId: MENU_TAB_TO_WINDOW_ID },
+    { commandName: COMMAND_POPUP, menuId: MENU_TAB_TO_POPUP_ID },
+    { commandName: COMMAND_NEXT, menuId: MENU_TAB_TO_NEXT_ID },
+    { commandName: COMMAND_DISPLAY, menuId: MENU_TAB_TO_DISPLAY_ID },
+  ];
 
-    const commandsPromise = new Promise<chrome.commands.Command[]>(resolve => {
-      chrome.commands.getAll(commands => resolve(commands));
-    });
-
-    const [options, commands] = await Promise.all([optionsPromise, commandsPromise]);
-    chrome.contextMenus.removeAll();
-
-    // Actions
-    // -------
-    const actionDefs = [
-      { commandName: COMMAND_NORMAL, menuId: MENU_TAB_TO_WINDOW_ID },
-      { commandName: COMMAND_POPUP, menuId: MENU_TAB_TO_POPUP_ID },
-      { commandName: COMMAND_NEXT, menuId: MENU_TAB_TO_NEXT_ID },
-      { commandName: COMMAND_DISPLAY, menuId: MENU_TAB_TO_DISPLAY_ID },
-    ];
-
-    for (const { commandName: commandId, menuId } of actionDefs) {
-      const command = commands.find(cmd => cmd.name === commandId);
-      if (command !== undefined) {
-        chrome.contextMenus.create({
-          type: "normal",
-          id: menuId,
-          title: `Tab to ${command.description} ${command.shortcut}`,
-          contexts: ["browser_action", "page"],
-        });
-      }
-    }
-
-    // Type
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_TYPE_PARENT_ID,
-      title: "Window Type",
-      contexts: ["browser_action"],
-    });
-
-    chrome.contextMenus.create({
-      type: "radio",
-      id: MENU_WINDOW_OPTION_ID,
-      parentId: MENU_TYPE_PARENT_ID,
-      title: "Window",
-      checked: options.get("menuButtonType") === "normal",
-      contexts: ["browser_action"],
-    });
-
-    chrome.contextMenus.create({
-      type: "radio",
-      id: MENU_POPUP_OPTION_ID,
-      parentId: MENU_TYPE_PARENT_ID,
-      title: "Popup",
-      checked: options.get("menuButtonType") === "popup",
-      contexts: ["browser_action"],
-    });
-
-    // Focus
-    chrome.contextMenus.create({
-      type: "normal",
-      id: MENU_FOCUS_PARENT_ID,
-      title: "Focus",
-      contexts: ["browser_action"],
-    });
-
-    chrome.contextMenus.create({
-      type: "radio",
-      id: MENU_FOCUS_ORIGINAL_OPTION_ID,
-      parentId: MENU_FOCUS_PARENT_ID,
-      title: "Original",
-      checked: options.get("focus") === "original",
-      contexts: ["browser_action"],
-    });
-
-    chrome.contextMenus.create({
-      type: "radio",
-      id: MENU_FOCUS_NEW_OPTION_ID,
-      parentId: MENU_FOCUS_PARENT_ID,
-      title: "New",
-      checked: options.get("focus") === "new",
-      contexts: ["browser_action"],
-    });
-
-    // links on page
-    const linkDefs = [
-      { id: MENU_LINK_TO_WINDOW_ID, title: "Link To New Window" },
-      { id: MENU_LINK_TO_POPUP_ID, title: "Link To New Popup" },
-      { id: MENU_LINK_TO_NEXT_ID, title: "Link To Next Window" },
-      { id: MENU_LINK_TO_DISPLAY_ID, title: "Link To Next Display" },
-    ];
-
-    for (const { id, title } of linkDefs) {
+  for (const { commandName: commandId, menuId } of actionDefs) {
+    const command = commands.find((cmd) => cmd.name === commandId);
+    if (command !== undefined) {
       chrome.contextMenus.create({
         type: "normal",
-        id,
-        title,
-        contexts: ["link"],
+        id: menuId,
+        title: `Tab to ${command.description} ${command.shortcut}`,
+        contexts: ["browser_action", "page"],
       });
     }
+  }
 
-    // Context Menu action
-    chrome.contextMenus.onClicked.addListener(info => {
-      // actions
-      if (info.menuItemId === MENU_TAB_TO_WINDOW_ID) {
-        tabToWindowNormal();
-      } else if (info.menuItemId === MENU_TAB_TO_POPUP_ID) {
-        tabToWindowPopup();
-      } else if (info.menuItemId === MENU_TAB_TO_NEXT_ID) {
-        tabToNextWindow();
-      } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
-        tabToNextDisplay();
-      } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID && info.linkUrl !== undefined) {
-        urlToWindowNormal(info.linkUrl);
-      } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID && info.linkUrl !== undefined) {
-        urlToWindowPopup(info.linkUrl);
-      } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID && info.linkUrl !== undefined) {
-        urlToNextWindow(info.linkUrl);
-      } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID && info.linkUrl !== undefined) {
-        urlToNextDisplay(info.linkUrl);
-      }
+  // Type
+  chrome.contextMenus.create({
+    type: "normal",
+    id: MENU_TYPE_PARENT_ID,
+    title: "Window Type",
+    contexts: ["browser_action"],
+  });
 
-      // options
-      else if (info.menuItemId === MENU_WINDOW_OPTION_ID) {
-        options.update({ menuButtonType: "normal" });
-      } else if (info.menuItemId === MENU_POPUP_OPTION_ID) {
-        options.update({ menuButtonType: "popup" });
-      } else if (info.menuItemId === MENU_FOCUS_ORIGINAL_OPTION_ID) {
-        options.update({ focus: "original" });
-      } else if (info.menuItemId === MENU_FOCUS_NEW_OPTION_ID) {
-        options.update({ focus: "new" });
-      }
+  chrome.contextMenus.create({
+    type: "radio",
+    id: MENU_WINDOW_OPTION_ID,
+    parentId: MENU_TYPE_PARENT_ID,
+    title: "Window",
+    checked: options.get("menuButtonType") === "normal",
+    contexts: ["browser_action"],
+  });
+
+  chrome.contextMenus.create({
+    type: "radio",
+    id: MENU_POPUP_OPTION_ID,
+    parentId: MENU_TYPE_PARENT_ID,
+    title: "Popup",
+    checked: options.get("menuButtonType") === "popup",
+    contexts: ["browser_action"],
+  });
+
+  // Focus
+  chrome.contextMenus.create({
+    type: "normal",
+    id: MENU_FOCUS_PARENT_ID,
+    title: "Focus",
+    contexts: ["browser_action"],
+  });
+
+  chrome.contextMenus.create({
+    type: "radio",
+    id: MENU_FOCUS_ORIGINAL_OPTION_ID,
+    parentId: MENU_FOCUS_PARENT_ID,
+    title: "Original",
+    checked: options.get("focus") === "original",
+    contexts: ["browser_action"],
+  });
+
+  chrome.contextMenus.create({
+    type: "radio",
+    id: MENU_FOCUS_NEW_OPTION_ID,
+    parentId: MENU_FOCUS_PARENT_ID,
+    title: "New",
+    checked: options.get("focus") === "new",
+    contexts: ["browser_action"],
+  });
+
+  // links on page
+  const linkDefs = [
+    { id: MENU_LINK_TO_WINDOW_ID, title: "Link To New Window" },
+    { id: MENU_LINK_TO_POPUP_ID, title: "Link To New Popup" },
+    { id: MENU_LINK_TO_NEXT_ID, title: "Link To Next Window" },
+    { id: MENU_LINK_TO_DISPLAY_ID, title: "Link To Next Display" },
+  ];
+
+  for (const { id, title } of linkDefs) {
+    chrome.contextMenus.create({
+      type: "normal",
+      id,
+      title,
+      contexts: ["link"],
     });
-  };
+  }
 
-  createMenu();
-});
+  // Context Menu action
+  chrome.contextMenus.onClicked.addListener((info) => {
+    // actions
+    if (info.menuItemId === MENU_TAB_TO_WINDOW_ID) {
+      tabToWindowNormal();
+    } else if (info.menuItemId === MENU_TAB_TO_POPUP_ID) {
+      tabToWindowPopup();
+    } else if (info.menuItemId === MENU_TAB_TO_NEXT_ID) {
+      tabToNextWindow();
+    } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
+      tabToNextDisplay();
+    } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID && info.linkUrl !== undefined) {
+      urlToWindowNormal(info.linkUrl);
+    } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID && info.linkUrl !== undefined) {
+      urlToWindowPopup(info.linkUrl);
+    } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID && info.linkUrl !== undefined) {
+      urlToNextWindow(info.linkUrl);
+    } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID && info.linkUrl !== undefined) {
+      urlToNextDisplay(info.linkUrl);
+    }
+
+    // options
+    else if (info.menuItemId === MENU_WINDOW_OPTION_ID) {
+      options.update({ menuButtonType: "normal" });
+    } else if (info.menuItemId === MENU_POPUP_OPTION_ID) {
+      options.update({ menuButtonType: "popup" });
+    } else if (info.menuItemId === MENU_FOCUS_ORIGINAL_OPTION_ID) {
+      options.update({ focus: "original" });
+    } else if (info.menuItemId === MENU_FOCUS_NEW_OPTION_ID) {
+      options.update({ focus: "new" });
+    }
+  });
+};
+
+createMenu();
