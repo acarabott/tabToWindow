@@ -8,8 +8,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "build": "tsc -p .",
-    "publish": "./publish.sh"
+    "build": "./build.sh",
+    "publish": "npm run build && zip -r build.zip \"./build\""
   },
   "repository": {
     "type": "git",
