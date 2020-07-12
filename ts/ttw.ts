@@ -303,7 +303,7 @@ const tabToWindow = async (windowType: WindowType | undefined, moveToNextDisplay
   });
 };
 
-const getNextWindowId = async (currentWindowId: number) => {
+const getNeighbouringWindowId = async (currentWindowId: number, distance: number) => {
   const windows = await new Promise<chrome.windows.Window[]>((resolve) => {
     chrome.windows.getAll({ windowTypes: ["normal"] }, (windows) => resolve(windows));
   });
@@ -313,7 +313,9 @@ const getNextWindowId = async (currentWindowId: number) => {
     return;
   }
 
-  const nextIndex = (currentIndex + 1) % windows.length;
+  const i = currentIndex + distance;
+  const max = windows.length;
+  const nextIndex = ((i % max) + max) % max; // wrapping in either direction
   if (nextIndex === currentIndex) {
     return undefined;
   }
@@ -341,7 +343,7 @@ const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
 const tabToWindowNormal = () => tabToWindow("normal");
 const tabToWindowPopup = () => tabToWindow("popup");
 const tabToNextDisplay = () => tabToWindow(undefined, true);
-const tabToNextWindow = () => {
+const tabToExistingWindow = (windowDistance: number) => {
   doBackgroundAction(async () => {
     const tabsToMove = await new Promise<chrome.tabs.Tab[]>((resolve) =>
       chrome.tabs.query({ currentWindow: true, highlighted: true }, (tabs) => resolve(tabs)),
@@ -351,7 +353,7 @@ const tabToNextWindow = () => {
       return;
     }
 
-    const nextWindowId = await getNextWindowId(tabsToMove[0].windowId);
+    const nextWindowId = await getNeighbouringWindowId(tabsToMove[0].windowId, windowDistance);
     if (nextWindowId === undefined) {
       return;
     }
@@ -399,13 +401,13 @@ const urlToWindow = (
 const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
 const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
 const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
-const urlToNextWindow = (url: string) => {
+const urlToExistingWindow = (url: string, windowDistance: number) => {
   doBackgroundAction(async () => {
     const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
       chrome.windows.getCurrent({}, (window) => resolve(window));
     });
 
-    const nextWindowId = await getNextWindowId(currentWindow.id);
+    const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
     if (nextWindowId === undefined) {
       return;
     }
@@ -441,7 +443,7 @@ chrome.commands.onCommand.addListener((command) => {
         tabToWindowPopup();
         break;
       case COMMAND_NEXT:
-        tabToNextWindow();
+        tabToExistingWindow(1);
         break;
       case COMMAND_DISPLAY:
         tabToNextDisplay();
@@ -582,7 +584,7 @@ const createMenu = async () => {
     } else if (info.menuItemId === MENU_TAB_TO_POPUP_ID) {
       tabToWindowPopup();
     } else if (info.menuItemId === MENU_TAB_TO_NEXT_ID) {
-      tabToNextWindow();
+      tabToExistingWindow(1);
     } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
       tabToNextDisplay();
     } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID && info.linkUrl !== undefined) {
@@ -590,7 +592,7 @@ const createMenu = async () => {
     } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID && info.linkUrl !== undefined) {
       urlToWindowPopup(info.linkUrl);
     } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID && info.linkUrl !== undefined) {
-      urlToNextWindow(info.linkUrl);
+      urlToExistingWindow(info.linkUrl, 1);
     } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID && info.linkUrl !== undefined) {
       urlToNextDisplay(info.linkUrl);
     }
