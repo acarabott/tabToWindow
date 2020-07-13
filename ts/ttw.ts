@@ -21,7 +21,6 @@ import {
   MENU_TAB_TO_WINDOW_ID,
   MENU_TYPE_PARENT_ID,
   MENU_WINDOW_OPTION_ID,
-  WindowType,
 } from "./api.js";
 import { doBackgroundAction } from "./doBackgroundAction.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
@@ -30,6 +29,7 @@ import { getOptions } from "./options-storage.js";
 import { tabToNeighbouringWindow } from "./tabToNeighbouringWindow.js";
 import { tabToWindow } from "./tabToWindow.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
+import { urlToWindow } from "./urlToWindow.js";
 
 // Primary Functions
 // -----------------------------------------------------------------------------
@@ -37,18 +37,6 @@ import { unhighlightTabs } from "./unhighlightTabs.js";
 const tabToWindowNormal = () => tabToWindow("normal");
 const tabToWindowPopup = () => tabToWindow("popup");
 const tabToNextDisplay = () => tabToWindow(undefined, true);
-
-const urlToWindow = (
-  url: string,
-  windowType: WindowType | undefined,
-  moveToNextDisplay = false,
-) => {
-  doBackgroundAction(() => {
-    chrome.tabs.create({ url, active: true }, () => {
-      tabToWindow(windowType, moveToNextDisplay);
-    });
-  });
-};
 
 const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
 const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
