@@ -29,17 +29,10 @@ import { getOptions } from "./options-storage.js";
 import { tabToWindow } from "./tabToWindow.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
+import { unhighlightTabs } from "./unhighlightTabs.js";
 
 // Primary Functions
 // -----------------------------------------------------------------------------
-
-const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
-  for (const tab of tabs) {
-    if (tab.id !== undefined) {
-      chrome.tabs.update(tab.id!, { highlighted: false });
-    }
-  }
-};
 
 const tabToWindowNormal = () => tabToWindow("normal");
 const tabToWindowPopup = () => tabToWindow("popup");
