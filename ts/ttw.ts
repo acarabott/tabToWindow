@@ -22,34 +22,15 @@ import {
   MENU_TAB_TO_WINDOW_ID,
   MENU_TYPE_PARENT_ID,
   MENU_WINDOW_OPTION_ID,
-  Options,
-  windowProperties,
   WindowType,
 } from "./api.js";
-import { getCloneBounds } from "./getCloneBounds.js";
+import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { getOptions } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
-
-const getNewWindowBounds = async (
-  options: Options,
-  origWindow: chrome.windows.Window,
-  displayBounds: IBounds,
-) => {
-  const newBounds = options.isCloneEnabled
-    ? getCloneBounds(getWindowBounds(origWindow), displayBounds, options.get("cloneMode"))
-    : await getSizeAndPos(options, "new", displayBounds);
-
-  // ensure all values are integers for Chrome APIs
-  windowProperties.forEach((key) => {
-    newBounds[key] = Math.round(newBounds[key]);
-  });
-
-  return newBounds;
-};
 
 const createNewWindow = (
   tab: chrome.tabs.Tab,
