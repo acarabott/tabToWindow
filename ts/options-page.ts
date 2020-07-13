@@ -3,7 +3,6 @@ import { getCloneBounds } from "./getCloneBounds.js";
 import { getOptions, getStorageWindowPropKey } from "./options-storage.js";
 
 // Helper functions
-// These should be functions that are called in more than one place
 // -----------------------------------------------------------------------------
 
 const getFromId = <T extends HTMLElement>(id: string, root = document) =>
