@@ -28,6 +28,7 @@ import {
   WindowType,
 } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
+import { getWindowBounds } from "./getWindowBounds.js";
 import { getOptions, getStorageWindowPropKey } from "./options-storage.js";
 
 // Helper functions
@@ -50,15 +51,6 @@ const getSizeAndPos = async (options: Options, winKey: WindowID, displayBounds: 
     height: Math.round(
       options.get(getStorageWindowPropKey(winKey, "height")) * displayBounds.height,
     ),
-  };
-};
-
-const getWindowBounds = (win: chrome.windows.Window): IBounds => {
-  return {
-    left: win.left ?? 0,
-    top: win.top ?? 0,
-    width: win.width ?? screen.availWidth,
-    height: win.height ?? screen.availHeight,
   };
 };
 
