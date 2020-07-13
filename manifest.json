@@ -44,8 +44,11 @@
 				"linux": "Alt+Shift+Z"
 			},
 			"description": "Next Window"
+        },
+        "04-tab-to-window-previous": {
+			"description": "Previous Window"
 		},
-		"04-tab-to-window-display": {
+		"05-tab-to-window-display": {
 			"suggested_key": {
 				"default": "Alt+D",
 				"linux": "Alt+Shift+D",

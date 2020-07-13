@@ -1,31 +1,34 @@
-import { getStorageWindowPropKey, getOptions } from "./options-storage.js";
-import { getCloneBounds } from "./getCloneBounds.js";
 import {
-  WindowID,
-  IBounds,
-  windowProperties,
-  WindowType,
-  IOptions,
-  MENU_TAB_TO_WINDOW_ID,
-  MENU_TAB_TO_POPUP_ID,
-  MENU_TAB_TO_NEXT_ID,
-  MENU_TAB_TO_DISPLAY_ID,
-  MENU_LINK_TO_WINDOW_ID,
-  MENU_LINK_TO_POPUP_ID,
-  MENU_LINK_TO_NEXT_ID,
-  MENU_LINK_TO_DISPLAY_ID,
-  MENU_WINDOW_OPTION_ID,
-  MENU_POPUP_OPTION_ID,
-  MENU_FOCUS_PARENT_ID,
-  MENU_TYPE_PARENT_ID,
-  MENU_FOCUS_ORIGINAL_OPTION_ID,
-  MENU_FOCUS_NEW_OPTION_ID,
+  COMMAND_DISPLAY,
+  COMMAND_NEXT,
   COMMAND_NORMAL,
   COMMAND_POPUP,
-  COMMAND_NEXT,
-  COMMAND_DISPLAY,
+  COMMAND_PREVIOUS,
+  IBounds,
+  IOptions,
+  MENU_FOCUS_NEW_OPTION_ID,
+  MENU_FOCUS_ORIGINAL_OPTION_ID,
+  MENU_FOCUS_PARENT_ID,
+  MENU_LINK_TO_DISPLAY_ID,
+  MENU_LINK_TO_NEXT_ID,
+  MENU_LINK_TO_POPUP_ID,
+  MENU_LINK_TO_PREVIOUS_ID,
+  MENU_LINK_TO_WINDOW_ID,
+  MENU_POPUP_OPTION_ID,
+  MENU_TAB_TO_DISPLAY_ID,
+  MENU_TAB_TO_NEXT_ID,
+  MENU_TAB_TO_POPUP_ID,
+  MENU_TAB_TO_PREVIOUS_ID,
+  MENU_TAB_TO_WINDOW_ID,
+  MENU_TYPE_PARENT_ID,
+  MENU_WINDOW_OPTION_ID,
   Options,
+  WindowID,
+  windowProperties,
+  WindowType,
 } from "./api.js";
+import { getCloneBounds } from "./getCloneBounds.js";
+import { getOptions, getStorageWindowPropKey } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -343,7 +346,7 @@ const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
 const tabToWindowNormal = () => tabToWindow("normal");
 const tabToWindowPopup = () => tabToWindow("popup");
 const tabToNextDisplay = () => tabToWindow(undefined, true);
-const tabToExistingWindow = (windowDistance: number) => {
+const tabToNeighbouringWindow = (windowDistance: number) => {
   doBackgroundAction(async () => {
     const tabsToMove = await new Promise<chrome.tabs.Tab[]>((resolve) =>
       chrome.tabs.query({ currentWindow: true, highlighted: true }, (tabs) => resolve(tabs)),
@@ -401,7 +404,7 @@ const urlToWindow = (
 const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
 const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
 const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
-const urlToExistingWindow = (url: string, windowDistance: number) => {
+const urlToNeighbouringWindow = (url: string, windowDistance: number) => {
   doBackgroundAction(async () => {
     const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
       chrome.windows.getCurrent({}, (window) => resolve(window));
@@ -422,7 +425,7 @@ const urlToExistingWindow = (url: string, windowDistance: number) => {
 // Chrome Listeners
 // -----------------------------------------------------------------------------
 
-chrome.storage.onChanged.addListener(async(changes) => {
+chrome.storage.onChanged.addListener(async (changes) => {
   const update: Partial<IOptions> = {};
 
   const entries = Object.entries(changes) as Array<[keyof IOptions, chrome.storage.StorageChange]>;
@@ -443,7 +446,10 @@ chrome.commands.onCommand.addListener((command) => {
         tabToWindowPopup();
         break;
       case COMMAND_NEXT:
-        tabToExistingWindow(1);
+        tabToNeighbouringWindow(1);
+        break;
+      case COMMAND_PREVIOUS:
+        tabToNeighbouringWindow(-1);
         break;
       case COMMAND_DISPLAY:
         tabToNextDisplay();
@@ -492,6 +498,7 @@ const createMenu = async () => {
     { commandName: COMMAND_NORMAL, menuId: MENU_TAB_TO_WINDOW_ID },
     { commandName: COMMAND_POPUP, menuId: MENU_TAB_TO_POPUP_ID },
     { commandName: COMMAND_NEXT, menuId: MENU_TAB_TO_NEXT_ID },
+    { commandName: COMMAND_PREVIOUS, menuId: MENU_TAB_TO_PREVIOUS_ID },
     { commandName: COMMAND_DISPLAY, menuId: MENU_TAB_TO_DISPLAY_ID },
   ];
 
@@ -564,6 +571,7 @@ const createMenu = async () => {
     { id: MENU_LINK_TO_WINDOW_ID, title: "Link To New Window" },
     { id: MENU_LINK_TO_POPUP_ID, title: "Link To New Popup" },
     { id: MENU_LINK_TO_NEXT_ID, title: "Link To Next Window" },
+    { id: MENU_LINK_TO_PREVIOUS_ID, title: "Link To Previous Window" },
     { id: MENU_LINK_TO_DISPLAY_ID, title: "Link To Next Display" },
   ];
 
@@ -584,7 +592,9 @@ const createMenu = async () => {
     } else if (info.menuItemId === MENU_TAB_TO_POPUP_ID) {
       tabToWindowPopup();
     } else if (info.menuItemId === MENU_TAB_TO_NEXT_ID) {
-      tabToExistingWindow(1);
+      tabToNeighbouringWindow(1);
+    } else if (info.menuItemId === MENU_TAB_TO_PREVIOUS_ID) {
+      tabToNeighbouringWindow(-1);
     } else if (info.menuItemId === MENU_TAB_TO_DISPLAY_ID) {
       tabToNextDisplay();
     } else if (info.menuItemId === MENU_LINK_TO_WINDOW_ID && info.linkUrl !== undefined) {
@@ -592,7 +602,9 @@ const createMenu = async () => {
     } else if (info.menuItemId === MENU_LINK_TO_POPUP_ID && info.linkUrl !== undefined) {
       urlToWindowPopup(info.linkUrl);
     } else if (info.menuItemId === MENU_LINK_TO_NEXT_ID && info.linkUrl !== undefined) {
-      urlToExistingWindow(info.linkUrl, 1);
+      urlToNeighbouringWindow(info.linkUrl, 1);
+    } else if (info.menuItemId === MENU_LINK_TO_PREVIOUS_ID && info.linkUrl !== undefined) {
+      urlToNeighbouringWindow(info.linkUrl, -1);
     } else if (info.menuItemId === MENU_LINK_TO_DISPLAY_ID && info.linkUrl !== undefined) {
       urlToNextDisplay(info.linkUrl);
     }

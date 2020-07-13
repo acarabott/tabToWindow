@@ -80,6 +80,7 @@ export type Options = ThenArg<ReturnType<typeof getOptions>>;
 export const MENU_TAB_TO_WINDOW_ID = "tab to window";
 export const MENU_TAB_TO_POPUP_ID = "tab to popup";
 export const MENU_TAB_TO_NEXT_ID = "tab to next";
+export const MENU_TAB_TO_PREVIOUS_ID = "tab to previous";
 export const MENU_TAB_TO_DISPLAY_ID = "tab to display";
 export const MENU_TYPE_PARENT_ID = "type parent";
 export const MENU_WINDOW_OPTION_ID = "window option";
@@ -90,10 +91,12 @@ export const MENU_FOCUS_NEW_OPTION_ID = "focus new option";
 export const MENU_LINK_TO_WINDOW_ID = "link to window";
 export const MENU_LINK_TO_POPUP_ID = "link to popup";
 export const MENU_LINK_TO_NEXT_ID = "link to next";
+export const MENU_LINK_TO_PREVIOUS_ID = "link to previous";
 export const MENU_LINK_TO_DISPLAY_ID = "link to display";
 
 // Must match those in manifest.json
 export const COMMAND_NORMAL = "01-tab-to-window-normal";
 export const COMMAND_POPUP = "02-tab-to-window-popup";
 export const COMMAND_NEXT = "03-tab-to-window-next";
-export const COMMAND_DISPLAY = "04-tab-to-window-display";
+export const COMMAND_PREVIOUS = "04-tab-to-window-previous";
+export const COMMAND_DISPLAY = "05-tab-to-window-display";
