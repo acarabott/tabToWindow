@@ -1,4 +1,4 @@
-import { IBounds, CloneMode } from "./api";
+import { CloneMode, IBounds } from "./api";
 
 /**
   * find the position that has the most space and return the position
