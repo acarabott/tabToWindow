@@ -26,6 +26,7 @@
     "@types/jquery": "^3.3.34",
     "@types/jqueryui": "^1.12.10",
     "eslint": "^6.8.0",
+    "prettier": "^2.0.5",
     "typescript": "^3.8.3"
   }
 }
