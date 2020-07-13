@@ -22,42 +22,18 @@ import {
   MENU_TYPE_PARENT_ID,
   MENU_WINDOW_OPTION_ID,
 } from "./api.js";
-import { doBackgroundAction } from "./doBackgroundAction.js";
-import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
-import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
 import { getOptions } from "./options-storage.js";
-import { tabToNeighbouringWindow } from "./tabToNeighbouringWindow.js";
-import { tabToWindow } from "./tabToWindow.js";
-import { unhighlightTabs } from "./unhighlightTabs.js";
-import { urlToWindow } from "./urlToWindow.js";
+import {
+  tabToNeighbouringWindow,
+  tabToNextDisplay,
+  tabToWindow,
+  tabToWindowNormal,
+  tabToWindowPopup,
+} from "./actionsTabs.js";
+import { urlToNeighbouringWindow, urlToNextDisplay, urlToWindowNormal, urlToWindowPopup } from "./actionsURLs.js";
 
 // Primary Functions
 // -----------------------------------------------------------------------------
-
-const tabToWindowNormal = () => tabToWindow("normal");
-const tabToWindowPopup = () => tabToWindow("popup");
-const tabToNextDisplay = () => tabToWindow(undefined, true);
-
-const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
-const urlToWindowPopup = (url: string) => urlToWindow(url, "popup");
-const urlToNextDisplay = (url: string) => urlToWindow(url, undefined, true);
-const urlToNeighbouringWindow = (url: string, windowDistance: number) => {
-  doBackgroundAction(async () => {
-    const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
-      chrome.windows.getCurrent({}, (window) => resolve(window));
-    });
-
-    const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
-    if (nextWindowId === undefined) {
-      return;
-    }
-
-    unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
-
-    const opts = { windowId: nextWindowId, url };
-    chrome.tabs.create(opts);
-  });
-};
 
 // Chrome Listeners
 // -----------------------------------------------------------------------------
