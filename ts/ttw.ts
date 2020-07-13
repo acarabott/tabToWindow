@@ -28,18 +28,10 @@ import { moveTabs } from "./moveTabs.js";
 import { getOptions } from "./options-storage.js";
 import { tabToWindow } from "./tabToWindow.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
+import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
 
 // Primary Functions
 // -----------------------------------------------------------------------------
-
-const getTabsToUnhighlight = (windowId: number) => {
-  return new Promise<chrome.tabs.Tab[]>((resolve) => {
-    chrome.tabs.query({ windowId, highlighted: true }, (tabs) => {
-      const tabsArray = Array.isArray(tabs) ? tabs : [tabs];
-      resolve(tabsArray);
-    });
-  });
-};
 
 const unhighlightTabs = (tabs: chrome.tabs.Tab[]) => {
   for (const tab of tabs) {
