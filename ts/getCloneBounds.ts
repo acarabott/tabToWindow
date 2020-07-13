@@ -1,4 +1,4 @@
-import { CloneMode, IBounds } from "./api";
+import { CloneMode, IBounds } from "./api.js";
 
 /**
  * find the position that has the most space and return the position
