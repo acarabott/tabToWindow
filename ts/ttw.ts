@@ -28,22 +28,10 @@ import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { getOptions } from "./options-storage.js";
+import { moveTabs } from "./moveTabs.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
-
-const moveTabs = (tabs: chrome.tabs.Tab[], windowId: number, index: number) => {
-  return new Promise<chrome.tabs.Tab[]>((resolve) => {
-    const tabIds = tabs.reduce(
-      (accum, tab) => (tab.id === undefined ? accum : [...accum, tab.id]),
-      [] as number[],
-    );
-
-    chrome.tabs.move(tabIds, { windowId, index }, (movedTabs) =>
-      resolve(Array.isArray(movedTabs) ? movedTabs : [movedTabs]),
-    );
-  });
-};
 
 /** Helper to perform actions once the background page has been activated
  * Without this, the first action (e.g. keyboard shortcut) will only wake up
