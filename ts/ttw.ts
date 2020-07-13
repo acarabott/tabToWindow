@@ -23,36 +23,16 @@ import {
   MENU_TYPE_PARENT_ID,
   MENU_WINDOW_OPTION_ID,
   Options,
-  WindowID,
   windowProperties,
   WindowType,
 } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
+import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
-import { getOptions, getStorageWindowPropKey } from "./options-storage.js";
+import { getOptions } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
-
-/**
- * Convert normalised values into pixel values
- */
-const getSizeAndPos = async (options: Options, winKey: WindowID, displayBounds: IBounds) => {
-  return {
-    left: Math.round(
-      options.get(getStorageWindowPropKey(winKey, "left")) * displayBounds.width +
-        displayBounds.left,
-    ),
-    top: Math.round(
-      options.get(getStorageWindowPropKey(winKey, "top")) * displayBounds.height +
-        displayBounds.top,
-    ),
-    width: Math.round(options.get(getStorageWindowPropKey(winKey, "width")) * displayBounds.width),
-    height: Math.round(
-      options.get(getStorageWindowPropKey(winKey, "height")) * displayBounds.height,
-    ),
-  };
-};
 
 const getNewWindowBounds = async (
   options: Options,
