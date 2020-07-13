@@ -29,19 +29,7 @@ import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { getOptions } from "./options-storage.js";
 import { moveTabs } from "./moveTabs.js";
-
-// Helper functions
-// -----------------------------------------------------------------------------
-
-/** Helper to perform actions once the background page has been activated
- * Without this, the first action (e.g. keyboard shortcut) will only wake up
- * the background page, and not perform the action
- */
-const doBackgroundAction = (action: () => void) => {
-  chrome.runtime.getBackgroundPage((_backgroundPage) => {
-    action();
-  });
-};
+import { doBackgroundAction } from "./doBackgroundAction.js";
 
 // Primary Functions
 // -----------------------------------------------------------------------------
