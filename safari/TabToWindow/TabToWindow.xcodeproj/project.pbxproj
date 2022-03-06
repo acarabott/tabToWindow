@@ -1,0 +1,608 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		40619E2927CF2F8D00BCD6EF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40619E2827CF2F8D00BCD6EF /* AppDelegate.swift */; };
+		40619E2D27CF2F8D00BCD6EF /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 40619E2B27CF2F8D00BCD6EF /* Main.html */; };
+		40619E2F27CF2F8D00BCD6EF /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 40619E2E27CF2F8D00BCD6EF /* Icon.png */; };
+		40619E3127CF2F8D00BCD6EF /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 40619E3027CF2F8D00BCD6EF /* Style.css */; };
+		40619E3327CF2F8D00BCD6EF /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 40619E3227CF2F8D00BCD6EF /* Script.js */; };
+		40619E3527CF2F8D00BCD6EF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40619E3427CF2F8D00BCD6EF /* ViewController.swift */; };
+		40619E3827CF2F8D00BCD6EF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40619E3627CF2F8D00BCD6EF /* Main.storyboard */; };
+		40619E3A27CF2F8F00BCD6EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40619E3927CF2F8F00BCD6EF /* Assets.xcassets */; };
+		40619E4227CF2F8F00BCD6EF /* TabToWindow Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 40619E4127CF2F8F00BCD6EF /* TabToWindow Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		40619E4727CF2F8F00BCD6EF /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40619E4627CF2F8F00BCD6EF /* SafariWebExtensionHandler.swift */; };
+		40619E4A27CF2F8F00BCD6EF /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = 40619E4927CF2F8F00BCD6EF /* _locales */; };
+		40619E4C27CF2F8F00BCD6EF /* images in Resources */ = {isa = PBXBuildFile; fileRef = 40619E4B27CF2F8F00BCD6EF /* images */; };
+		40619E4E27CF2F8F00BCD6EF /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 40619E4D27CF2F8F00BCD6EF /* manifest.json */; };
+		40619E5027CF2F8F00BCD6EF /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = 40619E4F27CF2F8F00BCD6EF /* background.js */; };
+		40619E5227CF2F8F00BCD6EF /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5127CF2F8F00BCD6EF /* content.js */; };
+		40619E5427CF2F8F00BCD6EF /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5327CF2F8F00BCD6EF /* popup.html */; };
+		40619E5627CF2F8F00BCD6EF /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5527CF2F8F00BCD6EF /* popup.css */; };
+		40619E5827CF2F8F00BCD6EF /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5727CF2F8F00BCD6EF /* popup.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		40619E4327CF2F8F00BCD6EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 40619E1D27CF2F8D00BCD6EF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 40619E4027CF2F8F00BCD6EF;
+			remoteInfo = "TabToWindow Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		40619E6027CF2F8F00BCD6EF /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				40619E4227CF2F8F00BCD6EF /* TabToWindow Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		40619E2527CF2F8D00BCD6EF /* TabToWindow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TabToWindow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40619E2827CF2F8D00BCD6EF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		40619E2C27CF2F8D00BCD6EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
+		40619E2E27CF2F8D00BCD6EF /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		40619E3027CF2F8D00BCD6EF /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		40619E3227CF2F8D00BCD6EF /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		40619E3427CF2F8D00BCD6EF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		40619E3727CF2F8D00BCD6EF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		40619E3927CF2F8F00BCD6EF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		40619E3B27CF2F8F00BCD6EF /* TabToWindow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TabToWindow.entitlements; sourceTree = "<group>"; };
+		40619E3C27CF2F8F00BCD6EF /* TabToWindow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TabToWindow.entitlements; sourceTree = "<group>"; };
+		40619E4127CF2F8F00BCD6EF /* TabToWindow Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "TabToWindow Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		40619E4627CF2F8F00BCD6EF /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		40619E4927CF2F8F00BCD6EF /* _locales */ = {isa = PBXFileReference; lastKnownFileType = folder; path = _locales; sourceTree = "<group>"; };
+		40619E4B27CF2F8F00BCD6EF /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
+		40619E4D27CF2F8F00BCD6EF /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		40619E4F27CF2F8F00BCD6EF /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
+		40619E5127CF2F8F00BCD6EF /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.js; sourceTree = "<group>"; };
+		40619E5327CF2F8F00BCD6EF /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = popup.html; sourceTree = "<group>"; };
+		40619E5527CF2F8F00BCD6EF /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = popup.css; sourceTree = "<group>"; };
+		40619E5727CF2F8F00BCD6EF /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
+		40619E5927CF2F8F00BCD6EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		40619E5A27CF2F8F00BCD6EF /* TabToWindow_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TabToWindow_Extension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		40619E2227CF2F8D00BCD6EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		40619E3E27CF2F8F00BCD6EF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		40619E1C27CF2F8D00BCD6EF = {
+			isa = PBXGroup;
+			children = (
+				40619E2727CF2F8D00BCD6EF /* TabToWindow */,
+				40619E4527CF2F8F00BCD6EF /* TabToWindow Extension */,
+				40619E2627CF2F8D00BCD6EF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		40619E2627CF2F8D00BCD6EF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				40619E2527CF2F8D00BCD6EF /* TabToWindow.app */,
+				40619E4127CF2F8F00BCD6EF /* TabToWindow Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		40619E2727CF2F8D00BCD6EF /* TabToWindow */ = {
+			isa = PBXGroup;
+			children = (
+				40619E2827CF2F8D00BCD6EF /* AppDelegate.swift */,
+				40619E3427CF2F8D00BCD6EF /* ViewController.swift */,
+				40619E3627CF2F8D00BCD6EF /* Main.storyboard */,
+				40619E3927CF2F8F00BCD6EF /* Assets.xcassets */,
+				40619E3B27CF2F8F00BCD6EF /* TabToWindow.entitlements */,
+				40619E3C27CF2F8F00BCD6EF /* TabToWindow.entitlements */,
+				40619E2A27CF2F8D00BCD6EF /* Resources */,
+			);
+			path = TabToWindow;
+			sourceTree = "<group>";
+		};
+		40619E2A27CF2F8D00BCD6EF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				40619E2B27CF2F8D00BCD6EF /* Main.html */,
+				40619E2E27CF2F8D00BCD6EF /* Icon.png */,
+				40619E3027CF2F8D00BCD6EF /* Style.css */,
+				40619E3227CF2F8D00BCD6EF /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		40619E4527CF2F8F00BCD6EF /* TabToWindow Extension */ = {
+			isa = PBXGroup;
+			children = (
+				40619E4627CF2F8F00BCD6EF /* SafariWebExtensionHandler.swift */,
+				40619E5927CF2F8F00BCD6EF /* Info.plist */,
+				40619E5A27CF2F8F00BCD6EF /* TabToWindow_Extension.entitlements */,
+				40619E4827CF2F8F00BCD6EF /* Resources */,
+			);
+			path = "TabToWindow Extension";
+			sourceTree = "<group>";
+		};
+		40619E4827CF2F8F00BCD6EF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				40619E4927CF2F8F00BCD6EF /* _locales */,
+				40619E4B27CF2F8F00BCD6EF /* images */,
+				40619E4D27CF2F8F00BCD6EF /* manifest.json */,
+				40619E4F27CF2F8F00BCD6EF /* background.js */,
+				40619E5127CF2F8F00BCD6EF /* content.js */,
+				40619E5327CF2F8F00BCD6EF /* popup.html */,
+				40619E5527CF2F8F00BCD6EF /* popup.css */,
+				40619E5727CF2F8F00BCD6EF /* popup.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		40619E2427CF2F8D00BCD6EF /* TabToWindow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40619E6127CF2F8F00BCD6EF /* Build configuration list for PBXNativeTarget "TabToWindow" */;
+			buildPhases = (
+				40619E2127CF2F8D00BCD6EF /* Sources */,
+				40619E2227CF2F8D00BCD6EF /* Frameworks */,
+				40619E2327CF2F8D00BCD6EF /* Resources */,
+				40619E6027CF2F8F00BCD6EF /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				40619E4427CF2F8F00BCD6EF /* PBXTargetDependency */,
+			);
+			name = TabToWindow;
+			productName = TabToWindow;
+			productReference = 40619E2527CF2F8D00BCD6EF /* TabToWindow.app */;
+			productType = "com.apple.product-type.application";
+		};
+		40619E4027CF2F8F00BCD6EF /* TabToWindow Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 40619E5D27CF2F8F00BCD6EF /* Build configuration list for PBXNativeTarget "TabToWindow Extension" */;
+			buildPhases = (
+				40619E3D27CF2F8F00BCD6EF /* Sources */,
+				40619E3E27CF2F8F00BCD6EF /* Frameworks */,
+				40619E3F27CF2F8F00BCD6EF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "TabToWindow Extension";
+			productName = "TabToWindow Extension";
+			productReference = 40619E4127CF2F8F00BCD6EF /* TabToWindow Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		40619E1D27CF2F8D00BCD6EF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1320;
+				LastUpgradeCheck = 1320;
+				TargetAttributes = {
+					40619E2427CF2F8D00BCD6EF = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+					40619E4027CF2F8F00BCD6EF = {
+						CreatedOnToolsVersion = 13.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 40619E2027CF2F8D00BCD6EF /* Build configuration list for PBXProject "TabToWindow" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 40619E1C27CF2F8D00BCD6EF;
+			productRefGroup = 40619E2627CF2F8D00BCD6EF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				40619E2427CF2F8D00BCD6EF /* TabToWindow */,
+				40619E4027CF2F8F00BCD6EF /* TabToWindow Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		40619E2327CF2F8D00BCD6EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40619E2F27CF2F8D00BCD6EF /* Icon.png in Resources */,
+				40619E3827CF2F8D00BCD6EF /* Main.storyboard in Resources */,
+				40619E3327CF2F8D00BCD6EF /* Script.js in Resources */,
+				40619E2D27CF2F8D00BCD6EF /* Main.html in Resources */,
+				40619E3A27CF2F8F00BCD6EF /* Assets.xcassets in Resources */,
+				40619E3127CF2F8D00BCD6EF /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		40619E3F27CF2F8F00BCD6EF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40619E5027CF2F8F00BCD6EF /* background.js in Resources */,
+				40619E5627CF2F8F00BCD6EF /* popup.css in Resources */,
+				40619E5427CF2F8F00BCD6EF /* popup.html in Resources */,
+				40619E4C27CF2F8F00BCD6EF /* images in Resources */,
+				40619E4E27CF2F8F00BCD6EF /* manifest.json in Resources */,
+				40619E4A27CF2F8F00BCD6EF /* _locales in Resources */,
+				40619E5227CF2F8F00BCD6EF /* content.js in Resources */,
+				40619E5827CF2F8F00BCD6EF /* popup.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		40619E2127CF2F8D00BCD6EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40619E3527CF2F8D00BCD6EF /* ViewController.swift in Sources */,
+				40619E2927CF2F8D00BCD6EF /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		40619E3D27CF2F8F00BCD6EF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				40619E4727CF2F8F00BCD6EF /* SafariWebExtensionHandler.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		40619E4427CF2F8F00BCD6EF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 40619E4027CF2F8F00BCD6EF /* TabToWindow Extension */;
+			targetProxy = 40619E4327CF2F8F00BCD6EF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		40619E2B27CF2F8D00BCD6EF /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40619E2C27CF2F8D00BCD6EF /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		40619E3627CF2F8D00BCD6EF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40619E3727CF2F8D00BCD6EF /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		40619E5B27CF2F8F00BCD6EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		40619E5C27CF2F8F00BCD6EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		40619E5E27CF2F8F00BCD6EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "TabToWindow Extension/TabToWindow_Extension.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8FRSU4B4W7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TabToWindow Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "TabToWindow Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arthurcarabott.TabToWindow.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		40619E5F27CF2F8F00BCD6EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "TabToWindow Extension/TabToWindow_Extension.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8FRSU4B4W7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "TabToWindow Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "TabToWindow Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arthurcarabott.TabToWindow.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		40619E6227CF2F8F00BCD6EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TabToWindow/TabToWindow.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8FRSU4B4W7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TabToWindow;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arthurcarabott.TabToWindow;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		40619E6327CF2F8F00BCD6EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TabToWindow/TabToWindow.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8FRSU4B4W7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TabToWindow;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arthurcarabott.TabToWindow;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		40619E2027CF2F8D00BCD6EF /* Build configuration list for PBXProject "TabToWindow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40619E5B27CF2F8F00BCD6EF /* Debug */,
+				40619E5C27CF2F8F00BCD6EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40619E5D27CF2F8F00BCD6EF /* Build configuration list for PBXNativeTarget "TabToWindow Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40619E5E27CF2F8F00BCD6EF /* Debug */,
+				40619E5F27CF2F8F00BCD6EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		40619E6127CF2F8F00BCD6EF /* Build configuration list for PBXNativeTarget "TabToWindow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40619E6227CF2F8F00BCD6EF /* Debug */,
+				40619E6327CF2F8F00BCD6EF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 40619E1D27CF2F8D00BCD6EF /* Project object */;
+}
