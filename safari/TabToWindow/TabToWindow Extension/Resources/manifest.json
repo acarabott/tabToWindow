@@ -32,12 +32,15 @@
         }
     },
 
+    "content_scripts": [
+        {
+            "matches": ["*://*/*"],
+            "js": ["content.js"]
+        }
+    ],
+
     "commands": {
         "01-tab-to-window-normal": {
-            "suggested_key": {
-                "default": "Alt+X",
-                "linux": "Alt+Shift+X"
-            },
             "description": "Window"
         }
     },

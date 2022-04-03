@@ -2,13 +2,16 @@
 
 ## Strategy
 
-- Go through existing code and find areas that will be an issue
+- [x] Go through existing code and find areas that will be an issue
 - Figure out how to structure resources for multiple platforms
 - Figure out how to handle browser inconsistencies
+  - https://github.com/Lusito/webextension-polyfill-ts
 
 ## TODO
 
-- Keyboard Shortcuts
+- changing keyboard shortcuts
+- Options page
+
 
 ### checked APIs
 
@@ -29,7 +32,7 @@
 - options-page.ts
 - options-storage.ts
 - unhighlightTabs.ts
-
+- Keyboard Shortcuts
 
 
 ## Issues
