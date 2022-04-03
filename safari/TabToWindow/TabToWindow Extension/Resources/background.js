@@ -1,15 +1,14 @@
-export const COMMAND_NORMAL = "01-tab-to-window-normal";
-
-console.log("win");
-
+import { COMMAND_NORMAL } from "./shared.js";
 
 browser.commands.onCommand.addListener((command) => {
+    console.log("command");
+    console.log(command);
     switch (command) {
         case COMMAND_NORMAL:
             console.log("normal!");
             break;
         default:
-            console.assert(false);
+            console.log("default");
             break;
     }
 });

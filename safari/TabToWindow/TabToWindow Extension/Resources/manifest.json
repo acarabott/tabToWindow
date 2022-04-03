@@ -15,7 +15,7 @@
     },
 
     "background": {
-        "scripts": [ "background.js" ],
+        "page": "background.html",
         "persistent": false
     },
 
@@ -39,7 +39,7 @@
                 "linux": "Alt+Shift+X"
             },
             "description": "Window"
-        },
+        }
     },
 
     "permissions": ["tabs", "storage", "contextMenus"]

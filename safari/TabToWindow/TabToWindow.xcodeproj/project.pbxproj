@@ -25,6 +25,8 @@
 		40619E5427CF2F8F00BCD6EF /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5327CF2F8F00BCD6EF /* popup.html */; };
 		40619E5627CF2F8F00BCD6EF /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5527CF2F8F00BCD6EF /* popup.css */; };
 		40619E5827CF2F8F00BCD6EF /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 40619E5727CF2F8F00BCD6EF /* popup.js */; };
+		40750D7F27F9175200BC4741 /* background.html in Resources */ = {isa = PBXBuildFile; fileRef = 40750D7D27F9175200BC4741 /* background.html */; };
+		40750D8027F9175200BC4741 /* shared.js in Resources */ = {isa = PBXBuildFile; fileRef = 40750D7E27F9175200BC4741 /* shared.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +77,8 @@
 		40619E5727CF2F8F00BCD6EF /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
 		40619E5927CF2F8F00BCD6EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		40619E5A27CF2F8F00BCD6EF /* TabToWindow_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TabToWindow_Extension.entitlements; sourceTree = "<group>"; };
+		40750D7D27F9175200BC4741 /* background.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = background.html; sourceTree = "<group>"; };
+		40750D7E27F9175200BC4741 /* shared.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = shared.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,6 +156,8 @@
 		40619E4827CF2F8F00BCD6EF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				40750D7D27F9175200BC4741 /* background.html */,
+				40750D7E27F9175200BC4741 /* shared.js */,
 				40619E4927CF2F8F00BCD6EF /* _locales */,
 				40619E4B27CF2F8F00BCD6EF /* images */,
 				40619E4D27CF2F8F00BCD6EF /* manifest.json */,
@@ -259,7 +265,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				40619E5027CF2F8F00BCD6EF /* background.js in Resources */,
+				40750D7F27F9175200BC4741 /* background.html in Resources */,
 				40619E5627CF2F8F00BCD6EF /* popup.css in Resources */,
+				40750D8027F9175200BC4741 /* shared.js in Resources */,
 				40619E5427CF2F8F00BCD6EF /* popup.html in Resources */,
 				40619E4C27CF2F8F00BCD6EF /* images in Resources */,
 				40619E4E27CF2F8F00BCD6EF /* manifest.json in Resources */,
