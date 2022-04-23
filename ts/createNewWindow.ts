@@ -23,9 +23,11 @@ export const createNewWindow = (
           // this timeout is gross but necessary.
           // updating immediately fails
           setTimeout(() => {
-            chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
-              resolve([newWin, tab]);
-            });
+            if (newWin.id !== undefined) {
+              chrome.windows.update(newWin.id, { state: "fullscreen" }, () => {
+                resolve([newWin, tab]);
+              });
+            }
           }, 1000);
         }
       });
