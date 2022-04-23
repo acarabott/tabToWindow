@@ -13,8 +13,10 @@ const onReady = (action) => {
 
 document.addEventListener("keydown", (event) => {
     if (event.altKey && event.code === "KeyX") {
-        console.log("do the thing")
+        console.log("do it");
+        console.log(browser);
     }
+
 });
 
 onReady(() => {});

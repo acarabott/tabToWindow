@@ -3,14 +3,17 @@
 ## Strategy
 
 - [x] Go through existing code and find areas that will be an issue
-- Figure out how to structure resources for multiple platforms
-- Figure out how to handle browser inconsistencies
+- [] Figure out how to structure resources for multiple platforms
+  - It may be best to have safari+/firefox be a different extension, and factor out chrome code into a shared library
+- [] Figure out how to handle browser inconsistencies
   - https://github.com/Lusito/webextension-polyfill-ts
+
+
 
 ## TODO
 
-- changing keyboard shortcuts
 - Options page
+  - shared data for options
 
 
 ### checked APIs
@@ -33,12 +36,13 @@
 - options-storage.ts
 - unhighlightTabs.ts
 - Keyboard Shortcuts
+- changing keyboard shortcuts - use injected script
 
 
 ## Issues
 
 - how to handle things that safari does not support?
-  - call anyeone
+  - call anyway
   - detect if safari
 
 - missing system.display permission/API
@@ -49,6 +53,10 @@
 
 - safari does not support `tabs.move`
   - can do `tabs.duplicate`
+  - can do `windows.create` with `tabId` as a param "If included, moves a tab of the specified ID from an existing window into the new window."
+    - doesn't solve "move to other window" case
+
+
 
 - using `windows.update` to change position to `top: 0` with `height: screen.availHeight` gest the wrong position as it doesn't take the browser chrome into account
   - `windows.create` seems fine though
@@ -62,6 +70,8 @@
     - can do a manual copy of data to sync...
 
 - safari background pages can only import modules with the `.js` extension, e.g.
+- keyboard shortcuts are beter handled in javascript, as otherwise cannot change them.
+
 
 ```js
 import { COMMAND_NORMAL } from "./shared.js"; // good
