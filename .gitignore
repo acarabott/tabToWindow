@@ -1,6 +1,5 @@
-js/
 build/
-build.zip
+*.zip
 
 .DS_Store
 *.sass-cache
