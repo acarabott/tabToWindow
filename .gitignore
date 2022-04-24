@@ -1,6 +1,8 @@
 build/
 *.zip
 
+safari/TabToWindow/TabToWindow\ Extension/Resources/js
+
 .DS_Store
 *.sass-cache
 *.sublime-workspace# Logs
