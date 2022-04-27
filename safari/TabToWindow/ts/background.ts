@@ -1,19 +1,39 @@
 import browser from "webextension-polyfill";
+import { tabToNeighbouringWindow, tabToNextDisplay, tabToWindowNormal, tabToWindowPopup } from "./actions-tabs";
+import {
+  COMMAND_DISPLAY,
+  COMMAND_NEXT,
+  COMMAND_NORMAL,
+  COMMAND_POPUP,
+  COMMAND_PREVIOUS,
+  isCommandMessage
+} from "./api";
 
-import { COMMAND_NORMAL } from "./shared.js";
+browser.runtime.onMessage.addListener((message, _sender) => {
+  if (isCommandMessage(message)) {
+    switch (message.command) {
+      case COMMAND_NORMAL:
+        void tabToWindowNormal();
+        break;
 
-browser.runtime.onMessage.addListener((message, sender) => {
-  console.log("message:", message);
-  console.log("sender:", sender);
-})
+      case COMMAND_NORMAL:
+        void tabToWindowNormal();
+        break;
+      case COMMAND_POPUP:
+        void tabToWindowPopup();
+        break;
+      case COMMAND_NEXT:
+        void tabToNeighbouringWindow(1);
+        break;
+      case COMMAND_PREVIOUS:
+        void tabToNeighbouringWindow(-1);
+        break;
+      case COMMAND_DISPLAY:
+        void tabToNextDisplay();
+        break;
 
-browser.commands.onCommand.addListener((command) => {
-  switch (command) {
-    case COMMAND_NORMAL:
-      console.log("normal!");
-      break;
-    default:
-      console.log("default");
-      break;
+      default:
+        break;
+    }
   }
 });

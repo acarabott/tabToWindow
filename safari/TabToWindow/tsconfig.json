@@ -2,6 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["./ts/**/*.ts"],
   "compilerOptions": {
-    "outDir": "./TabToWindow Extension/Resources/js" /* Redirect output structure to the directory. */
+    // "outDir": "./TabToWindow Extension/Resources/js" /* Redirect output structure to the directory. */
   }
 }

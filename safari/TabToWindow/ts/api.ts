@@ -1,5 +1,3 @@
-import { getOptions } from "./options-storage.js";
-
 export const windowIds = ["original", "new"] as const;
 export type WindowID = typeof windowIds[number];
 
@@ -72,9 +70,6 @@ export const isIOptions = (obj: unknown): obj is IOptions => {
   );
 };
 
-type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
-export type Options = ThenArg<ReturnType<typeof getOptions>>;
-
 // Constants
 export const MENU_TAB_TO_WINDOW_ID = "tab to window";
 export const MENU_TAB_TO_POPUP_ID = "tab to popup";
@@ -99,3 +94,20 @@ export const COMMAND_POPUP = "02-tab-to-window-popup";
 export const COMMAND_NEXT = "03-tab-to-window-next";
 export const COMMAND_PREVIOUS = "04-tab-to-window-previous";
 export const COMMAND_DISPLAY = "05-tab-to-window-display";
+export const COMMANDS = [
+  COMMAND_NORMAL,
+  COMMAND_POPUP,
+  COMMAND_NEXT,
+  COMMAND_PREVIOUS,
+  COMMAND_DISPLAY,
+] as const;
+export type Command = typeof COMMANDS[number];
+
+export interface CommandMessage {
+  command: Command;
+}
+
+export const isCommandMessage = (obj: unknown): obj is CommandMessage => {
+  const cast = obj as CommandMessage;
+  return cast !== undefined && COMMANDS.includes(cast.command);
+};
