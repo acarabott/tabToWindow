@@ -1,11 +1,13 @@
+import browser from "webextension-polyfill";
 export const windowIds = ["original", "new"] as const;
 export type WindowID = typeof windowIds[number];
 
 export const windowProperties = ["width", "height", "left", "top"] as const;
 export type WindowProperty = typeof windowProperties[number];
 
+type Extends<T, U extends T> = U;
+export type WindowType = Extends<browser.Windows.CreateType, "normal" | "popup">;
 export const windowTypes = ["normal", "popup"] as const;
-export type WindowType = typeof windowTypes[number];
 
 export const cloneModes = [
   "clone-mode-no",
@@ -57,7 +59,7 @@ export const isIOptions = (obj: unknown): obj is IOptions => {
     cloneModes.includes(cast.cloneMode) &&
     typeof cast.copyFullscreen === "boolean" &&
     windowIds.includes(cast.focus) &&
-    windowTypes.includes(cast.menuButtonType) &&
+    (cast.menuButtonType === "normal" || cast.menuButtonType === "popup") &&
     typeof cast.newHeight === "number" &&
     typeof cast.newLeft === "number" &&
     typeof cast.newTop === "number" &&

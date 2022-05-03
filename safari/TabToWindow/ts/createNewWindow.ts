@@ -10,7 +10,7 @@ export const createNewWindow = (
   isFocused: boolean,
 ): Promise<browser.Windows.Window> => {
   const opts: browser.Windows.CreateCreateDataType = {
-    tabId: tab.id,
+    url: tab.url,
     type: windowType,
     focused: isFocused,
     incognito: tab.incognito,

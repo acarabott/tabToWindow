@@ -1,12 +1,17 @@
 import browser from "webextension-polyfill";
-import { tabToNeighbouringWindow, tabToNextDisplay, tabToWindowNormal, tabToWindowPopup } from "./actions-tabs";
+import {
+  tabToNeighbouringWindow,
+  tabToNextDisplay,
+  tabToWindowNormal,
+  tabToWindowPopup,
+} from "./actions-tabs";
 import {
   COMMAND_DISPLAY,
   COMMAND_NEXT,
   COMMAND_NORMAL,
   COMMAND_POPUP,
   COMMAND_PREVIOUS,
-  isCommandMessage
+  isCommandMessage,
 } from "./api";
 
 browser.runtime.onMessage.addListener((message, _sender) => {
