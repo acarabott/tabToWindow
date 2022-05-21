@@ -57,7 +57,7 @@
 			"description": "Next Display"
 		}
 	},
-	"permissions": ["tabs", "storage", "system.display", "contextMenus"],
+	"permissions": ["storage", "system.display", "contextMenus"],
 	"options_page": "options.html",
 	"options_ui": {
 		"page": "options.html",
