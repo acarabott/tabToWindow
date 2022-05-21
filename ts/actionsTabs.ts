@@ -84,17 +84,19 @@ export const tabToWindow = async (
     ) {
       const vals = await getSizeAndPos(options, "original", currentDisplay.workArea);
       origWindow = await new Promise<chrome.windows.Window>((resolve) => {
-        chrome.windows.update(
-          origWindow.id,
-          {
-            width: vals.width,
-            height: vals.height,
-            left: vals.left,
-            top: vals.top,
-            state: "normal",
-          },
-          (win) => resolve(win),
-        );
+        if (origWindow.id !== undefined) {
+          chrome.windows.update(
+            origWindow.id,
+            {
+              width: vals.width,
+              height: vals.height,
+              left: vals.left,
+              top: vals.top,
+              state: "normal",
+            },
+            (win) => resolve(win),
+          );
+        }
       });
     }
 
@@ -126,47 +128,53 @@ export const tabToWindow = async (
       isFocused,
     );
 
-    // move other highlighted tabs
-    const otherTabs = tabs.filter((tab) => tab !== movedTab && tab.highlighted);
-    if (otherTabs.length > 0) {
-      if (newWindowType === "normal") {
-        // move all tabs at once
-        const moveIndex = 1;
-        const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
-
-        // highlight tabs in new window
-        const tabPromises = movedTabs.map((tab) => {
-          return new Promise<chrome.tabs.Tab>((resolve) => {
-            chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
+    if (newWin.id !== undefined) {
+      // move other highlighted tabs
+      const otherTabs = tabs.filter((tab) => tab !== movedTab && tab.highlighted);
+      if (otherTabs.length > 0) {
+        if (newWindowType === "normal") {
+          // move all tabs at once
+          const moveIndex = 1;
+          const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
+  
+          // highlight tabs in new window
+          const tabPromises = movedTabs.map((tab) => {
+            return new Promise<chrome.tabs.Tab>((resolve) => {
+              chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
+            });
           });
-        });
-
-        await Promise.all(tabPromises);
-      } else if (newWindowType === "popup") {
-        // can't move tabs to a popup window, so create individual ones
-        const tabPromises = otherTabs.map((tab) => {
-          return createNewWindow(
-            tab,
-            newWindowType,
-            getWindowBounds(newWin),
-            isFullscreen,
-            isFocused,
-          );
-        });
-        await Promise.all(tabPromises);
+  
+          await Promise.all(tabPromises);
+        } else if (newWindowType === "popup") {
+          // can't move tabs to a popup window, so create individual ones
+          const tabPromises = otherTabs.map((tab) => {
+            return createNewWindow(
+              tab,
+              newWindowType,
+              getWindowBounds(newWin),
+              isFullscreen,
+              isFocused,
+            );
+          });
+          await Promise.all(tabPromises);
+        }
       }
+      
     }
 
     // focus on original window if specified, and it still exists
     // (popping a single tab will destroy the original window)
-    if (options.get("focus") === "original" && !destroyingOriginalWindow) {
-      chrome.windows.get(currentWindow.id, {}, () => {
-        if (chrome.runtime.lastError === undefined) {
-          chrome.windows.update(currentWindow.id, { focused: true });
-        } else {
-          throw new Error(chrome.runtime.lastError.message);
-        }
-      });
+    const currentWindowId = currentWindow.id;
+    if (currentWindowId !== undefined) {
+      if (options.get("focus") === "original" && !destroyingOriginalWindow) {
+        chrome.windows.get(currentWindowId, {}, () => {
+          if (chrome.runtime.lastError === undefined) {
+            chrome.windows.update(currentWindowId, { focused: true });
+          } else {
+            throw new Error(chrome.runtime.lastError.message);
+          }
+        });
+      }
     }
   });
 };

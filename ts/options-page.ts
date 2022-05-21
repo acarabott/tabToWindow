@@ -211,7 +211,7 @@ getOptions().then(options => {
           }
 
           clearTimeout(saveTimeout);
-          saveTimeout = setTimeout(save, 200);
+          saveTimeout = window.setTimeout(save, 200);
         };
 
         const $win = $(win);

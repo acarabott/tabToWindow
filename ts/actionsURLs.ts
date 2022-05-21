@@ -23,15 +23,17 @@ export const urlToNeighbouringWindow = (url: string, windowDistance: number) => 
       chrome.windows.getCurrent({}, (window) => resolve(window));
     });
 
-    const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
-    if (nextWindowId === undefined) {
-      return;
+    if (currentWindow.id !== undefined) {
+      const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
+      if (nextWindowId === undefined) {
+        return;
+      }
+
+      unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
+
+      const opts = { windowId: nextWindowId, url };
+      chrome.tabs.create(opts);
     }
-
-    unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
-
-    const opts = { windowId: nextWindowId, url };
-    chrome.tabs.create(opts);
   });
 };
 
