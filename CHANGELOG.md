@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.3.1
+
+- Removed "tabs" permission, as no longer required
+
+## 3.3
+
+- Added "Tab To Previous Window" command
+
 ## 3.2
 
 - No longer tries to move tabs into popup or app windows
