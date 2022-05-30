@@ -45,5 +45,5 @@
         }
     },
 
-    "permissions": ["tabs", "storage", "contextMenus"]
+    "permissions": ["storage", "contextMenus"]
 }
