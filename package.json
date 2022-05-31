@@ -12,6 +12,7 @@
     "clean": "node scripts/build.js clean",
     "assets": "node scripts/build.js assets",
     "build": "node scripts/build.js build",
+    "xcode": "node scripts/build.js xcode",
     "start": "node scripts/build.js start",
     "publish": "npm run build && zip -r build.zip \"./build\""
   },
@@ -33,6 +34,7 @@
     "@types/webextension-polyfill": "^0.8.3",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
+    "chokidar": "^3.5.3",
     "create-serve": "^1.0.1",
     "esbuild": "^0.14.38",
     "eslint": "^8.14.0",

@@ -1,11 +1,26 @@
 import fs from "fs-extra";
 import esbuild from "esbuild";
 import serve, { error, log } from "create-serve";
+import { exec } from "child_process";
 
 const safariDir = "./safari/TabToWindow/TabToWindow Extension/Resources/";
 const safariScriptDir = `${safariDir}js/`;
 
 const clean = () => fs.removeSync(safariScriptDir);
+
+const xcode = () => {
+  log("starting Safari Build");
+  exec(
+    "xcrun xcodebuild -scheme TabToWindow -project ./safari/TabToWindow/TabToWindow.xcodeproj -configuration Debug -destination 'platform=macOS,arch=x86_64' build",
+    (exception, _stdout, stderr) => {
+      if (exception !== null) {
+        error(exception.message);
+      }
+
+      log("Safari build complete");
+    },
+  );
+};
 
 const safari = (isWatch) => {
   return esbuild
@@ -23,6 +38,7 @@ const safari = (isWatch) => {
       watch: isWatch && {
         onRebuild(err) {
           serve.update();
+          xcode();
           err ? error("× Failed") : log("✓ Updated");
         },
       },
@@ -71,6 +87,10 @@ switch (action) {
     preBuild();
     await safari(true);
     serve.start({ port: 8080, root: safariDir });
+    break;
+
+  case "xcode":
+    xcode();
     break;
 
   default:
