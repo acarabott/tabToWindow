@@ -29,6 +29,7 @@ document.addEventListener("keydown", (event) => {
   const command = getCommandFromKeyboardEvent(event);
   if (command !== undefined) {
     browser.runtime.sendMessage({ command }).then((response) => {
+      // TODO provide feedback
       console.log("Received response: ", response);
     });
   }
