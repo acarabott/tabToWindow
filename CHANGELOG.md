@@ -26,7 +26,7 @@
 
 ## 2.3
 
-- Support for fullscreen and maximized windows.
+- Support for full-screen and maximized windows.
 - New default keys, which avoid clashes with default Chrome commands
 
 ## 2.2
