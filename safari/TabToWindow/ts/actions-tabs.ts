@@ -19,16 +19,37 @@ export const tabToWindow = async (windowType: WindowType) => {
     const tab = currentWindow.tabs[0];
     const isCopyFullScreenEnabled = options.get("copyFullscreen");
     const isCurrentWindowFullscreen = currentWindow.state === "fullscreen";
-    const isFullscreen = isCopyFullScreenEnabled && isCurrentWindowFullscreen;
-    const isFocused = options.get("focus") === "new";
+    const isNewWindowFullscreen = isCopyFullScreenEnabled && isCurrentWindowFullscreen;
+    const isNewWindowFocused = options.get("focus") === "new";
     const newWindowBounds = await getSizeAndPos(options, "new", getScreenBounds());
 
     // create the new window
-    await createNewWindow(tab, windowType, newWindowBounds, isFullscreen, isFocused);
+    await createNewWindow(
+      tab,
+      windowType,
+      newWindowBounds,
+      isNewWindowFullscreen,
+      isNewWindowFocused,
+    );
 
     // close the existing tab
     if (tab.id !== undefined) {
       await browser.tabs.remove(tab.id);
+    }
+
+    // (maybe) move and resize original window
+    const destroyingOriginalWindow = currentWindow.tabs.length === 1;
+    if (
+      currentWindow.id !== undefined &&
+      options.get("resizeOriginal") &&
+      !isNewWindowFullscreen &&
+      !destroyingOriginalWindow
+    ) {
+      const vals = await getSizeAndPos(options, "original", getScreenBounds());
+      browser.windows.update(currentWindow.id, {
+        ...vals,
+        state: "normal",
+      });
     }
   });
 };
