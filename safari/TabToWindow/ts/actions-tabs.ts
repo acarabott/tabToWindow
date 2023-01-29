@@ -59,4 +59,7 @@ export const tabToNeighbouringWindow = (_windowDistance: number) => {};
 
 export const tabToWindowNormal = () => tabToWindow("normal");
 export const tabToWindowPopup = () => tabToWindow("popup");
-export const tabToNextDisplay = () => tabToWindow("normal"); // TODO can we do this in Safari?
+export const tabToNextDisplay = () => {
+  // TODO can we do this in Safari?
+  throw new Error("tabToNextDisplay not implemented");
+};
