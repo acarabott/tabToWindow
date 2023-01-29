@@ -2,6 +2,9 @@ import browser from "webextension-polyfill";
 import { IBounds, WindowType } from "./api";
 import { createNewWindow } from "./createNewWindow";
 import { doBackgroundAction } from "./doBackgroundAction";
+import { getScreenBounds } from "./getScreenBounds";
+import { getSizeAndPos } from "./getSizeAndPos";
+import { getOptions } from "./options-storage";
 
 export const tabToWindow = async (windowType: WindowType) => {
   doBackgroundAction(async () => {
@@ -10,21 +13,19 @@ export const tabToWindow = async (windowType: WindowType) => {
     if (tabs.length === 0) {
       return;
     }
+
+    const options = await getOptions();
+
     const tab = tabs[0];
 
     const isFullscreen = false;
     const isFocused = true;
-    const windowBounds: IBounds = {
-      left: screen.availWidth * 0.5,
-      top: screenTop,
-      width: screen.availWidth * 0.5,
-      height: screen.availHeight,
-    };
+    const newWindowBounds = await getSizeAndPos(options, "new", getScreenBounds());
 
     const promises: Promise<unknown>[] = [];
 
     // create the new window
-    promises.push(createNewWindow(tab, windowType, windowBounds, isFullscreen, isFocused));
+    promises.push(createNewWindow(tab, windowType, newWindowBounds, isFullscreen, isFocused));
 
     // close the existing tab
     if (tab.id !== undefined) {
