@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import {
-  Command,
+  CommandName,
   COMMAND_DISPLAY,
   COMMAND_NEXT,
   COMMAND_NORMAL,
@@ -8,7 +8,7 @@ import {
   COMMAND_PREVIOUS,
 } from "./api";
 
-const getCommandFromKeyboardEvent = (event: KeyboardEvent): Command | undefined => {
+const getCommandFromKeyboardEvent = (event: KeyboardEvent): CommandName | undefined => {
   // TODO get shortcuts from user options
   if (event.altKey && event.code === "KeyZ") {
     return COMMAND_NEXT;

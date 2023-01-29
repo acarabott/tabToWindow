@@ -39,11 +39,5 @@
         }
     ],
 
-    "commands": {
-        "01-tab-to-window-normal": {
-            "description": "Window"
-        }
-    },
-
     "permissions": ["storage", "contextMenus"]
 }

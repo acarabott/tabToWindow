@@ -16,7 +16,7 @@ import {
 
 browser.runtime.onMessage.addListener((message, _sender) => {
   if (isCommandMessage(message)) {
-    switch (message.command) {
+    switch (message.commandName) {
       case COMMAND_NORMAL:
         void tabToWindowNormal();
         break;

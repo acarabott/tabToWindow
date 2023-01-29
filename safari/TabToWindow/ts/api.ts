@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { ScanCode } from "./ScanCode";
 export const windowIds = ["original", "new"] as const;
 export type WindowID = typeof windowIds[number];
 
@@ -36,6 +37,28 @@ export interface IBounds {
   height: number;
 }
 
+export interface IKeybinding {
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+  altGraphKey: boolean;
+  code: ScanCode;
+  display: string;
+}
+
+export const COMMAND_NORMAL = "01-tab-to-window-normal";
+export const COMMAND_POPUP = "02-tab-to-window-popup";
+export const COMMAND_NEXT = "03-tab-to-window-next";
+export const COMMAND_PREVIOUS = "04-tab-to-window-previous";
+export const COMMAND_DISPLAY = "05-tab-to-window-display";
+export type CommandName =
+  | typeof COMMAND_NORMAL
+  | typeof COMMAND_POPUP
+  | typeof COMMAND_NEXT
+  | typeof COMMAND_PREVIOUS
+  | typeof COMMAND_DISPLAY;
+
 export interface IOptions {
   cloneMode: CloneMode;
   copyFullscreen: boolean;
@@ -50,6 +73,13 @@ export interface IOptions {
   originalTop: number;
   originalWidth: number;
   resizeOriginal: boolean;
+  keybindings: {
+    [COMMAND_NORMAL]: IKeybinding | undefined;
+    [COMMAND_POPUP]: IKeybinding | undefined;
+    [COMMAND_NEXT]: IKeybinding | undefined;
+    [COMMAND_PREVIOUS]: IKeybinding | undefined;
+    [COMMAND_DISPLAY]: IKeybinding | undefined;
+  };
 }
 
 export const isIOptions = (obj: unknown): obj is IOptions => {
@@ -90,26 +120,36 @@ export const MENU_LINK_TO_NEXT_ID = "link to next";
 export const MENU_LINK_TO_PREVIOUS_ID = "link to previous";
 export const MENU_LINK_TO_DISPLAY_ID = "link to display";
 
-// Must match those in manifest.json
-export const COMMAND_NORMAL = "01-tab-to-window-normal";
-export const COMMAND_POPUP = "02-tab-to-window-popup";
-export const COMMAND_NEXT = "03-tab-to-window-next";
-export const COMMAND_PREVIOUS = "04-tab-to-window-previous";
-export const COMMAND_DISPLAY = "05-tab-to-window-display";
-export const COMMANDS = [
+export interface Command {
+  name: CommandName;
+  description: string;
+}
+
+export const COMMANDS: Command[] = [
+  { name: COMMAND_NORMAL, description: "Window" },
+  { name: COMMAND_POPUP, description: "Popup" },
+  { name: COMMAND_NEXT, description: "Next Window" },
+  { name: COMMAND_PREVIOUS, description: "Previous Window" },
+  { name: COMMAND_DISPLAY, description: "Next Display" },
+];
+
+const COMMAND_NAMES = [
   COMMAND_NORMAL,
   COMMAND_POPUP,
   COMMAND_NEXT,
   COMMAND_PREVIOUS,
   COMMAND_DISPLAY,
 ] as const;
-export type Command = typeof COMMANDS[number];
 
 export interface CommandMessage {
-  command: Command;
+  commandName: CommandName;
 }
 
 export const isCommandMessage = (obj: unknown): obj is CommandMessage => {
   const cast = obj as CommandMessage;
-  return cast !== undefined && COMMANDS.includes(cast.command);
+  return cast !== undefined && COMMAND_NAMES.includes(cast.commandName);
 };
+
+export interface PopupState {
+  commandBeingAssignedTo: CommandName | undefined;
+}

@@ -7,6 +7,11 @@ import {
   StoredWindowProperty,
   storedWindowBounds,
   isIOptions,
+  COMMAND_DISPLAY,
+  COMMAND_NEXT,
+  COMMAND_NORMAL,
+  COMMAND_POPUP,
+  COMMAND_PREVIOUS,
   // isIOptions,
 } from "./api.js";
 
@@ -24,6 +29,13 @@ const defaultOptions: IOptions = {
   newHeight: 1.0,
   newLeft: 0.5,
   newTop: 0.0,
+  keybindings: {
+    [COMMAND_NORMAL]: undefined,
+    [COMMAND_POPUP]: undefined,
+    [COMMAND_NEXT]: undefined,
+    [COMMAND_PREVIOUS]: undefined,
+    [COMMAND_DISPLAY]: undefined, 
+  }
 };
 
 // retrieve the storage key for a particular window property

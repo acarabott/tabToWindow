@@ -1,18 +1,22 @@
-import { CloneMode, IOptions, WindowID, WindowProperty, WindowType } from "./api.js";
+import {
+  CloneMode,
+  CommandName,
+  COMMANDS,
+  IOptions,
+  PopupState,
+  WindowID,
+  WindowProperty,
+  WindowType,
+} from "./api.js";
+import { defAtom } from "./defAtom.js";
+import { getFromClass, getFromId, getFromIdOrThrow, getFromTag } from "./domUtils.js";
 import { getCloneBounds } from "./getCloneBounds.js";
+import { setupKeybinding } from "./keybinding.js";
+import { keybindingToString } from "./keybindingToString.js";
 import { getOptions, getStorageWindowPropKey, Options } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
-
-const getFromId = <T extends HTMLElement>(id: string, root = document) =>
-  root.getElementById(id) as T;
-
-const getFromClass = <T extends HTMLElement>(className: string, root = document) =>
-  Array.from(root.getElementsByClassName(className)) as T[];
-
-const getFromTag = <T extends HTMLElement>(tagName: string, root = document) =>
-  Array.from(root.getElementsByTagName(tagName)) as T[];
 
 // window that will be focused on pop-out
 const getFocusedName = (): WindowID => {
@@ -141,32 +145,73 @@ getOptions()
     // as then it's more difficult to tell when / where they are being called
     // and if it's more than one
 
-    const main = (options: Options) => {
+    const main = async (options: Options) => {
       {
         // display shortcuts
         // -----------------------------------------------------------------------
-        chrome.commands.getAll((cmds) => {
-          if (cmds.length === 0) {
-            return;
+        const db = defAtom<PopupState>({ commandBeingAssignedTo: undefined });
+
+        const getShortcutElId = (commandName: CommandName) => `shortcut-${commandName}`;
+
+        const updateKeybindingsView = (newKeybindings: IOptions["keybindings"]) => {
+          for (const command of COMMANDS) {
+            const el = getFromIdOrThrow(getShortcutElId(command.name));
+            const keybinding = newKeybindings[command.name];
+            const text = keybindingToString(keybinding);
+            console.log("keybinding:", keybinding);
+            console.log("text:", text);
+            el.textContent = text;
+          }
+        };
+
+        {
+          // create elements
+          const keybindings = options.get("keybindings");
+
+          const shortcutList = getFromId("shortcut-list");
+
+          for (const command of COMMANDS) {
+            const li = document.createElement("li");
+            shortcutList.appendChild(li);
+
+            const name = document.createElement("span");
+            name.textContent = `${command.description}:`;
+            name.classList.add("shortcut-label");
+            li.appendChild(name);
+
+            const shortcut = document.createElement("span");
+            shortcut.id = getShortcutElId(command.name);
+            shortcut.classList.add("shortcut");
+            li.appendChild(shortcut);
+
+            const assign = document.createElement("button");
+            assign.textContent = "🔴";
+            assign.classList.add("shortcut-assign");
+            assign.addEventListener("click", () => {
+              db.set({ commandBeingAssignedTo: command.name });
+              assign.style.backgroundColor = "red"; // TODO use class etc
+            });
+            li.appendChild(assign);
           }
 
-          cmds
-            .filter((cmd) => cmd.name !== "_execute_browser_action")
-            .forEach((cmd) => {
-              const name = document.createElement("span");
-              name.textContent = `${cmd.description}:`;
-              name.classList.add("shortcut-label");
+          updateKeybindingsView(keybindings);
+        }
 
-              const shortcut = document.createElement("span");
-              shortcut.classList.add("shortcut");
-              shortcut.textContent = cmd.shortcut!;
-
-              const li = document.createElement("li");
-              [name, shortcut].forEach((el) => li.appendChild(el));
-
-              getFromId("shortcut-list").appendChild(li);
-            });
-        });
+        // setup updates
+        const clearAssignButtons = () => {
+          // TODO class as var
+          for (const el of getFromClass("shortcut-assign")) {
+            el.style.backgroundColor = "white";
+          }
+        };
+        setupKeybinding(
+          db,
+          (newKeybindings) => {
+            updateKeybindingsView(newKeybindings);
+            clearAssignButtons();
+          },
+          clearAssignButtons,
+        );
       }
 
       const gridsize = 20; // px to use for window grid
