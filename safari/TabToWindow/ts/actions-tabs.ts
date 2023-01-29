@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { IBounds, WindowType } from "./api";
+import { WindowType } from "./api";
 import { createNewWindow } from "./createNewWindow";
 import { doBackgroundAction } from "./doBackgroundAction";
 import { getScreenBounds } from "./getScreenBounds";
@@ -8,31 +8,28 @@ import { getOptions } from "./options-storage";
 
 export const tabToWindow = async (windowType: WindowType) => {
   doBackgroundAction(async () => {
-    const tabs = await browser.tabs.query({ currentWindow: true, active: true });
+    const currentWindow = await browser.windows.getCurrent({ populate: true });
 
-    if (tabs.length === 0) {
+    if (currentWindow.tabs === undefined || currentWindow.tabs.length === 0) {
       return;
     }
 
     const options = await getOptions();
 
-    const tab = tabs[0];
-
-    const isFullscreen = false;
-    const isFocused = true;
+    const tab = currentWindow.tabs[0];
+    const isCopyFullScreenEnabled = options.get("copyFullscreen");
+    const isCurrentWindowFullscreen = currentWindow.state === "fullscreen";
+    const isFullscreen = isCopyFullScreenEnabled && isCurrentWindowFullscreen;
+    const isFocused = options.get("focus") === "new";
     const newWindowBounds = await getSizeAndPos(options, "new", getScreenBounds());
 
-    const promises: Promise<unknown>[] = [];
-
     // create the new window
-    promises.push(createNewWindow(tab, windowType, newWindowBounds, isFullscreen, isFocused));
+    await createNewWindow(tab, windowType, newWindowBounds, isFullscreen, isFocused);
 
     // close the existing tab
     if (tab.id !== undefined) {
-      promises.push(browser.tabs.remove(tab.id));
+      await browser.tabs.remove(tab.id);
     }
-
-    return Promise.all(promises);
   });
 };
 

@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 
 import { WindowType, IBounds } from "./api";
 
-export const createNewWindow = (
+export const createNewWindow = async (
   tab: browser.Tabs.Tab,
   windowType: WindowType,
   windowBounds: IBounds,
@@ -17,23 +17,11 @@ export const createNewWindow = (
     ...windowBounds,
   };
 
-  if (isFullscreen) {
-    return new Promise<browser.Windows.Window>(async (resolve, reject) => {
-      browser.windows.create(opts).then((newWin) => {
-        // this timeout is gross but necessary.
-        // updating immediately fails
-        setTimeout(() => {
-          if (newWin.id !== undefined) {
-            browser.windows.update(newWin.id, { state: "fullscreen" }).then(() => {
-              resolve(newWin);
-            });
-          } else {
-            reject("New window has no ide");
-          }
-        }, 1000);
-      });
-    });
+  const newWin = await browser.windows.create(opts);
+
+  if (newWin.id !== undefined) {
+    await browser.windows.update(newWin.id, { state: isFullscreen ? "fullscreen" : "normal" });
   }
 
-  return browser.windows.create(opts);
+  return newWin;
 };
