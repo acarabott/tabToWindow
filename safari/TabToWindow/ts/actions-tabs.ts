@@ -49,6 +49,7 @@ export const tabToWindow = async (windowType: WindowType) => {
       browser.windows.update(currentWindow.id, {
         ...vals,
         state: "normal",
+        focused: !isNewWindowFocused,
       });
     }
   });
