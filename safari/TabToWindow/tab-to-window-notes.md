@@ -14,6 +14,7 @@
 
 - Options page
   - shared data for options
+- Multiple monitors
 
 
 ### checked APIs
@@ -58,7 +59,7 @@
 
 
 
-- using `windows.update` to change position to `top: 0` with `height: screen.availHeight` gest the wrong position as it doesn't take the browser chrome into account
+- using `windows.update` to change position to `top: 0` with `height: screen.availHeight` gets the wrong position as it doesn't take the browser chrome into account
   - `windows.create` seems fine though
   - using a negative vallue for top works, might have issues on (e.g.) Windows Chrome, or Linux
   - this might only be on external monitor? seems fine on mbp only screen
@@ -70,7 +71,7 @@
     - can do a manual copy of data to sync...
 
 - safari background pages can only import modules with the `.js` extension, e.g.
-- keyboard shortcuts are beter handled in javascript, as otherwise cannot change them.
+- keyboard shortcuts are better handled in javascript, as otherwise cannot change them.
 
 
 ```js
