@@ -11,17 +11,21 @@ export const keybindingToString = (keybinding: IKeybinding | undefined): string 
 
       if (keybinding.altGraphKey) {
         modifiers.push("AltGr");
-      } else if (keybinding.altKey) {
+      }
+      if (keybinding.altKey) {
         modifiers.push("Alt");
-      } else if (keybinding.ctrlKey) {
+      }
+      if (keybinding.ctrlKey) {
         modifiers.push("Ctrl");
-      } else if (keybinding.metaKey) {
+      }
+      if (keybinding.metaKey) {
         modifiers.push("Cmd"); // TODO mac/win
-      } else if (keybinding.shiftKey) {
+      }
+      if (keybinding.shiftKey) {
         modifiers.push("Shift");
       }
 
-      modifiersLabel = modifiers.join(" ");
+      modifiersLabel = modifiers.join(" + ");
     }
 
     {
