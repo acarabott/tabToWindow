@@ -7,7 +7,7 @@ import {
   PopupState,
   WindowID,
   WindowProperty,
-  WindowType
+  WindowType,
 } from "./api.js";
 import { defAtom } from "./defAtom.js";
 import { getFromClass, getFromId, getFromIdOrThrow, getFromTag } from "./domUtils.js";
@@ -15,7 +15,7 @@ import { getCloneBounds } from "./getCloneBounds.js";
 import {
   OnKeybindingAlreadyAssigned,
   OnKeybindingsUpdated,
-  setupKeybinding
+  setupKeybinding,
 } from "./keybinding.js";
 import { keybindingToString } from "./keybindingToString.js";
 import { getOptions, getStorageWindowPropKey, Options } from "./options-storage.js";
@@ -160,14 +160,36 @@ getOptions()
 
         const getShortcutElId = (commandName: CommandName) => `shortcut-${commandName}`;
         const getAssignElId = (commandName: CommandName) => `${ASSIGN_CLASS}-${commandName}`;
+        const getClearElId = (commandName: CommandName) => `clear-${commandName}`;
 
         const updateKeybindingsView = (newKeybindings: Keybindings) => {
           for (const command of COMMANDS) {
-            const el = getFromIdOrThrow(getShortcutElId(command.name));
             const keybinding = newKeybindings[command.name];
-            const text = keybindingToString(keybinding);
-            el.textContent = text;
+
+            const shortcutEl = getFromIdOrThrow(getShortcutElId(command.name));
+            shortcutEl.textContent = keybindingToString(keybinding);
+
+            const clearEl = getFromIdOrThrow<HTMLButtonElement>(getClearElId(command.name));
+            const isEnabled = keybinding !== undefined;
+            clearEl.disabled = !isEnabled;
+            clearEl.style.opacity = `${isEnabled ? 1.0 : 0.5}`;
           }
+        };
+
+        const startAssigning = (commandName: CommandName) =>
+          db.set({ commandBeingAssignedTo: commandName });
+
+        const clearAssignment = (commandName: CommandName) => {
+          const newKeybindings: Keybindings = {
+            ...options.get("keybindings"),
+            [commandName]: undefined,
+          };
+
+          options.update({ keybindings: newKeybindings });
+
+          updateKeybindingsView(newKeybindings);
+
+          db.set({ commandBeingAssignedTo: undefined });
         };
 
         {
@@ -194,10 +216,14 @@ getOptions()
             assign.id = getAssignElId(command.name);
             assign.textContent = "🔴";
             assign.classList.add(ASSIGN_CLASS);
-            assign.addEventListener("click", () => {
-              db.set({ commandBeingAssignedTo: command.name });
-            });
+            assign.addEventListener("click", () => startAssigning(command.name));
             li.appendChild(assign);
+
+            const clear = document.createElement("button");
+            clear.id = getClearElId(command.name);
+            clear.textContent = "❌";
+            clear.addEventListener("click", () => clearAssignment(command.name));
+            li.appendChild(clear);
           }
 
           updateKeybindingsView(keybindings);

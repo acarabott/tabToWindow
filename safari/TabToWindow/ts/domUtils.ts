@@ -1,8 +1,8 @@
 export const getFromId = <T extends HTMLElement>(id: string, root = document) =>
   root.getElementById(id) as T;
 
-export const getFromIdOrThrow = (id: string) => {
-  const el = getFromId(id);
+export const getFromIdOrThrow = <T extends HTMLElement>(id: string) => {
+  const el = getFromId<T>(id);
   if (el === null) {
     throw new Error(`Could not find element with id ${id}`);
   }
