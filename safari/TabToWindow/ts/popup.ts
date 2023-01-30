@@ -202,28 +202,39 @@ getOptions()
             const li = document.createElement("li");
             shortcutList.appendChild(li);
 
-            const name = document.createElement("span");
+            const name = document.createElement("div");
             name.textContent = `${command.description}:`;
             name.classList.add("shortcut-label");
             li.appendChild(name);
 
+            const container = document.createElement("div");
+            // TODO move to css file
+            container.style.width = "100%";
+            container.style.display = "flex";
+            container.style.flexDirection = "row";
+            container.style.justifyContent = "space-between";
+            li.appendChild(container);
+
             const shortcut = document.createElement("span");
             shortcut.id = getShortcutElId(command.name);
             shortcut.classList.add(SHORTCUT_CLASS);
-            li.appendChild(shortcut);
+            container.appendChild(shortcut);
+
+            const buttonContainer = document.createElement("div");
+            container.appendChild(buttonContainer);
 
             const assign = document.createElement("button");
             assign.id = getAssignElId(command.name);
             assign.textContent = "🔴";
             assign.classList.add(ASSIGN_CLASS);
             assign.addEventListener("click", () => startAssigning(command.name));
-            li.appendChild(assign);
+            buttonContainer.appendChild(assign);
 
             const clear = document.createElement("button");
             clear.id = getClearElId(command.name);
             clear.textContent = "❌";
             clear.addEventListener("click", () => clearAssignment(command.name));
-            li.appendChild(clear);
+            buttonContainer.appendChild(clear);
           }
 
           updateKeybindingsView(keybindings);
