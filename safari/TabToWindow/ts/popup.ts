@@ -2,6 +2,7 @@ import {
   CloneMode,
   CommandName,
   COMMANDS,
+  Keybindings,
   IOptions,
   PopupState,
   WindowID,
@@ -11,7 +12,12 @@ import {
 import { defAtom } from "./defAtom.js";
 import { getFromClass, getFromId, getFromIdOrThrow, getFromTag } from "./domUtils.js";
 import { getCloneBounds } from "./getCloneBounds.js";
-import { setupKeybinding } from "./keybinding.js";
+import {
+  OnKeybindingAlreadyAssigned,
+  OnKeybindingCancelled,
+  OnKeybindingsUpdated,
+  setupKeybinding,
+} from "./keybinding.js";
 import { keybindingToString } from "./keybindingToString.js";
 import { getOptions, getStorageWindowPropKey, Options } from "./options-storage.js";
 
@@ -153,13 +159,11 @@ getOptions()
 
         const getShortcutElId = (commandName: CommandName) => `shortcut-${commandName}`;
 
-        const updateKeybindingsView = (newKeybindings: IOptions["keybindings"]) => {
+        const updateKeybindingsView = (newKeybindings: Keybindings) => {
           for (const command of COMMANDS) {
             const el = getFromIdOrThrow(getShortcutElId(command.name));
             const keybinding = newKeybindings[command.name];
             const text = keybindingToString(keybinding);
-            console.log("keybinding:", keybinding);
-            console.log("text:", text);
             el.textContent = text;
           }
         };
@@ -197,21 +201,24 @@ getOptions()
           updateKeybindingsView(keybindings);
         }
 
+        const onUpdated: OnKeybindingsUpdated = (newKeybindings: Keybindings) => {
+          updateKeybindingsView(newKeybindings);
+          onCancelled();
+        };
+
         // setup updates
-        const clearAssignButtons = () => {
+        const onCancelled: OnKeybindingCancelled = () => {
           // TODO class as var
           for (const el of getFromClass("shortcut-assign")) {
             el.style.backgroundColor = "white";
           }
         };
-        setupKeybinding(
-          db,
-          (newKeybindings) => {
-            updateKeybindingsView(newKeybindings);
-            clearAssignButtons();
-          },
-          clearAssignButtons,
-        );
+
+        const onAlreadyAssigned: OnKeybindingAlreadyAssigned = (failed, existing) => {
+          console.log(failed, existing);
+        };
+
+        setupKeybinding(db, onUpdated, onCancelled, onAlreadyAssigned);
       }
 
       const gridsize = 20; // px to use for window grid

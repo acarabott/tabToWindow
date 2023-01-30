@@ -59,6 +59,14 @@ export type CommandName =
   | typeof COMMAND_PREVIOUS
   | typeof COMMAND_DISPLAY;
 
+export interface Keybindings {
+  [COMMAND_NORMAL]: IKeybinding | undefined;
+  [COMMAND_POPUP]: IKeybinding | undefined;
+  [COMMAND_NEXT]: IKeybinding | undefined;
+  [COMMAND_PREVIOUS]: IKeybinding | undefined;
+  [COMMAND_DISPLAY]: IKeybinding | undefined;
+}
+
 export interface IOptions {
   cloneMode: CloneMode;
   copyFullscreen: boolean;
@@ -73,13 +81,7 @@ export interface IOptions {
   originalTop: number;
   originalWidth: number;
   resizeOriginal: boolean;
-  keybindings: {
-    [COMMAND_NORMAL]: IKeybinding | undefined;
-    [COMMAND_POPUP]: IKeybinding | undefined;
-    [COMMAND_NEXT]: IKeybinding | undefined;
-    [COMMAND_PREVIOUS]: IKeybinding | undefined;
-    [COMMAND_DISPLAY]: IKeybinding | undefined;
-  };
+  keybindings: Keybindings;
 }
 
 export const isIOptions = (obj: unknown): obj is IOptions => {

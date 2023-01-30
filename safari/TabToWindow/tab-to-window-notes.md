@@ -15,6 +15,8 @@
 - Options page
   - shared data for options
   - keyboard shortcuts
+    - update view as keys pressed
+    - highlighting already assigned
 - Multiple monitors
 - test if keyboard shortcuts work if client page is blocking events
 

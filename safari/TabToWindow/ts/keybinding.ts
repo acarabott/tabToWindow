@@ -1,5 +1,6 @@
-import { CommandName, IKeybinding, IOptions, PopupState } from "./api";
+import { CommandName, IKeybinding, Keybindings, IOptions, PopupState } from "./api";
 import { Atom } from "./defAtom";
+import { getEntries } from "./getEntries";
 import { getOptions } from "./options-storage";
 import { ScanCode } from "./ScanCode";
 
@@ -13,10 +14,15 @@ const defKeybinding = (): IKeybinding => ({
   display: "",
 });
 
+export type OnKeybindingsUpdated = (keybindings: Keybindings) => void;
+export type OnKeybindingCancelled = () => void;
+export type OnKeybindingAlreadyAssigned = (failed: CommandName, existing: CommandName) => void;
+
 export const setupKeybinding = (
   db: Atom<PopupState>,
-  onUpdate: (keybindings: IOptions["keybindings"]) => void,
-  onCancel: () => void,
+  onUpdate: OnKeybindingsUpdated,
+  onCancel: OnKeybindingCancelled,
+  onAlreadyAssigned: OnKeybindingAlreadyAssigned,
 ) => {
   let keybinding = defKeybinding();
 
@@ -26,10 +32,30 @@ export const setupKeybinding = (
     const options = await getOptions();
     const keybindings = options.get("keybindings");
 
-    const newKeybindings = structuredClone(keybindings);
-    newKeybindings[commandName] = structuredClone(keybinding);
-    options.update({ keybindings: newKeybindings });
-    onUpdate(newKeybindings);
+    type Entries<T> = {
+      [K in keyof T]: [K, T[K]];
+    }[keyof T][];
+
+    const existingBinding = getEntries(keybindings).find(([otherCommandName, otherKeybinding]) => {
+      return (
+        otherCommandName !== commandName &&
+        keybinding.ctrlKey === otherKeybinding?.ctrlKey &&
+        keybinding.shiftKey === otherKeybinding?.shiftKey &&
+        keybinding.altKey === otherKeybinding?.altKey &&
+        keybinding.metaKey === otherKeybinding?.metaKey &&
+        keybinding.altGraphKey === otherKeybinding?.altGraphKey &&
+        keybinding.code === otherKeybinding?.code
+      );
+    });
+
+    if (existingBinding === undefined) {
+      const newKeybindings = structuredClone(keybindings);
+      newKeybindings[commandName] = structuredClone(keybinding);
+      options.update({ keybindings: newKeybindings });
+      onUpdate(newKeybindings);
+    } else {
+      onAlreadyAssigned(commandName, existingBinding[0]);
+    }
   };
 
   const MODIFIERS: ScanCode[] = [
