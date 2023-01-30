@@ -1,4 +1,4 @@
-import { CommandName, IKeybinding, Keybindings, IOptions, PopupState } from "./api";
+import { CommandName, IKeybinding, Keybindings, PopupState } from "./api";
 import { Atom } from "./defAtom";
 import { getEntries } from "./getEntries";
 import { getOptions } from "./options-storage";
@@ -21,7 +21,6 @@ export type OnKeybindingAlreadyAssigned = (failed: CommandName, existing: Comman
 export const setupKeybinding = (
   db: Atom<PopupState>,
   onUpdate: OnKeybindingsUpdated,
-  onCancel: OnKeybindingCancelled,
   onAlreadyAssigned: OnKeybindingAlreadyAssigned,
 ) => {
   let keybinding = defKeybinding();
@@ -31,10 +30,6 @@ export const setupKeybinding = (
   const assign = async (commandName: CommandName, keybinding: Readonly<IKeybinding>) => {
     const options = await getOptions();
     const keybindings = options.get("keybindings");
-
-    type Entries<T> = {
-      [K in keyof T]: [K, T[K]];
-    }[keyof T][];
 
     const existingBinding = getEntries(keybindings).find(([otherCommandName, otherKeybinding]) => {
       return (
@@ -56,6 +51,8 @@ export const setupKeybinding = (
     } else {
       onAlreadyAssigned(commandName, existingBinding[0]);
     }
+
+    db.set({ commandBeingAssignedTo: undefined });
   };
 
   const MODIFIERS: ScanCode[] = [
@@ -90,7 +87,6 @@ export const setupKeybinding = (
       } else if (code === "Escape") {
         resetKeybinding();
         db.set({ commandBeingAssignedTo: undefined });
-        onCancel();
       } else {
         keybinding.code = code;
         keybinding.display = event.code; // TODO need lookup

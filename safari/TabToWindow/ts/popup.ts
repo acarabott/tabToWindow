@@ -2,21 +2,20 @@ import {
   CloneMode,
   CommandName,
   COMMANDS,
-  Keybindings,
   IOptions,
+  Keybindings,
   PopupState,
   WindowID,
   WindowProperty,
-  WindowType,
+  WindowType
 } from "./api.js";
 import { defAtom } from "./defAtom.js";
 import { getFromClass, getFromId, getFromIdOrThrow, getFromTag } from "./domUtils.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import {
   OnKeybindingAlreadyAssigned,
-  OnKeybindingCancelled,
   OnKeybindingsUpdated,
-  setupKeybinding,
+  setupKeybinding
 } from "./keybinding.js";
 import { keybindingToString } from "./keybindingToString.js";
 import { getOptions, getStorageWindowPropKey, Options } from "./options-storage.js";
@@ -153,11 +152,14 @@ getOptions()
 
     const main = async (options: Options) => {
       {
+        const ASSIGN_CLASS = "shortcut-assign";
+        const SHORTCUT_CLASS = "shortcut";
         // display shortcuts
         // -----------------------------------------------------------------------
         const db = defAtom<PopupState>({ commandBeingAssignedTo: undefined });
 
         const getShortcutElId = (commandName: CommandName) => `shortcut-${commandName}`;
+        const getAssignElId = (commandName: CommandName) => `${ASSIGN_CLASS}-${commandName}`;
 
         const updateKeybindingsView = (newKeybindings: Keybindings) => {
           for (const command of COMMANDS) {
@@ -185,15 +187,15 @@ getOptions()
 
             const shortcut = document.createElement("span");
             shortcut.id = getShortcutElId(command.name);
-            shortcut.classList.add("shortcut");
+            shortcut.classList.add(SHORTCUT_CLASS);
             li.appendChild(shortcut);
 
             const assign = document.createElement("button");
+            assign.id = getAssignElId(command.name);
             assign.textContent = "🔴";
-            assign.classList.add("shortcut-assign");
+            assign.classList.add(ASSIGN_CLASS);
             assign.addEventListener("click", () => {
               db.set({ commandBeingAssignedTo: command.name });
-              assign.style.backgroundColor = "red"; // TODO use class etc
             });
             li.appendChild(assign);
           }
@@ -201,24 +203,38 @@ getOptions()
           updateKeybindingsView(keybindings);
         }
 
-        const onUpdated: OnKeybindingsUpdated = (newKeybindings: Keybindings) => {
-          updateKeybindingsView(newKeybindings);
-          onCancelled();
-        };
+        db.addListener((state) => {
+          if (state.commandBeingAssignedTo === undefined) {
+            for (const el of getFromClass(ASSIGN_CLASS)) {
+              el.style.backgroundColor = "white";
+            }
+          } else {
+            const el = getFromIdOrThrow(getAssignElId(state.commandBeingAssignedTo));
+            el.style.background = "red";
+          }
+        });
 
         // setup updates
-        const onCancelled: OnKeybindingCancelled = () => {
-          // TODO class as var
-          for (const el of getFromClass("shortcut-assign")) {
-            el.style.backgroundColor = "white";
-          }
+        const onUpdated: OnKeybindingsUpdated = (newKeybindings: Keybindings) => {
+          updateKeybindingsView(newKeybindings);
         };
 
         const onAlreadyAssigned: OnKeybindingAlreadyAssigned = (failed, existing) => {
-          console.log(failed, existing);
+          // TODO do this with better CSS
+          const failedEl = getFromIdOrThrow(getShortcutElId(failed));
+          failedEl.style.background = "red";
+          failedEl.textContent = "Keys in use!";
+
+          const existingEl = getFromIdOrThrow(getShortcutElId(existing));
+          existingEl.style.background = "orange";
+
+          setTimeout(() => {
+            failedEl.style.background = "white";
+            existingEl.style.background = "white";
+          }, 3000);
         };
 
-        setupKeybinding(db, onUpdated, onCancelled, onAlreadyAssigned);
+        setupKeybinding(db, onUpdated, onAlreadyAssigned);
       }
 
       const gridsize = 20; // px to use for window grid
