@@ -5,6 +5,7 @@ export const createNewWindow = (
   windowType: WindowType,
   windowBounds: IBounds,
   isFullscreen: boolean,
+  isMaximized: boolean,
   isFocused: boolean,
 ): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
   // new window options
@@ -21,6 +22,8 @@ export const createNewWindow = (
       if (newWin !== undefined) {
         if (isFullscreen && newWin.id !== undefined) {
           chrome.windows.update(newWin.id, { state: "fullscreen" }, () => resolve([newWin, tab]));
+        } else if (isMaximized && newWin.id !== undefined) {
+          chrome.windows.update(newWin.id, { state: "maximized" }, () => resolve([newWin, tab]));
         } else {
           resolve([newWin, tab]);
         }
