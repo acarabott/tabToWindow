@@ -24,7 +24,7 @@ export const createNewWindow = (
           chrome.windows.update(newWin.id, { state: "fullscreen" }, () => resolve([newWin, tab]));
         } else if (isMaximized && newWin.id !== undefined) {
           chrome.windows.update(newWin.id, { state: "maximized" }, () => resolve([newWin, tab]));
-        } else{
+        } else {
           resolve([newWin, tab]);
         }
       } else {
