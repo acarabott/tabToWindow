@@ -70,7 +70,7 @@ export const tabToWindow = async (
 
     const options = await getOptions();
 
-    const isFullscreen = options.get("copyFullscreen") && currentWindow.state === "fullscreen";
+    const copyState = options.get("copyState");
     const isFocused = options.get("focus") === "new";
 
     // (maybe) move and resize original window
@@ -78,7 +78,7 @@ export const tabToWindow = async (
     const destroyingOriginalWindow = tabs.length === 1;
     if (
       options.get("resizeOriginal") &&
-      !isFullscreen &&
+      !copyState &&
       !destroyingOriginalWindow &&
       !moveToNextDisplay
     ) {
@@ -124,8 +124,9 @@ export const tabToWindow = async (
       activeTab,
       newWindowType,
       windowBounds,
-      isFullscreen,
       isFocused,
+      copyState,
+      currentWindow.state
     );
 
     if (newWin.id !== undefined) {
@@ -152,8 +153,9 @@ export const tabToWindow = async (
               tab,
               newWindowType,
               getWindowBounds(newWin),
-              isFullscreen,
               isFocused,
+              copyState,
+              currentWindow.state
             );
           });
           await Promise.all(tabPromises);

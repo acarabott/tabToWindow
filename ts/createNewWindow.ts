@@ -4,8 +4,9 @@ export const createNewWindow = (
   tab: chrome.tabs.Tab,
   windowType: WindowType,
   windowBounds: IBounds,
-  isFullscreen: boolean,
   isFocused: boolean,
+  copyState: boolean,
+  state: chrome.windows.windowStateEnum | undefined,
 ): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
   // new window options
   const opts: chrome.windows.CreateData = {
@@ -13,17 +14,18 @@ export const createNewWindow = (
     type: windowType,
     focused: isFocused,
     incognito: tab.incognito,
-    ...windowBounds,
+    state,
   };
 
   return new Promise((resolve, reject) => {
     chrome.windows.create(opts, (newWin) => {
       if (newWin !== undefined) {
-        if (isFullscreen && newWin.id !== undefined) {
-          chrome.windows.update(newWin.id, { state: "fullscreen" }, () => resolve([newWin, tab]));
-        } else {
-          resolve([newWin, tab]);
+        if (newWin.id && copyState) {
+          chrome.windows.update(newWin.id, { state: "normal", ...windowBounds }, () =>
+            chrome.windows.update(newWin.id!, { state }, () => resolve([newWin, tab])),
+          );
         }
+        resolve([newWin, tab]);
       } else {
         reject("Could not create new window");
       }

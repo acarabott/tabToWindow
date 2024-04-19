@@ -38,7 +38,7 @@ export interface IBounds {
 
 export interface IOptions {
   cloneMode: CloneMode;
-  copyFullscreen: boolean;
+  copyState: boolean;
   focus: WindowID;
   menuButtonType: WindowType;
   newHeight: number;
@@ -58,7 +58,7 @@ export const isIOptions = (obj: any): obj is IOptions => {
     cast !== undefined &&
     obj &&
     cloneModes.includes(cast.cloneMode) &&
-    typeof cast.copyFullscreen === "boolean" &&
+    typeof cast.copyState === "boolean" &&
     windowIds.includes(cast.focus) &&
     windowTypes.includes(cast.menuButtonType) &&
     typeof cast.newHeight === "number" &&
