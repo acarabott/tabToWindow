@@ -11,7 +11,7 @@ const defaultOptions: IOptions = {
   focus: "new",
   resizeOriginal: true,
   cloneMode: "clone-mode-no",
-  copyFullscreen: true,
+  copyState: true,
   menuButtonType: "normal",
   originalWidth: 0.5,
   originalHeight: 1.0,

@@ -26,7 +26,7 @@ getOptions().then(options => {
     const update: Partial<IOptions> = {
       focus: getFocusedName(),
       resizeOriginal: getFromId<HTMLInputElement>("resize-original").checked,
-      copyFullscreen: getFromId<HTMLInputElement>("copy-fullscreen").checked,
+      copyState: getFromId<HTMLInputElement>("copy-state").checked,
       cloneMode: getFromClass<HTMLInputElement>("clone-mode-option").find(cp => cp.checked)!
         .id as CloneMode,
       menuButtonType: getFromClass<HTMLInputElement>("menu-button-option")
@@ -183,7 +183,7 @@ getOptions().then(options => {
         cp => cp.id === options.get("cloneMode"),
       )!;
       curCloneOption.checked = true;
-      getFromId<HTMLInputElement>("copy-fullscreen").checked = options.get("copyFullscreen");
+      getFromId<HTMLInputElement>("copy-state").checked = options.get("copyState");
       getFromClass<HTMLInputElement>("menu-button-option").forEach(opt => {
         opt.checked = opt.id.includes(options.get("menuButtonType"));
       });
