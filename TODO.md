@@ -14,6 +14,7 @@
 
 - Layout on options screen, now narrow extra colon
 - options-page.ts filter for each
+- consolidate getHighlightedTabs and unhilightTabs? check if windowIds always match
 
 ## Testing
 
