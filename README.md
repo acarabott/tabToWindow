@@ -14,6 +14,6 @@ Get it from the [Chrome Store](https://chrome.google.com/webstore/detail/tab-to-
 
 This extensions does not collect any of your data.
 
-There is *no* communication with any external software, server, or service; everything is entirely contained within your browser.
+There is _no_ communication with any external software, server, or service; everything is entirely contained within your browser.
 
-This extension does *not* perform any kind of tracking.
+This extension does _not_ perform any kind of tracking.

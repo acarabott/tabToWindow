@@ -79,8 +79,8 @@ export const tabToWindow = async (
   const windowBounds = moveToNextDisplay
     ? getNextDisplay().bounds
     : tabs.length === 1
-    ? getWindowBounds(origWindow)
-    : await getNewWindowBounds(options, origWindow, currentDisplay.workArea);
+      ? getWindowBounds(origWindow)
+      : await getNewWindowBounds(options, origWindow, currentDisplay.workArea);
 
   const newWindowType =
     windowType === undefined ? (currentWindow.type === "popup" ? "popup" : "normal") : windowType;
@@ -110,13 +110,9 @@ export const tabToWindow = async (
         }
       } else if (newWindowType === "popup") {
         // can't move tabs to a popup window, so create individual ones
-        const tabPromises = otherTabs.map((tab) => createNewWindow(
-            tab,
-            newWindowType,
-            getWindowBounds(newWin),
-            isFullscreen,
-            isFocused,
-          ));
+        const tabPromises = otherTabs.map((tab) =>
+          createNewWindow(tab, newWindowType, getWindowBounds(newWin), isFullscreen, isFocused),
+        );
         await Promise.all(tabPromises);
       }
     }

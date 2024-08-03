@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Tab to Window</title>
@@ -7,21 +7,27 @@
         font-family: "Oxygen";
         font-style: normal;
         font-weight: 300;
-        src: local("Oxygen Light"), local("Oxygen-Light"),
+        src:
+          local("Oxygen Light"),
+          local("Oxygen-Light"),
           url(css/fonts/oxygenLight.woff) format("woff");
       }
       @font-face {
         font-family: "Oxygen";
         font-style: normal;
         font-weight: 400;
-        src: local("Oxygen"), local("Oxygen-Regular"),
+        src:
+          local("Oxygen"),
+          local("Oxygen-Regular"),
           url(css/fonts/oxygenRegular.woff) format("woff");
       }
       @font-face {
         font-family: "Oxygen";
         font-style: normal;
         font-weight: 700;
-        src: local("Oxygen Bold"), local("Oxygen-Bold"),
+        src:
+          local("Oxygen Bold"),
+          local("Oxygen-Bold"),
           url(css/fonts/oxygenBold.woff) format("woff");
       }
 
@@ -96,18 +102,18 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-6P35E7VQNF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-      gtag('config', 'G-6P35E7VQNF');
+      gtag("config", "G-6P35E7VQNF");
     </script>
   </head>
 
   <body>
     <div class="container">
-      <h1>
-        Tab to Window
-      </h1>
+      <h1>Tab to Window</h1>
 
       <h3>
         <a

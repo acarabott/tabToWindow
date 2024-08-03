@@ -2,19 +2,28 @@
   font-family: "Oxygen";
   font-style: normal;
   font-weight: 300;
-  src: local("Oxygen Light"), local("Oxygen-Light"), url(fonts/oxygenLight.woff) format("woff");
+  src:
+    local("Oxygen Light"),
+    local("Oxygen-Light"),
+    url(fonts/oxygenLight.woff) format("woff");
 }
 @font-face {
   font-family: "Oxygen";
   font-style: normal;
   font-weight: 400;
-  src: local("Oxygen"), local("Oxygen-Regular"), url(fonts/oxygenRegular.woff) format("woff");
+  src:
+    local("Oxygen"),
+    local("Oxygen-Regular"),
+    url(fonts/oxygenRegular.woff) format("woff");
 }
 @font-face {
   font-family: "Oxygen";
   font-style: normal;
   font-weight: 700;
-  src: local("Oxygen Bold"), local("Oxygen-Bold"), url(fonts/oxygenBold.woff) format("woff");
+  src:
+    local("Oxygen Bold"),
+    local("Oxygen-Bold"),
+    url(fonts/oxygenBold.woff) format("woff");
 }
 
 html {

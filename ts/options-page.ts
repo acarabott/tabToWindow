@@ -202,7 +202,9 @@ getOptions().then((options) => {
           win.style[prop] = `${value * 100}%`;
         });
 
-        const grid = (["clientWidth", "clientHeight"] as const).map((d) => getFromId("screen")[d] / gridsize);
+        const grid = (["clientWidth", "clientHeight"] as const).map(
+          (d) => getFromId("screen")[d] / gridsize,
+        );
 
         let saveTimeout: number;
         const update = () => {
