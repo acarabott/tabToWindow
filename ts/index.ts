@@ -17,7 +17,6 @@ import {
   COMMAND_NORMAL,
   COMMAND_POPUP,
   COMMAND_PREVIOUS,
-  IOptions,
   MENU_FOCUS_NEW_OPTION_ID,
   MENU_FOCUS_ORIGINAL_OPTION_ID,
   MENU_LINK_TO_DISPLAY_ID,
@@ -35,20 +34,6 @@ import {
 } from "./api.js";
 import { createMenu } from "./createMenu.js";
 import { getOptions } from "./options-storage.js";
-
-// Storage
-// -----------------------------------------------------------------------------
-
-chrome.storage.onChanged.addListener(async (changes) => {
-  const update: Partial<IOptions> = {};
-
-  const entries = Object.entries(changes) as Array<[keyof IOptions, chrome.storage.StorageChange]>;
-  for (const [key, change] of entries) {
-    update[key] = change.newValue;
-  }
-
-  (await getOptions()).update(update);
-});
 
 // Commands
 // -----------------------------------------------------------------------------

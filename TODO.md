@@ -8,6 +8,7 @@
   - Event listeners should not be registered in response to returned promises or inside event callbacks.
   - Since they're not backward compatible with XMLHttpRequest() you'll need to replace calls to this interface with calls to fetch().
   - Since they terminate when not in use, you'll need to persist application states rather than rely on global variables. Terminating service workers can also end timers before they have completed. You'll need to replace them with alarms.
+  - `getOptions` not working in service worker
 
 - Update API calls: https://developer.chrome.com/docs/extensions/develop/migrate/api-calls
 - Replace blocking web request listeners: https://developer.chrome.com/docs/extensions/develop/migrate/blocking-web-requests
