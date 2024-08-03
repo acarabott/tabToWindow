@@ -1,5 +1,6 @@
 import { CommandName, IKeybinding, Keybindings, PopupState } from "./api";
-import { Atom } from "./defAtom";
+import { clone } from "./clone";
+import { Atom, Immutable } from "./defAtom";
 import { getEntries } from "./getEntries";
 import { getOptions } from "./options-storage";
 import { ScanCode } from "./ScanCode";
@@ -23,11 +24,7 @@ export const setupKeybinding = (
   onUpdate: OnKeybindingsUpdated,
   onAlreadyAssigned: OnKeybindingAlreadyAssigned,
 ) => {
-  let keybinding = defKeybinding();
-
-  const resetKeybinding = () => (keybinding = defKeybinding());
-
-  const assign = async (commandName: CommandName, keybinding: Readonly<IKeybinding>) => {
+  const assign = async (commandName: CommandName, keybinding: Immutable<IKeybinding>) => {
     const options = await getOptions();
     const keybindings = options.get("keybindings");
 
@@ -44,15 +41,15 @@ export const setupKeybinding = (
     });
 
     if (existingBinding === undefined) {
-      const newKeybindings = structuredClone(keybindings);
-      newKeybindings[commandName] = structuredClone(keybinding);
-      options.update({ keybindings: newKeybindings });
+      const newKeybindings = clone(keybindings);
+      newKeybindings[commandName] = clone(keybinding);
+      await options.update({ keybindings: newKeybindings });
       onUpdate(newKeybindings);
     } else {
       onAlreadyAssigned(commandName, existingBinding[0]);
     }
 
-    db.set({ commandBeingAssignedTo: undefined });
+    db.set({ commandBeingAssignedTo: undefined, keybinding: defKeybinding() });
   };
 
   const MODIFIERS: ScanCode[] = [
@@ -72,36 +69,52 @@ export const setupKeybinding = (
     MODIFIERS.includes(event.code as unknown as ScanCode) || getAltGraphState(event);
 
   const onKeyDown = (event: KeyboardEvent) => {
-    const state = db.get();
-    if (state.commandBeingAssignedTo !== undefined) {
+    if (db.get().commandBeingAssignedTo !== undefined) {
       event.preventDefault();
 
       const code = event.code as unknown as ScanCode;
 
       if (isModifier(event)) {
-        keybinding.ctrlKey = event.ctrlKey;
-        keybinding.shiftKey = event.shiftKey;
-        keybinding.altKey = event.altKey;
-        keybinding.metaKey = event.metaKey;
-        keybinding.altGraphKey = getAltGraphState(event);
+        db.swap((oldState) => ({
+          ...oldState,
+          keybinding: {
+            ...oldState.keybinding,
+            ctrlKey: event.ctrlKey,
+            shiftKey: event.shiftKey,
+            altKey: event.altKey,
+            metaKey: event.metaKey,
+            altGraphKey: getAltGraphState(event),
+          },
+        }));
       } else if (code === "Escape") {
-        resetKeybinding();
-        db.set({ commandBeingAssignedTo: undefined });
+        db.set({ commandBeingAssignedTo: undefined, keybinding: defKeybinding() });
       } else {
-        keybinding.code = code;
-        keybinding.display = event.code; // TODO need lookup
+        db.swap((oldState) => ({
+          ...oldState,
+          keybinding: {
+            ...oldState.keybinding,
+            code,
+            display: event.code, // TODO need lookup
+          },
+        }));
       }
 
-      if (
-        keybinding.code !== "None" &&
-        (keybinding.ctrlKey ||
-          keybinding.shiftKey ||
-          keybinding.altKey ||
-          keybinding.metaKey ||
-          keybinding.altGraphKey)
-      ) {
-        assign(state.commandBeingAssignedTo, keybinding);
-        resetKeybinding();
+      {
+        // do assignment
+        const state = db.get();
+        const keybinding = state.keybinding;
+
+        if (
+          state.commandBeingAssignedTo !== undefined &&
+          keybinding.code !== "None" &&
+          (keybinding.ctrlKey ||
+            keybinding.shiftKey ||
+            keybinding.altKey ||
+            keybinding.metaKey ||
+            keybinding.altGraphKey)
+        ) {
+          void assign(state.commandBeingAssignedTo, keybinding);
+        }
       }
     }
   };

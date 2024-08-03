@@ -47,6 +47,16 @@ export interface IKeybinding {
   display: string;
 }
 
+export const defKeybinding = (): IKeybinding => ({
+  ctrlKey: false,
+  shiftKey: false,
+  altKey: false,
+  metaKey: false,
+  altGraphKey: false,
+  code: "None",
+  display: "",
+});
+
 export const COMMAND_NORMAL = "01-tab-to-window-normal";
 export const COMMAND_POPUP = "02-tab-to-window-popup";
 export const COMMAND_NEXT = "03-tab-to-window-next";
@@ -154,4 +164,5 @@ export const isCommandMessage = (obj: unknown): obj is CommandMessage => {
 
 export interface PopupState {
   commandBeingAssignedTo: CommandName | undefined;
+  keybinding: IKeybinding;
 }

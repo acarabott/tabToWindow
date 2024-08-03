@@ -2,6 +2,7 @@ import {
   CloneMode,
   CommandName,
   COMMANDS,
+  defKeybinding,
   IOptions,
   Keybindings,
   PopupState,
@@ -11,6 +12,7 @@ import {
 } from "./api.js";
 import { defAtom } from "./defAtom.js";
 import { getFromClass, getFromId, getFromIdOrThrow, getFromTag } from "./domUtils.js";
+import { findThrow } from "./findThrow.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import {
   OnKeybindingAlreadyAssigned,
@@ -18,7 +20,7 @@ import {
   setupKeybinding,
 } from "./keybinding.js";
 import { keybindingToString } from "./keybindingToString.js";
-import { getOptions, getStorageWindowPropKey, Options } from "./options-storage.js";
+import { getOptions, getStorageWindowPropKey } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -37,8 +39,10 @@ getOptions()
         focus: getFocusedName(),
         resizeOriginal: getFromId<HTMLInputElement>("resize-original").checked,
         copyFullscreen: getFromId<HTMLInputElement>("copy-fullscreen").checked,
-        cloneMode: getFromClass<HTMLInputElement>("clone-mode-option").find((cp) => cp.checked)!
-          .id as CloneMode,
+        cloneMode: findThrow(
+          getFromClass<HTMLInputElement>("clone-mode-option"),
+          (cp) => cp.checked,
+        ).id as CloneMode,
         menuButtonType: getFromClass<HTMLInputElement>("menu-button-option")
           .find((mb) => mb.checked)
           ?.getAttribute("data-value") as WindowType,
@@ -61,7 +65,7 @@ getOptions()
         });
       });
 
-      options.update(update);
+      void options.update(update);
     };
 
     // changing draggable/resizable windows, used when radio buttons override
@@ -82,7 +86,9 @@ getOptions()
       updateWindowHandling("resize-original", "original", true);
       const originalWin = getFromId("original");
       const isResizing = getFromId<HTMLInputElement>("resize-original").checked;
-      isResizing ? originalWin.classList.remove("disabled") : originalWin.classList.add("disabled");
+      void (isResizing
+        ? originalWin.classList.remove("disabled")
+        : originalWin.classList.add("disabled"));
     };
 
     const updateResizeNew = () => updateWindowHandling("clone-mode-no", "new", true);
@@ -119,13 +125,13 @@ getOptions()
     const updateFocus = () => {
       getFromClass("window").forEach((win) => {
         const isBlurred = win.id !== getFocusedName();
-        isBlurred ? win.classList.add("blurred") : win.classList.remove("blurred");
+        void (isBlurred ? win.classList.add("blurred") : win.classList.remove("blurred"));
       });
     };
 
     const setWindowAsCurrent = (win: HTMLElement) => {
       getFromClass("window").forEach((_win) => {
-        _win === win ? _win.classList.add("current") : _win.classList.remove("current");
+        void (_win === win ? _win.classList.add("current") : _win.classList.remove("current"));
       });
     };
 
@@ -133,13 +139,21 @@ getOptions()
       const cloneMode = options.get("cloneMode");
       const $original = $("#original");
 
-      const maxWidth =
-        cloneMode === "clone-mode-horizontal" ? $original.parent().width()! * 0.8 : Infinity;
+      const parent = $original.parent();
+      const parentWidth = parent.width();
+      if (parentWidth === undefined) {
+        throw new Error("parent does not have a width");
+      }
+      const parentHeight = parent.height();
+      if (parentHeight === undefined) {
+        throw new Error("parent does not have a height");
+      }
+
+      const maxWidth = cloneMode === "clone-mode-horizontal" ? parentWidth * 0.8 : Infinity;
 
       $original.resizable("option", "maxWidth", maxWidth);
 
-      const maxHeight =
-        cloneMode === "clone-mode-vertical" ? $original.parent().height()! * 0.8 : Infinity;
+      const maxHeight = cloneMode === "clone-mode-vertical" ? parentHeight * 0.8 : Infinity;
 
       $original.resizable("option", "maxHeight", maxHeight);
     };
@@ -150,24 +164,32 @@ getOptions()
     // as then it's more difficult to tell when / where they are being called
     // and if it's more than one
 
-    const main = async (options: Options) => {
+    const main = () => {
       {
         const ASSIGN_CLASS = "shortcut-assign";
         const SHORTCUT_CLASS = "shortcut";
         // display shortcuts
         // -----------------------------------------------------------------------
-        const db = defAtom<PopupState>({ commandBeingAssignedTo: undefined });
+        const db = defAtom<PopupState>({
+          commandBeingAssignedTo: undefined,
+          keybinding: defKeybinding(),
+        });
 
         const getShortcutElId = (commandName: CommandName) => `shortcut-${commandName}`;
         const getAssignElId = (commandName: CommandName) => `${ASSIGN_CLASS}-${commandName}`;
         const getClearElId = (commandName: CommandName) => `clear-${commandName}`;
 
-        const updateKeybindingsView = (newKeybindings: Keybindings) => {
+        const updateKeybindingsView = (
+          newKeybindings: Readonly<Keybindings>,
+          state: PopupState,
+        ) => {
           for (const command of COMMANDS) {
             const keybinding = newKeybindings[command.name];
 
             const shortcutEl = getFromIdOrThrow(getShortcutElId(command.name));
-            shortcutEl.textContent = keybindingToString(keybinding);
+            shortcutEl.textContent = keybindingToString(
+              command.name === state.commandBeingAssignedTo ? state.keybinding : keybinding,
+            );
 
             const clearEl = getFromIdOrThrow<HTMLButtonElement>(getClearElId(command.name));
             const isEnabled = keybinding !== undefined;
@@ -177,7 +199,7 @@ getOptions()
         };
 
         const startAssigning = (commandName: CommandName) =>
-          db.set({ commandBeingAssignedTo: commandName });
+          db.swap((state) => ({ ...state, commandBeingAssignedTo: commandName }));
 
         const clearAssignment = (commandName: CommandName) => {
           const newKeybindings: Keybindings = {
@@ -185,17 +207,17 @@ getOptions()
             [commandName]: undefined,
           };
 
-          options.update({ keybindings: newKeybindings });
+          void options.update({ keybindings: newKeybindings });
 
-          updateKeybindingsView(newKeybindings);
-
-          db.set({ commandBeingAssignedTo: undefined });
+          const newState: PopupState = {
+            commandBeingAssignedTo: undefined,
+            keybinding: defKeybinding(),
+          };
+          db.set(newState);
         };
 
         {
           // create elements
-          const keybindings = options.get("keybindings");
-
           const shortcutList = getFromId("shortcut-list");
 
           for (const command of COMMANDS) {
@@ -236,24 +258,28 @@ getOptions()
             clear.addEventListener("click", () => clearAssignment(command.name));
             buttonContainer.appendChild(clear);
           }
-
-          updateKeybindingsView(keybindings);
         }
 
-        db.addListener((state) => {
-          if (state.commandBeingAssignedTo === undefined) {
-            for (const el of getFromClass(ASSIGN_CLASS)) {
-              el.style.backgroundColor = "white";
+        {
+          db.addListener((state) => {
+            console.log("state:", state);
+            if (state.commandBeingAssignedTo === undefined) {
+              for (const el of getFromClass(ASSIGN_CLASS)) {
+                el.style.backgroundColor = "white";
+              }
+            } else {
+              const el = getFromIdOrThrow(getAssignElId(state.commandBeingAssignedTo));
+              el.style.background = "red";
             }
-          } else {
-            const el = getFromIdOrThrow(getAssignElId(state.commandBeingAssignedTo));
-            el.style.background = "red";
-          }
-        });
+
+            updateKeybindingsView(options.get("keybindings"), state);
+          });
+          db.notifyListeners();
+        }
 
         // setup updates
         const onUpdated: OnKeybindingsUpdated = (newKeybindings: Keybindings) => {
-          updateKeybindingsView(newKeybindings);
+          updateKeybindingsView(newKeybindings, db.get());
         };
 
         const onAlreadyAssigned: OnKeybindingAlreadyAssigned = (failed, existing) => {
@@ -291,9 +317,10 @@ getOptions()
           opt.checked = opt.id.includes(options.get("focus"));
         });
         getFromId<HTMLInputElement>("resize-original").checked = options.get("resizeOriginal");
-        const curCloneOption = getFromClass<HTMLInputElement>("clone-mode-option").find(
+        const curCloneOption = findThrow(
+          getFromClass<HTMLInputElement>("clone-mode-option"),
           (cp) => cp.id === options.get("cloneMode"),
-        )!;
+        );
         curCloneOption.checked = true;
         getFromId<HTMLInputElement>("copy-fullscreen").checked = options.get("copyFullscreen");
         getFromClass<HTMLInputElement>("menu-button-option").forEach((opt) => {
@@ -336,12 +363,22 @@ getOptions()
             stop: update,
           });
 
+          const parent = $win.parent();
+          const parentWidth = parent.width();
+          if (parentWidth === undefined) {
+            throw new Error("parent does not have a width");
+          }
+          const parentHeight = parent.height();
+          if (parentHeight === undefined) {
+            throw new Error("parent does not have a height");
+          }
+
           $win.resizable({
             containment: "parent",
             handles: "all",
-            grid: grid,
-            minWidth: $win.parent().width()! * 0.2,
-            minHeight: $win.parent().height()! * 0.2,
+            grid,
+            minWidth: parentWidth * 0.2,
+            minHeight: parentHeight * 0.2,
             resize: update,
             start: update,
             stop: update,
@@ -396,7 +433,7 @@ getOptions()
       }
     };
 
-    onReady(() => main(options));
+    onReady(() => main());
   })
   .catch((_reason) => {
     // TODO handle this
