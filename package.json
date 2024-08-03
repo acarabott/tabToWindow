@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "./build.sh",
+    "watch": "./watch.sh",
     "publish": "npm run build && zip -r build.zip \"./build\""
   },
   "repository": {
