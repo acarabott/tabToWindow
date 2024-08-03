@@ -3,12 +3,19 @@
 ## Manifest v3
 
 - Update API calls: https://developer.chrome.com/docs/extensions/develop/migrate/api-calls
+  - Replace callbacks with promises
+  - Replace functions that expect a Manifest V2 background context
+  - Replace unsupported APIs
 - Replace blocking web request listeners: https://developer.chrome.com/docs/extensions/develop/migrate/blocking-web-requests
 - Improve extension security: https://developer.chrome.com/docs/extensions/develop/migrate/improve-security
 - Publish your extension: https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3
 
 ## Cleanup
-- Layout on options screen, now narrow extra colon 
+
+- Layout on options screen, now narrow extra colon
+
+## Testing
+- test all methods
 
 ### Done
 
