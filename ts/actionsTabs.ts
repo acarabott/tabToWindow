@@ -135,9 +135,7 @@ export const tabToWindow = async (
 };
 
 export const tabToNeighbouringWindow = async (windowDistance: number) => {
-  const tabsToMove = await new Promise<chrome.tabs.Tab[]>((resolve) =>
-    chrome.tabs.query({ currentWindow: true, highlighted: true }, (tabs) => resolve(tabs)),
-  );
+  const tabsToMove = await chrome.tabs.query({ currentWindow: true, highlighted: true });
 
   if (tabsToMove.length === 0) {
     return;
