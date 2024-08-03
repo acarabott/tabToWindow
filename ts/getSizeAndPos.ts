@@ -4,7 +4,7 @@ import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
 /**
  * Convert normalised values into pixel values
  */
-export const getSizeAndPos = async (options: Options, winKey: WindowID, displayBounds: IBounds) => {
+export const getSizeAndPos = (options: Options, winKey: WindowID, displayBounds: IBounds) => {
   return {
     left: Math.round(
       options.get(getStorageWindowPropKey(winKey, "left")) * displayBounds.width +
