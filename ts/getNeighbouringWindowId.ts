@@ -1,7 +1,5 @@
 export const getNeighbouringWindowId = async (currentWindowId: number, distance: number) => {
-  const windows = await new Promise<chrome.windows.Window[]>((resolve) => {
-    chrome.windows.getAll({ windowTypes: ["normal"] }, (windows) => resolve(windows));
-  });
+  const windows = await chrome.windows.getAll({ windowTypes: ["normal"] });
 
   const currentIndex = windows.findIndex((win) => win.id === currentWindowId);
   if (currentIndex === -1) {
