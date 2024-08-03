@@ -113,6 +113,7 @@ export default tseslint.config(
       "no-process-exit": "error",
       "no-fallthrough": ["error", { commentPattern: ".*intentional fallthrough.*" }],
       "one-var": ["error", "never"],
+      "no-param-reassign": ["error"],
 
       //
       // eslint-plugin-eslint-comments
