@@ -1,12 +1,12 @@
 import { WindowType } from "./api.js";
 import { createNewWindow } from "./createNewWindow.js";
+import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
+import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { moveTabs } from "./moveTabs.js";
 import { getOptions } from "./options-storage.js";
-import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
-import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
 
 export const tabToWindow = async (
