@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUILD_DIR="build";
+BUILD_DIR="../build";
 
 npx tsc -p . && \
 mkdir -p $BUILD_DIR && \
