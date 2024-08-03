@@ -4,7 +4,6 @@
 
 - Migrate to a service worker: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
 
-  - Because they can't access the DOM or the window interface, you'll need to move such calls to a different API or into an offscreen document.
   - Event listeners should not be registered in response to returned promises or inside event callbacks.
   - Since they terminate when not in use, you'll need to persist application states rather than rely on global variables. Terminating service workers can also end timers before they have completed. You'll need to replace them with alarms.
 
