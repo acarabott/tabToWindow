@@ -24,14 +24,11 @@ import {
 import { getOptions } from "./options-storage.js";
 
 export const createMenu = async () => {
-  const optionsPromise = getOptions();
+  const options = await getOptions();
 
-  const commandsPromise = new Promise<chrome.commands.Command[]>((resolve) => {
-    chrome.commands.getAll((commands) => resolve(commands));
-  });
+  const commands = await chrome.commands.getAll();
 
-  const [options, commands] = await Promise.all([optionsPromise, commandsPromise]);
-  chrome.contextMenus.removeAll();
+  await new Promise<void>((resolve) => chrome.contextMenus.removeAll(() => resolve()));
 
   // Actions
   // -------
