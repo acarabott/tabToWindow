@@ -15,7 +15,10 @@
 - Layout on options screen, now narrow extra colon
 
 ## Testing
+
 - test all methods
+  - actionsTabs.ts
+  - actionsURLS.ts
 
 ### Done
 
