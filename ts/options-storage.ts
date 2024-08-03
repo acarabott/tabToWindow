@@ -1,11 +1,4 @@
-import {
-  IOptions,
-  StoredWindowProperty,
-  WindowID,
-  WindowProperty,
-  isIOptions,
-  storedWindowBounds,
-} from "./api.js";
+import { IOptions, isIOptions, storedWindowBounds } from "./api.js";
 
 const defaultOptions: IOptions = {
   focus: "new",
@@ -21,29 +14,6 @@ const defaultOptions: IOptions = {
   newHeight: 1.0,
   newLeft: 0.5,
   newTop: 0.0,
-};
-
-// retrieve the storage key for a particular window property
-export const getStorageWindowPropKey = (
-  id: WindowID,
-  key: WindowProperty,
-): StoredWindowProperty => {
-  return (
-    {
-      original: {
-        left: "originalLeft",
-        top: "originalTop",
-        width: "originalWidth",
-        height: "originalHeight",
-      },
-      new: {
-        left: "newLeft",
-        top: "newTop",
-        width: "newWidth",
-        height: "newHeight",
-      },
-    } as const
-  )[id][key];
 };
 
 export const getOptions = async () => {

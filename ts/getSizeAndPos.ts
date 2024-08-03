@@ -1,5 +1,5 @@
 import { Options, WindowID, IBounds } from "./api.js";
-import { getStorageWindowPropKey } from "./options-storage.js";
+import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
 
 /**
  * Convert normalised values into pixel values
