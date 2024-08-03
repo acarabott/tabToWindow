@@ -155,17 +155,12 @@ export const tabToNeighbouringWindow = async (windowDistance: number) => {
   // move and highlight selected tabs
   const moveIndex = -1;
   const movedTabs = await moveTabs(tabsToMove, nextWindowId, moveIndex);
-  await Promise.all(
-    movedTabs.map((tab, i) => {
-      return new Promise((tabResolve) => {
-        chrome.tabs.update(
-          tab.id!,
-          { highlighted: true, active: i === movedTabs.length - 1 },
-          (tab) => tabResolve(tab),
-        );
-      });
-    }),
-  );
+  for (const tab of movedTabs) {
+    if (tab.id !== undefined) {
+      const active = tab === movedTabs[moveTabs.length - 1];
+      await chrome.tabs.update(tab.id, { highlighted: true, active });
+    }
+  }
 
   // unlight old tabs
   unhighlightTabs(tabsToUnhighlight);
