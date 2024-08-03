@@ -51,26 +51,16 @@ export const tabToWindow = async (
   let origWindow = currentWindow;
   const destroyingOriginalWindow = tabs.length === 1;
   if (
+    origWindow.id !== undefined &&
     options.get("resizeOriginal") &&
     !isFullscreen &&
     !destroyingOriginalWindow &&
     !moveToNextDisplay
   ) {
-    const vals = await getSizeAndPos(options, "original", currentDisplay.workArea);
-    origWindow = await new Promise<chrome.windows.Window>((resolve) => {
-      if (origWindow.id !== undefined) {
-        chrome.windows.update(
-          origWindow.id,
-          {
-            width: vals.width,
-            height: vals.height,
-            left: vals.left,
-            top: vals.top,
-            state: "normal",
-          },
-          (win) => resolve(win),
-        );
-      }
+    const bounds = getSizeAndPos(options, "original", currentDisplay.workArea);
+    origWindow = await chrome.windows.update(origWindow.id, {
+      ...bounds,
+      state: "normal",
     });
   }
 
