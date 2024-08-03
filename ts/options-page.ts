@@ -97,7 +97,7 @@ getOptions().then((options) => {
 
     const newBounds = getCloneBounds(origBounds, displayBounds, options.get("cloneMode"));
 
-    (Object.entries(newBounds) as Array<[WindowProperty, number]>).forEach(([key, value]) => {
+    (Object.entries(newBounds) as [WindowProperty, number][]).forEach(([key, value]) => {
       newWin.style[key] = `${value}px`;
     });
   };
@@ -202,9 +202,7 @@ getOptions().then((options) => {
           win.style[prop] = `${value * 100}%`;
         });
 
-        const grid = (["clientWidth", "clientHeight"] as const).map((d) => {
-          return getFromId("screen")[d] / gridsize;
-        });
+        const grid = (["clientWidth", "clientHeight"] as const).map((d) => getFromId("screen")[d] / gridsize);
 
         let saveTimeout: number;
         const update = () => {
@@ -230,7 +228,7 @@ getOptions().then((options) => {
         $win.resizable({
           containment: "parent",
           handles: "all",
-          grid: grid,
+          grid,
           minWidth: $win.parent().width()! * 0.2,
           minHeight: $win.parent().height()! * 0.2,
           resize: update,

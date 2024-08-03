@@ -57,7 +57,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.storage.onChanged.addListener(async (changes) => {
   const update: Partial<IOptions> = {};
 
-  const entries = Object.entries(changes) as Array<[keyof IOptions, chrome.storage.StorageChange]>;
+  const entries = Object.entries(changes) as [keyof IOptions, chrome.storage.StorageChange][];
   for (const [key, change] of entries) {
     update[key] = change.newValue;
   }
@@ -114,20 +114,20 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
 
   // prettier-ignore
   switch (info.menuItemId) {
-  
+
       // tab actions
       case MENU_TAB_TO_WINDOW_ID:   tabToWindowNormal(); break;
       case MENU_TAB_TO_POPUP_ID:    tabToWindowPopup(); break;
       case MENU_TAB_TO_NEXT_ID:     tabToNeighbouringWindow(1); break;
       case MENU_TAB_TO_PREVIOUS_ID: tabToNeighbouringWindow(-1); break;
       case MENU_TAB_TO_DISPLAY_ID:  tabToNextDisplay(); break;
-  
+
       // options
       case MENU_WINDOW_OPTION_ID:         options.update({ menuButtonType: "normal" }); break;
       case MENU_POPUP_OPTION_ID:          options.update({ menuButtonType: "popup" }); break;
       case MENU_FOCUS_ORIGINAL_OPTION_ID: options.update({ focus: "original" }); break;
       case MENU_FOCUS_NEW_OPTION_ID:      options.update({ focus: "new" }); break;
-  
+
       default: break;
     }
 
@@ -140,7 +140,7 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
         case MENU_LINK_TO_NEXT_ID:      urlToNeighbouringWindow(info.linkUrl, 1); break;
         case MENU_LINK_TO_PREVIOUS_ID:  urlToNeighbouringWindow(info.linkUrl, -1); break;
         case MENU_LINK_TO_DISPLAY_ID:   urlToNextDisplay(info.linkUrl); break;
-  
+
         default: break;
       }
     }

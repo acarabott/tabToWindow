@@ -1,5 +1,3 @@
 import { queryTabs } from "./queryTabs.js";
 
-export const getHighlightedTabs = (windowId: number) => {
-  return queryTabs({ windowId, highlighted: true });
-};
+export const getHighlightedTabs = (windowId: number) => queryTabs({ windowId, highlighted: true });

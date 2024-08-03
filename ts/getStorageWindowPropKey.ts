@@ -6,8 +6,7 @@ import { WindowID, WindowProperty, StoredWindowProperty } from "./api";
 export const getStorageWindowPropKey = (
   id: WindowID,
   key: WindowProperty,
-): StoredWindowProperty => {
-  return (
+): StoredWindowProperty => (
     {
       original: {
         left: "originalLeft",
@@ -23,4 +22,3 @@ export const getStorageWindowPropKey = (
       },
     } as const
   )[id][key];
-};

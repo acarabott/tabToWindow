@@ -110,15 +110,13 @@ export const tabToWindow = async (
         }
       } else if (newWindowType === "popup") {
         // can't move tabs to a popup window, so create individual ones
-        const tabPromises = otherTabs.map((tab) => {
-          return createNewWindow(
+        const tabPromises = otherTabs.map((tab) => createNewWindow(
             tab,
             newWindowType,
             getWindowBounds(newWin),
             isFullscreen,
             isFocused,
-          );
-        });
+          ));
         await Promise.all(tabPromises);
       }
     }
