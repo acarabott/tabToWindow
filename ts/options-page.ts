@@ -139,7 +139,7 @@ getOptions().then(options => {
     {
       // display shortcuts
       // -----------------------------------------------------------------------
-      chrome.commands.getAll(cmds => {
+      chrome.commands.getAll().then((cmds) => {
         if (cmds.length === 0) {
           return;
         }
