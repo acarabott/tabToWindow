@@ -102,13 +102,11 @@ export const tabToWindow = async (
         const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
 
         // highlight tabs in new window
-        const tabPromises = movedTabs.map((tab) => {
-          return new Promise<chrome.tabs.Tab>((resolve) => {
-            chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
-          });
-        });
-
-        await Promise.all(tabPromises);
+        for (const tab of movedTabs) {
+          if (tab.id !== undefined) {
+            await chrome.tabs.update(tab.id, { highlighted: true });
+          }
+        }
       } else if (newWindowType === "popup") {
         // can't move tabs to a popup window, so create individual ones
         const tabPromises = otherTabs.map((tab) => {
