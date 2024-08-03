@@ -125,17 +125,12 @@ export const tabToWindow = async (
 
   // focus on original window if specified, and it still exists
   // (popping a single tab will destroy the original window)
-  const currentWindowId = currentWindow.id;
-  if (currentWindowId !== undefined) {
-    if (options.get("focus") === "original" && !destroyingOriginalWindow) {
-      chrome.windows.get(currentWindowId, {}, () => {
-        if (chrome.runtime.lastError === undefined) {
-          chrome.windows.update(currentWindowId, { focused: true });
-        } else {
-          throw new Error(chrome.runtime.lastError.message);
-        }
-      });
-    }
+  if (
+    currentWindow.id !== undefined &&
+    options.get("focus") === "original" &&
+    !destroyingOriginalWindow
+  ) {
+    await chrome.windows.update(currentWindow.id, { focused: true });
   }
 };
 
