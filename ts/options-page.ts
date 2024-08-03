@@ -17,32 +17,34 @@ const getFromTag = <T extends HTMLElement>(tagName: string, root = document) =>
 
 // window that will be focused on pop-out
 const getFocusedName = (): WindowID => {
-  const focused = getFromClass<HTMLInputElement>("focus-option").find(option => option.checked);
+  const focused = getFromClass<HTMLInputElement>("focus-option").find((option) => option.checked);
   return focused === undefined || focused.id === "focus-original" ? "original" : "new";
 };
 
-getOptions().then(options => {
+getOptions().then((options) => {
   // save current state
   const save = () => {
     const update: Partial<IOptions> = {
       focus: getFocusedName(),
       resizeOriginal: getFromId<HTMLInputElement>("resize-original").checked,
       copyFullscreen: getFromId<HTMLInputElement>("copy-fullscreen").checked,
-      cloneMode: getFromClass<HTMLInputElement>("clone-mode-option").find(cp => cp.checked)!
+      cloneMode: getFromClass<HTMLInputElement>("clone-mode-option").find((cp) => cp.checked)!
         .id as CloneMode,
       menuButtonType: getFromClass<HTMLInputElement>("menu-button-option")
-        .find(mb => mb.checked)
+        .find((mb) => mb.checked)
         ?.getAttribute("data-value") as WindowType,
     };
 
     // dimensions
-    getFromClass("window").forEach(win => {
-      ([
-        ["offsetWidth", "offsetWidth", "width"],
-        ["offsetHeight", "offsetHeight", "height"],
-        ["offsetLeft", "offsetWidth", "left"],
-        ["offsetTop", "offsetHeight", "top"],
-      ] as const).forEach(([prop, dim, setProp]) => {
+    getFromClass("window").forEach((win) => {
+      (
+        [
+          ["offsetWidth", "offsetWidth", "width"],
+          ["offsetHeight", "offsetHeight", "height"],
+          ["offsetLeft", "offsetWidth", "left"],
+          ["offsetTop", "offsetHeight", "top"],
+        ] as const
+      ).forEach(([prop, dim, setProp]) => {
         const windowDimension = win[prop];
         const screenDimension = getFromId("screen")[dim];
         const value = windowDimension / screenDimension;
@@ -102,14 +104,14 @@ getOptions().then(options => {
 
   // update appearance of windows depending on if they are active or not
   const updateFocus = () => {
-    getFromClass("window").forEach(win => {
+    getFromClass("window").forEach((win) => {
       const isBlurred = win.id !== getFocusedName();
       isBlurred ? win.classList.add("blurred") : win.classList.remove("blurred");
     });
   };
 
   const setWindowAsCurrent = (win: HTMLElement) => {
-    getFromClass("window").forEach(_win => {
+    getFromClass("window").forEach((_win) => {
       _win === win ? _win.classList.add("current") : _win.classList.remove("current");
     });
   };
@@ -145,8 +147,8 @@ getOptions().then(options => {
         }
 
         cmds
-          .filter(cmd => cmd.name !== "_execute_browser_action")
-          .forEach(cmd => {
+          .filter((cmd) => cmd.name !== "_execute_browser_action")
+          .forEach((cmd) => {
             const name = document.createElement("span");
             name.textContent = `${cmd.description}:`;
             name.classList.add("shortcut-label");
@@ -156,7 +158,7 @@ getOptions().then(options => {
             shortcut.textContent = cmd.shortcut!;
 
             const li = document.createElement("li");
-            [name, shortcut].forEach(el => li.appendChild(el));
+            [name, shortcut].forEach((el) => li.appendChild(el));
 
             getFromId("shortcut-list").appendChild(li);
           });
@@ -176,16 +178,16 @@ getOptions().then(options => {
     {
       // restore options
       // -----------------------------------------------------------------------
-      getFromClass<HTMLInputElement>("focus-option").forEach(opt => {
+      getFromClass<HTMLInputElement>("focus-option").forEach((opt) => {
         opt.checked = opt.id.includes(options.get("focus"));
       });
       getFromId<HTMLInputElement>("resize-original").checked = options.get("resizeOriginal");
       const curCloneOption = getFromClass<HTMLInputElement>("clone-mode-option").find(
-        cp => cp.id === options.get("cloneMode"),
+        (cp) => cp.id === options.get("cloneMode"),
       )!;
       curCloneOption.checked = true;
       getFromId<HTMLInputElement>("copy-fullscreen").checked = options.get("copyFullscreen");
-      getFromClass<HTMLInputElement>("menu-button-option").forEach(opt => {
+      getFromClass<HTMLInputElement>("menu-button-option").forEach((opt) => {
         opt.checked = opt.id.includes(options.get("menuButtonType"));
       });
     }
@@ -193,14 +195,14 @@ getOptions().then(options => {
     {
       // setup windows
       // -----------------------------------------------------------------------
-      getFromClass("window").forEach(win => {
+      getFromClass("window").forEach((win) => {
         // Restore positions from options
-        (["width", "height", "left", "top"] as WindowProperty[]).forEach(prop => {
+        (["width", "height", "left", "top"] as WindowProperty[]).forEach((prop) => {
           const value = options.get(getStorageWindowPropKey(win.id as WindowID, prop));
           win.style[prop] = `${value * 100}%`;
         });
 
-        const grid = (["clientWidth", "clientHeight"] as const).map(d => {
+        const grid = (["clientWidth", "clientHeight"] as const).map((d) => {
           return getFromId("screen")[d] / gridsize;
         });
 
@@ -253,12 +255,12 @@ getOptions().then(options => {
       // add input handlers
       // -----------------------------------------------------------------------
       getFromId("resize-original").onchange = updateResizeOriginal;
-      getFromClass("focus-option").forEach(el => (el.onchange = updateFocus));
-      getFromTag("input").forEach(el => (el.onclick = save));
-      getFromId("commandsUrl").onclick = event => {
+      getFromClass("focus-option").forEach((el) => (el.onchange = updateFocus));
+      getFromTag("input").forEach((el) => (el.onclick = save));
+      getFromId("commandsUrl").onclick = (event) => {
         chrome.tabs.create({ url: (event.target as HTMLAnchorElement).href });
       };
-      getFromClass("clone-mode-option").forEach(el => {
+      getFromClass("clone-mode-option").forEach((el) => {
         el.addEventListener(
           "change",
           () => {
