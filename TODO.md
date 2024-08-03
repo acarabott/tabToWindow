@@ -2,10 +2,6 @@
 
 ## Manifest v3
 
-- Migrate to a service worker: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
-
-  - Since they terminate when not in use, you'll need to persist application states rather than rely on global variables. Terminating service workers can also end timers before they have completed. You'll need to replace them with alarms.
-
 - Update API calls: https://developer.chrome.com/docs/extensions/develop/migrate/api-calls
 - Replace blocking web request listeners: https://developer.chrome.com/docs/extensions/develop/migrate/blocking-web-requests
 - Improve extension security: https://developer.chrome.com/docs/extensions/develop/migrate/improve-security
@@ -14,3 +10,4 @@
 ### Done
 
 - Update the manifest: https://developer.chrome.com/docs/extensions/develop/migrate/manifest
+- Migrate to a service worker: https://developer.chrome.com/docs/extensions/develop/migrate/to-service-workers
