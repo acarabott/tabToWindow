@@ -147,7 +147,7 @@ getOptions().then((options) => {
         }
 
         cmds
-          .filter((cmd) => cmd.name !== "_execute_browser_action")
+          .filter((cmd) => cmd.name !== "_execute_action")
           .forEach((cmd) => {
             const name = document.createElement("span");
             name.textContent = `${cmd.description}:`;
