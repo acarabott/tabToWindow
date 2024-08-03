@@ -1,4 +1,4 @@
-import { IBounds } from "./api.js";
+import type { IBounds } from "./api.js";
 
 export const getWindowBounds = (win: chrome.windows.Window): IBounds => ({
   left: win.left ?? 0,

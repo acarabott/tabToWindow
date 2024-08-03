@@ -1,4 +1,5 @@
-import { IBounds, Options, windowProperties } from "./api.js";
+import type { IBounds, Options} from "./api.js";
+import { windowProperties } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";

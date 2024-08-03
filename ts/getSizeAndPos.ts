@@ -1,4 +1,4 @@
-import { Options, WindowID, IBounds } from "./api.js";
+import type { Options, WindowID, IBounds } from "./api.js";
 import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
 
 /**

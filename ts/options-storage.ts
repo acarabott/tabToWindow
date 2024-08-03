@@ -1,4 +1,5 @@
-import { IOptions, isIOptions, storedWindowBounds } from "./api.js";
+import type { IOptions} from "./api.js";
+import { isIOptions, storedWindowBounds } from "./api.js";
 
 const kDefaultOptions: Readonly<IOptions> = {
   focus: "new",

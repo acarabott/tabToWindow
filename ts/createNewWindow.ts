@@ -1,4 +1,4 @@
-import { IBounds, WindowType } from "./api";
+import type { IBounds, WindowType } from "./api";
 
 export const createNewWindow = async (
   tab: chrome.tabs.Tab,

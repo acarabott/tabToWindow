@@ -1,4 +1,4 @@
-import { WindowType } from "./api.js";
+import type { WindowType } from "./api.js";
 import { getOptions } from "./options-storage.js";
 
 const kLookup: Readonly<Record<WindowType, string>> = {

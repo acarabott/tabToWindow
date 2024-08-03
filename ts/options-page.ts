@@ -1,4 +1,4 @@
-import { CloneMode, IOptions, Options, WindowID, WindowProperty, WindowType } from "./api.js";
+import type { CloneMode, IOptions, Options, WindowID, WindowProperty, WindowType } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import { getOptions } from "./options-storage.js";
 import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";

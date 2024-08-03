@@ -1,4 +1,4 @@
-import { WindowType } from "./api.js";
+import type { WindowType } from "./api.js";
 import { tabToWindow } from "./actionsTabs.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";

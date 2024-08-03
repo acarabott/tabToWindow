@@ -14,13 +14,14 @@ import {
   urlToWindowNormal,
   urlToWindowPopup,
 } from "./actionsURLs.js";
+import type {
+  IOptions} from "./api.js";
 import {
   COMMAND_DISPLAY,
   COMMAND_NEXT,
   COMMAND_NORMAL,
   COMMAND_POPUP,
   COMMAND_PREVIOUS,
-  IOptions,
   MENU_FOCUS_NEW_OPTION_ID,
   MENU_FOCUS_ORIGINAL_OPTION_ID,
   MENU_LINK_TO_DISPLAY_ID,
