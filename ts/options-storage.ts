@@ -1,10 +1,10 @@
 import {
   IOptions,
+  StoredWindowProperty,
   WindowID,
   WindowProperty,
-  StoredWindowProperty,
-  storedWindowBounds,
   isIOptions,
+  storedWindowBounds,
 } from "./api.js";
 
 const defaultOptions: IOptions = {
@@ -28,25 +28,27 @@ export const getStorageWindowPropKey = (
   id: WindowID,
   key: WindowProperty,
 ): StoredWindowProperty => {
-  return ({
-    original: {
-      left: "originalLeft",
-      top: "originalTop",
-      width: "originalWidth",
-      height: "originalHeight",
-    },
-    new: {
-      left: "newLeft",
-      top: "newTop",
-      width: "newWidth",
-      height: "newHeight",
-    },
-  } as const)[id][key];
+  return (
+    {
+      original: {
+        left: "originalLeft",
+        top: "originalTop",
+        width: "originalWidth",
+        height: "originalHeight",
+      },
+      new: {
+        left: "newLeft",
+        top: "newTop",
+        width: "newWidth",
+        height: "newHeight",
+      },
+    } as const
+  )[id][key];
 };
 
 export const getOptions = async () => {
   let options = await new Promise<IOptions>((resolve, reject) =>
-    chrome.storage.sync.get(defaultOptions, loadedOptions => {
+    chrome.storage.sync.get(defaultOptions, (loadedOptions) => {
       if (chrome.runtime.lastError !== undefined) {
         reject(chrome.runtime.lastError);
         return;
