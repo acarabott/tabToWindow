@@ -1,6 +1,6 @@
-import { WindowType, IBounds } from "./api";
+import { IBounds, WindowType } from "./api";
 
-export const createNewWindow = (
+export const createNewWindow = async (
   tab: chrome.tabs.Tab,
   windowType: WindowType,
   windowBounds: IBounds,
@@ -16,17 +16,10 @@ export const createNewWindow = (
     ...windowBounds,
   };
 
-  return new Promise((resolve, reject) => {
-    chrome.windows.create(opts, (newWin) => {
-      if (newWin !== undefined) {
-        if (isFullscreen && newWin.id !== undefined) {
-          chrome.windows.update(newWin.id, { state: "fullscreen" }, () => resolve([newWin, tab]));
-        } else {
-          resolve([newWin, tab]);
-        }
-      } else {
-        reject("Could not create new window");
-      }
-    });
-  });
+  const newWin = await chrome.windows.create(opts);
+  if (isFullscreen && newWin.id !== undefined) {
+    await chrome.windows.update(newWin.id, { state: "fullscreen" });
+  }
+
+  return [newWin, tab];
 };
