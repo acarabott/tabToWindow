@@ -3,7 +3,6 @@
 ## Manifest v3
 
 - Update API calls: https://developer.chrome.com/docs/extensions/develop/migrate/api-calls
-  - Replace callbacks with promises
   - Replace functions that expect a Manifest V2 background context
   - Replace unsupported APIs
 - Replace blocking web request listeners: https://developer.chrome.com/docs/extensions/develop/migrate/blocking-web-requests
