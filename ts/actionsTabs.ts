@@ -147,9 +147,7 @@ export const tabToNeighbouringWindow = async (windowDistance: number) => {
   }
 
   // focus on next window
-  await new Promise((resolve) => {
-    chrome.windows.update(nextWindowId, { focused: true }, (win) => resolve(win));
-  });
+  await chrome.windows.update(nextWindowId, { focused: true });
 
   // store tabs to unhighlight
   const tabsToUnhighlight = await getTabsToUnhighlight(nextWindowId);
