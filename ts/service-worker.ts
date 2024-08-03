@@ -2,6 +2,7 @@
 // -----------------------------------------------------------------------------
 
 import { IOptions } from "./api";
+import { getOptions } from "./options-storage.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
   const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
@@ -25,7 +26,6 @@ chrome.storage.onChanged.addListener(async (changes) => {
     update[key] = change.newValue;
   }
 
-  // TODO not working
-  //   const options = await getOptions();
-  //   options.update(update);
+  const options = await getOptions();
+  options.update(update);
 });
