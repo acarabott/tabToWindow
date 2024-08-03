@@ -19,8 +19,8 @@
 	},
 
 	"background": {
-		"page": "background.html",
-		"persistent": false
+        "service_worker": "js/service-worker.js",
+        "type": "module"
 	},
 
 	"commands": {
