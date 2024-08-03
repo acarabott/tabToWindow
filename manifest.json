@@ -14,7 +14,7 @@
 		"128": "icons/ttw128.png"
 	},
 
-	"browser_action": {
+	"action": {
 		"default_title": "Tab to window"
 	},
 
