@@ -1,8 +1,10 @@
 #!/bin/bash
 
-BUILD_DIR="../build";
+BUILD_DIR="../build"
+JS_DIR="js"
 
-npx tsc -p . && \
-mkdir -p $BUILD_DIR && \
-    cp -R background.html css js lib icons LICENSE manifest.json options.html $BUILD_DIR && \
-    zip -r build.zip $BUILD_DIR
+rm -rf $JS_DIR &&
+    npx tsc -p . &&
+    mkdir -p $BUILD_DIR &&
+    rm -rf $"BUILD_DIR/*" &&
+    cp -R css $JS_DIR lib icons LICENSE manifest.json options.html $BUILD_DIR

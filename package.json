@@ -10,7 +10,7 @@
   "scripts": {
     "build": "./build.sh",
     "watch": "./watch.sh",
-    "publish": "npm run build && zip -r build.zip \"./build\""
+    "publish": "./publish.sh"
   },
   "repository": {
     "type": "git",
