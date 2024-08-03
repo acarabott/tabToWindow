@@ -1,12 +1,13 @@
 import { WindowType } from "./api.js";
 import { createNewWindow } from "./createNewWindow.js";
+import { getHighlightedTabs } from "./getHighlightedTabs.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
-import { getHighlightedTabs } from "./getHighlightedTabs.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { moveTabs } from "./moveTabs.js";
 import { getOptions } from "./options-storage.js";
+import { queryTabs } from "./queryTabs.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
 
 export const tabToWindow = async (
@@ -15,7 +16,7 @@ export const tabToWindow = async (
 ) => {
   const displays = await chrome.system.display.getInfo();
   const currentWindow = await chrome.windows.getCurrent();
-  const tabs = await chrome.tabs.query({ currentWindow: true });
+  const tabs = await queryTabs({ currentWindow: true });
 
   moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
@@ -135,7 +136,7 @@ export const tabToWindow = async (
 };
 
 export const tabToNeighbouringWindow = async (windowDistance: number) => {
-  const tabsToMove = await chrome.tabs.query({ currentWindow: true, highlighted: true });
+  const tabsToMove = await queryTabs({ currentWindow: true, highlighted: true });
 
   if (tabsToMove.length === 0) {
     return;

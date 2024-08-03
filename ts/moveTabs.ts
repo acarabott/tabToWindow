@@ -7,9 +7,6 @@ export const moveTabs = async (tabs: chrome.tabs.Tab[], windowId: number, index:
   }
 
   const movedTabs = await chrome.tabs.move(tabIds, { windowId, index });
-  if (Array.isArray(movedTabs)) {
-    return movedTabs;
-  }
-
-  return [movedTabs];
+  const movedTabsArray = Array.isArray(movedTabs) ? movedTabs : [movedTabs];
+  return movedTabsArray;
 };

@@ -1,3 +1,5 @@
+import { queryTabs } from "./queryTabs.js";
+
 export const getHighlightedTabs = (windowId: number) => {
-  return chrome.tabs.query({ windowId, highlighted: true });
+  return queryTabs({ windowId, highlighted: true });
 };
