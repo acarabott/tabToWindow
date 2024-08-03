@@ -1,6 +1,6 @@
 import { IOptions, isIOptions, storedWindowBounds } from "./api.js";
 
-const defaultOptions: IOptions = {
+const kDefaultOptions: Readonly<IOptions> = {
   focus: "new",
   resizeOriginal: true,
   cloneMode: "clone-mode-no",
@@ -18,13 +18,13 @@ const defaultOptions: IOptions = {
 
 export const getOptions = async () => {
   let options = await new Promise<IOptions>((resolve, reject) =>
-    chrome.storage.sync.get(defaultOptions, (loadedOptions) => {
+    chrome.storage.sync.get(kDefaultOptions, (loadedOptions) => {
       if (chrome.runtime.lastError !== undefined) {
         reject(chrome.runtime.lastError);
         return;
       }
 
-      resolve(isIOptions(loadedOptions) ? loadedOptions : defaultOptions);
+      resolve(isIOptions(loadedOptions) ? loadedOptions : kDefaultOptions);
     }),
   );
 
