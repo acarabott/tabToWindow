@@ -38,6 +38,7 @@ import {
 } from "./api.js";
 import { createMenu } from "./createMenu.js";
 import { getOptions } from "./options-storage.js";
+import { updateActionButton } from "./updateActionButton.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
   const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
@@ -63,6 +64,8 @@ chrome.storage.onChanged.addListener(async (changes) => {
 
   const options = await getOptions();
   options.update(update);
+
+  updateActionButton();
 });
 
 // Commands
@@ -98,6 +101,8 @@ chrome.action.onClicked.addListener(async () => {
   const menuButtonType = options.get("menuButtonType");
   tabToWindow(menuButtonType);
 });
+
+updateActionButton();
 
 // Context Menu
 // -----------------------------------------------------------------------------
