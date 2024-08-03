@@ -1,7 +1,6 @@
 import {
   tabToNeighbouringWindow,
   tabToNextDisplay,
-  tabToWindow,
   tabToWindowNormal,
   tabToWindowPopup,
 } from "./actionsTabs.js";
@@ -12,11 +11,6 @@ import {
   urlToWindowPopup,
 } from "./actionsURLs.js";
 import {
-  COMMAND_DISPLAY,
-  COMMAND_NEXT,
-  COMMAND_NORMAL,
-  COMMAND_POPUP,
-  COMMAND_PREVIOUS,
   MENU_FOCUS_NEW_OPTION_ID,
   MENU_FOCUS_ORIGINAL_OPTION_ID,
   MENU_LINK_TO_DISPLAY_ID,
@@ -34,40 +28,6 @@ import {
 } from "./api.js";
 import { createMenu } from "./createMenu.js";
 import { getOptions } from "./options-storage.js";
-
-// Commands
-// -----------------------------------------------------------------------------
-
-chrome.commands.onCommand.addListener((command) => {
-  chrome.runtime.getBackgroundPage(() => {
-    switch (command) {
-      case COMMAND_NORMAL:
-        tabToWindowNormal();
-        break;
-      case COMMAND_POPUP:
-        tabToWindowPopup();
-        break;
-      case COMMAND_NEXT:
-        tabToNeighbouringWindow(1);
-        break;
-      case COMMAND_PREVIOUS:
-        tabToNeighbouringWindow(-1);
-        break;
-      case COMMAND_DISPLAY:
-        tabToNextDisplay();
-        break;
-      default:
-        console.assert(false);
-        break;
-    }
-  });
-});
-
-// Extension Button
-// -----------------------------------------------------------------------------
-chrome.browserAction.onClicked.addListener(async () => {
-  tabToWindow((await getOptions()).get("menuButtonType"));
-});
 
 // Context Menu
 // -----------------------------------------------------------------------------

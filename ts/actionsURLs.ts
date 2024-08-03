@@ -1,5 +1,4 @@
 import { WindowType } from "./api.js";
-import { doBackgroundAction } from "./doBackgroundAction.js";
 import { tabToWindow } from "./actionsTabs.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
@@ -10,31 +9,27 @@ export const urlToWindow = (
   windowType: WindowType | undefined,
   moveToNextDisplay = false,
 ) => {
-  doBackgroundAction(() => {
-    chrome.tabs.create({ url, active: true }, () => {
-      tabToWindow(windowType, moveToNextDisplay);
-    });
+  chrome.tabs.create({ url, active: true }, () => {
+    tabToWindow(windowType, moveToNextDisplay);
   });
 };
 
-export const urlToNeighbouringWindow = (url: string, windowDistance: number) => {
-  doBackgroundAction(async () => {
-    const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
-      chrome.windows.getCurrent({}, (window) => resolve(window));
-    });
-
-    if (currentWindow.id !== undefined) {
-      const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
-      if (nextWindowId === undefined) {
-        return;
-      }
-
-      unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
-
-      const opts = { windowId: nextWindowId, url };
-      chrome.tabs.create(opts);
-    }
+export const urlToNeighbouringWindow = async (url: string, windowDistance: number) => {
+  const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
+    chrome.windows.getCurrent({}, (window) => resolve(window));
   });
+
+  if (currentWindow.id !== undefined) {
+    const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
+    if (nextWindowId === undefined) {
+      return;
+    }
+
+    unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
+
+    const opts = { windowId: nextWindowId, url };
+    chrome.tabs.create(opts);
+  }
 };
 
 export const urlToWindowNormal = (url: string) => urlToWindow(url, "normal");
