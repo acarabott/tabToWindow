@@ -1,26 +1,26 @@
 import { WindowID, WindowProperty, StoredWindowProperty } from "./api";
 
-
-// retrieve the storage key for a particular window property
-
+/**
+ * retrieve the storage key for a particular window property
+ */
 export const getStorageWindowPropKey = (
-    id: WindowID,
-    key: WindowProperty
+  id: WindowID,
+  key: WindowProperty,
 ): StoredWindowProperty => {
-    return (
-        {
-            original: {
-                left: "originalLeft",
-                top: "originalTop",
-                width: "originalWidth",
-                height: "originalHeight",
-            },
-            new: {
-                left: "newLeft",
-                top: "newTop",
-                width: "newWidth",
-                height: "newHeight",
-            },
-        } as const
-    )[id][key];
+  return (
+    {
+      original: {
+        left: "originalLeft",
+        top: "originalTop",
+        width: "originalWidth",
+        height: "originalHeight",
+      },
+      new: {
+        left: "newLeft",
+        top: "newTop",
+        width: "newWidth",
+        height: "newHeight",
+      },
+    } as const
+  )[id][key];
 };
