@@ -13,33 +13,9 @@ export const tabToWindow = async (
   windowType: WindowType | undefined,
   moveToNextDisplay = false,
 ) => {
-  const displaysPromise = new Promise<chrome.system.display.DisplayInfo[]>((resolve) => {
-    chrome.system.display.getInfo((displays) => resolve(displays));
-  });
-
-  const currentWindowPromise = new Promise<chrome.windows.Window>((resolve, reject) => {
-    chrome.windows.getCurrent({}, (win) => {
-      if (chrome.runtime.lastError === undefined) {
-        resolve(win);
-      } else {
-        reject(new Error(chrome.runtime.lastError.message));
-      }
-    });
-  });
-
-  const tabsPromise = new Promise<chrome.tabs.Tab[]>((resolve) => {
-    chrome.tabs.query({ currentWindow: true }, (tabs) => {
-      if (tabs.length > 0) {
-        resolve(tabs);
-      }
-    });
-  });
-
-  const [displays, currentWindow, tabs] = await Promise.all([
-    displaysPromise,
-    currentWindowPromise,
-    tabsPromise,
-  ]);
+  const displays = await chrome.system.display.getInfo();
+  const currentWindow = await chrome.windows.getCurrent();
+  const tabs = await chrome.tabs.query({ currentWindow: true });
 
   moveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
