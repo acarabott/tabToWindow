@@ -3,7 +3,7 @@ import { createNewWindow } from "./createNewWindow.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
-import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
+import { getHighlightedTabs } from "./getHighlightedTabs.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { moveTabs } from "./moveTabs.js";
 import { getOptions } from "./options-storage.js";
@@ -150,7 +150,7 @@ export const tabToNeighbouringWindow = async (windowDistance: number) => {
   await chrome.windows.update(nextWindowId, { focused: true });
 
   // store tabs to unhighlight
-  const tabsToUnhighlight = await getTabsToUnhighlight(nextWindowId);
+  const tabsToUnhighlight = await getHighlightedTabs(nextWindowId);
 
   // move and highlight selected tabs
   const moveIndex = -1;

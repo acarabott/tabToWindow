@@ -2,7 +2,7 @@ import { WindowType } from "./api.js";
 import { tabToWindow } from "./actionsTabs.js";
 import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
-import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
+import { getHighlightedTabs } from "./getHighlightedTabs.js";
 
 export const urlToWindow = async (
   url: string,
@@ -22,7 +22,7 @@ export const urlToNeighbouringWindow = async (url: string, windowDistance: numbe
       return;
     }
 
-    unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
+    unhighlightTabs(await getHighlightedTabs(nextWindowId));
 
     const opts = { windowId: nextWindowId, url };
     await chrome.tabs.create(opts);
