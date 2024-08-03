@@ -7,6 +7,9 @@
 - Improve extension security: https://developer.chrome.com/docs/extensions/develop/migrate/improve-security
 - Publish your extension: https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3
 
+## Cleanup
+- Layout on options screen, now narrow extra colon 
+
 ### Done
 
 - Update the manifest: https://developer.chrome.com/docs/extensions/develop/migrate/manifest
