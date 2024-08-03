@@ -17,16 +17,9 @@ const kDefaultOptions: Readonly<IOptions> = {
 };
 
 export const getOptions = async () => {
-  let options = await new Promise<IOptions>((resolve, reject) =>
-    chrome.storage.sync.get(kDefaultOptions, (loadedOptions) => {
-      if (chrome.runtime.lastError !== undefined) {
-        reject(chrome.runtime.lastError);
-        return;
-      }
+  const loadedOptions = await chrome.storage.sync.get(kDefaultOptions);
 
-      resolve(isIOptions(loadedOptions) ? loadedOptions : kDefaultOptions);
-    }),
-  );
+  let options = isIOptions(loadedOptions) ? loadedOptions : { ...kDefaultOptions };
 
   return {
     get<K extends keyof IOptions, V extends IOptions[K]>(key: K) {
@@ -41,15 +34,7 @@ export const getOptions = async () => {
         options[key] = Math.max(0, Math.min(options[key], 1));
       }
 
-      return new Promise<boolean>((resolve, reject) => {
-        chrome.storage.sync.set(options, () => {
-          if (chrome.runtime.lastError === undefined) {
-            resolve(true);
-          } else {
-            reject(chrome.runtime.lastError);
-          }
-        });
-      });
+      return chrome.storage.sync.set(options);
     },
 
     get isCloneEnabled() {
