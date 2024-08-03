@@ -2,7 +2,6 @@
 
 ## Manifest v3
 
-- Replace blocking web request listeners: https://developer.chrome.com/docs/extensions/develop/migrate/blocking-web-requests
 - Improve extension security: https://developer.chrome.com/docs/extensions/develop/migrate/improve-security
 - Publish your extension: https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3
 
