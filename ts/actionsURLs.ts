@@ -4,20 +4,17 @@ import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
 import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
 
-export const urlToWindow = (
+export const urlToWindow = async (
   url: string,
   windowType: WindowType | undefined,
   moveToNextDisplay = false,
 ) => {
-  chrome.tabs.create({ url, active: true }, () => {
-    tabToWindow(windowType, moveToNextDisplay);
-  });
+  await chrome.tabs.create({ url, active: true });
+  tabToWindow(windowType, moveToNextDisplay);
 };
 
 export const urlToNeighbouringWindow = async (url: string, windowDistance: number) => {
-  const currentWindow = await new Promise<chrome.windows.Window>((resolve) => {
-    chrome.windows.getCurrent({}, (window) => resolve(window));
-  });
+  const currentWindow = await chrome.windows.getCurrent();
 
   if (currentWindow.id !== undefined) {
     const nextWindowId = await getNeighbouringWindowId(currentWindow.id, windowDistance);
@@ -28,7 +25,7 @@ export const urlToNeighbouringWindow = async (url: string, windowDistance: numbe
     unhighlightTabs(await getTabsToUnhighlight(nextWindowId));
 
     const opts = { windowId: nextWindowId, url };
-    chrome.tabs.create(opts);
+    await chrome.tabs.create(opts);
   }
 };
 
