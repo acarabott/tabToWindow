@@ -44,5 +44,6 @@
 
 - createMenu
 - each tab action is working correctly
+- each url action is working
 - switching type works
 - changing focus works
