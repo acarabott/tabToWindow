@@ -153,27 +153,30 @@ void getOptions().then((options) => {
     {
       // display shortcuts
       // -----------------------------------------------------------------------
-      void chrome.commands.getAll().then((cmds) => {
-        if (cmds.length === 0) {
+      void chrome.commands.getAll().then((commands) => {
+        if (commands.length === 0) {
           return;
         }
 
-        cmds
-          .filter((cmd) => cmd.name !== "_execute_action")
-          .forEach((cmd) => {
-            const name = document.createElement("span");
-            name.textContent = `${cmd.description}:`;
-            name.classList.add("shortcut-label");
+        const list = getFromId("shortcut-list");
+        for (const command of commands) {
+          if (command.name === "_execute_action") {
+            continue;
+          }
+          const li = document.createElement("li");
 
-            const shortcut = document.createElement("span");
-            shortcut.classList.add("shortcut");
-            shortcut.textContent = cmd.shortcut!;
+          const name = document.createElement("span");
+          name.textContent = `${command.description}:`;
+          name.classList.add("shortcut-label");
+          li.appendChild(name);
 
-            const li = document.createElement("li");
-            [name, shortcut].forEach((el) => li.appendChild(el));
+          const shortcut = document.createElement("span");
+          shortcut.classList.add("shortcut");
+          shortcut.textContent = command.shortcut!;
+          li.appendChild(shortcut);
 
-            getFromId("shortcut-list").appendChild(li);
-          });
+          list.appendChild(li);
+        }
       });
     }
 

@@ -6,7 +6,6 @@
 
 ## Cleanup
 
-- options-page.ts filter for each
 - consolidate getHighlightedTabs and unhilightTabs? check if windowIds always match
 
 ## Testing
