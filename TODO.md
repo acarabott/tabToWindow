@@ -12,19 +12,20 @@
 ## Features
 
 - add options page link to context menu
+- try getting focus in action button menu (might need to nest)
 
 ## Testing
 
 ## Installation
 
-- check whether to show update
-- check update is correct page
+- check whether to show update ✅
+- check update is correct page ✅
 
 ## Storage
 
-- check creating options from changes properly
-- check update working
-- update actionbutton working
+- check creating options from changes properly ✅
+- check update working ✅
+- update actionbutton working ✅
 
 ## Commands
 
