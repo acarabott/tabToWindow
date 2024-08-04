@@ -3,6 +3,10 @@ import { getCloneBounds } from "./getCloneBounds.js";
 import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
 import { getOptions, isCloneMode, isMenuButtonType, isWindowID } from "./options.js";
 
+const kMaxClonePercentage = 0.8;
+const kMinClonePercentage = 1.0 - kMaxClonePercentage;
+const kDefaultDimensionPx = 1000;
+
 // Helper functions
 // -----------------------------------------------------------------------------
 
@@ -58,7 +62,7 @@ void getOptions().then((options) => {
 
       const windowWidth = windowEl.offsetWidth;
       const windowHeight = windowEl.offsetHeight;
-      
+
       const left = windowEl.offsetLeft / screenOffsetWidth;
       const top = windowEl.offsetTop / screenOffsetHeight;
       const width = windowWidth / screenOffsetWidth;
@@ -161,15 +165,18 @@ void getOptions().then((options) => {
   const updateMaxDimensions = () => {
     const cloneMode = options.get("cloneMode");
     const $original = $("#original");
+    const $parent = $original.parent();
 
-    const maxWidth =
-      cloneMode === "clone-mode-horizontal" ? $original.parent().width()! * 0.8 : Infinity;
-
+    let maxWidth = $parent.width() ?? kDefaultDimensionPx;
+    if (cloneMode === "clone-mode-horizontal") {
+      maxWidth *= kMaxClonePercentage;
+    }
     $original.resizable("option", "maxWidth", maxWidth);
 
-    const maxHeight =
-      cloneMode === "clone-mode-vertical" ? $original.parent().height()! * 0.8 : Infinity;
-
+    let maxHeight = $parent.height() ?? kDefaultDimensionPx;
+    if (cloneMode === "clone-mode-vertical") {
+      maxHeight *= kMaxClonePercentage;
+    }
     $original.resizable("option", "maxHeight", maxHeight);
   };
 
@@ -271,12 +278,16 @@ void getOptions().then((options) => {
           stop: update,
         });
 
+        const $winParent = $win.parent();
+        const winParentWidth = $winParent.width() ?? kDefaultDimensionPx;
+        const winParentHeight = $winParent.height() ?? kDefaultDimensionPx;
+
         $win.resizable({
           containment: "parent",
           handles: "all",
           grid,
-          minWidth: $win.parent().width()! * 0.2,
-          minHeight: $win.parent().height()! * 0.2,
+          minWidth: winParentWidth * kMinClonePercentage,
+          minHeight: winParentHeight * kMinClonePercentage,
           resize: update,
           start: update,
           stop: update,
