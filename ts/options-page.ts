@@ -196,8 +196,10 @@ void getOptions().then((options) => {
       getFromId<HTMLInputElement>("resize-original").checked = options.get("resizeOriginal");
       const curCloneOption = getFromClass<HTMLInputElement>("clone-mode-option").find(
         (cp) => cp.id === options.get("cloneMode"),
-      )!;
-      curCloneOption.checked = true;
+      );
+      if (curCloneOption !== undefined) {
+        curCloneOption.checked = true;
+      }
       getFromId<HTMLInputElement>("copy-fullscreen").checked = options.get("copyFullscreen");
       getFromClass<HTMLInputElement>("menu-button-option").forEach((opt) => {
         opt.checked = opt.id.includes(options.get("menuButtonType"));
