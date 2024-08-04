@@ -47,7 +47,7 @@ export const createMenu = async () => {
         type: "normal",
         id: menuId,
         title: `Tab to ${command.description} ${command.shortcut}`,
-        contexts: ["browser_action", "page"],
+        contexts: ["action", "page"],
       });
     }
   }
@@ -57,7 +57,7 @@ export const createMenu = async () => {
     type: "normal",
     id: MENU_TYPE_PARENT_ID,
     title: "Window Type",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   chrome.contextMenus.create({
@@ -66,7 +66,7 @@ export const createMenu = async () => {
     parentId: MENU_TYPE_PARENT_ID,
     title: "Window",
     checked: options.get("menuButtonType") === "normal",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   chrome.contextMenus.create({
@@ -75,7 +75,7 @@ export const createMenu = async () => {
     parentId: MENU_TYPE_PARENT_ID,
     title: "Popup",
     checked: options.get("menuButtonType") === "popup",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   // Focus
@@ -83,7 +83,7 @@ export const createMenu = async () => {
     type: "normal",
     id: MENU_FOCUS_PARENT_ID,
     title: "Focus",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   chrome.contextMenus.create({
@@ -92,7 +92,7 @@ export const createMenu = async () => {
     parentId: MENU_FOCUS_PARENT_ID,
     title: "Original",
     checked: options.get("focus") === "original",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   chrome.contextMenus.create({
@@ -101,7 +101,7 @@ export const createMenu = async () => {
     parentId: MENU_FOCUS_PARENT_ID,
     title: "New",
     checked: options.get("focus") === "new",
-    contexts: ["browser_action"],
+    contexts: ["action"],
   });
 
   // links on page
