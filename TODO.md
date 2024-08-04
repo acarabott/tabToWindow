@@ -61,5 +61,4 @@
 
 ## Bugs
 
-- Focus not working?
 - tab to previous window not working after first time ? after just moving ?

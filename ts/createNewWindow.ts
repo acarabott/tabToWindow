@@ -17,8 +17,17 @@ export const createNewWindow = async (
   };
 
   const newWin = await chrome.windows.create(opts);
-  if (isFullscreen && newWin.id !== undefined) {
-    await chrome.windows.update(newWin.id, { state: "fullscreen" });
+
+  if (newWin.id !== undefined) {
+    const updateOptions: chrome.windows.UpdateInfo = {
+      focused: isFocused,
+    };
+
+    if (isFullscreen) {
+      updateOptions.state = "fullscreen";
+    }
+
+    await chrome.windows.update(newWin.id, updateOptions);
   }
 
   return [newWin, tab];
