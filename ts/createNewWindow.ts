@@ -6,7 +6,10 @@ export const createNewWindow = async (
   windowBounds: IBounds,
   isFullscreen: boolean,
   isFocused: boolean,
-): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
+): Promise<[chrome.windows.Window, chrome.tabs.Tab] | undefined> => {
+  if (tab.id === undefined) {
+    return undefined;
+  }
   // new window options
   const opts: chrome.windows.CreateData = {
     tabId: tab.id,

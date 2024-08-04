@@ -86,13 +86,20 @@ export const tabToWindow = async (
 
   const newWindowType = windowType ?? (currentWindow.type === "popup" ? "popup" : "normal");
 
-  const [newWin, movedTab] = await createNewWindow(
+  // move and resize new window
+  const newWindowResult = await createNewWindow(
     activeTab,
     newWindowType,
     windowBounds,
     isFullscreen,
     isFocused,
   );
+
+  if (newWindowResult === undefined) {
+    return;
+  }
+
+  const [newWin, movedTab] = newWindowResult;
 
   if (newWin.id !== undefined) {
     // move other highlighted tabs
