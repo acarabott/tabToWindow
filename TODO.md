@@ -8,7 +8,6 @@
 
 - options-page.ts filter for each
 - consolidate getHighlightedTabs and unhighlightTabs? check if windowIds always match
-- store current major version as a constant and use in installation
 
 ## Features
 

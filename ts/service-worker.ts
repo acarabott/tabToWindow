@@ -41,9 +41,11 @@ import { updateActionButton } from "./updateActionButton.js";
 
 chrome.runtime.onInstalled.addListener((details) => {
   const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
+  const currentMajorVersion = parseInt(chrome.runtime.getManifest().version, 10);
   const showUpdate =
     details.reason === chrome.runtime.OnInstalledReason.INSTALL ||
-    (details.reason === chrome.runtime.OnInstalledReason.UPDATE && previousMajorVersion < 3);
+    (details.reason === chrome.runtime.OnInstalledReason.UPDATE &&
+      previousMajorVersion < currentMajorVersion);
 
   if (showUpdate) {
     const url = "https://acarabott.github.io/tabToWindow";
