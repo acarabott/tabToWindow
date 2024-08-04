@@ -12,7 +12,8 @@
 ## Features
 
 - add options page link to context menu
-- try getting focus in action button menu (might need to nest)
+- action button menu sets options for clicking the button, and opening options page
+- options page reacts to changes in options
 
 ## Testing
 
@@ -29,21 +30,36 @@
 
 ## Commands
 
-- 01-tab-to-window-normal
-- 02-tab-to-window-popup
-- 03-tab-to-window-next
-- 04-tab-to-window-previous
-- 05-tab-to-window-display
+- 01-tab-to-window-normal ✅
+- 02-tab-to-window-popup ✅
+- 03-tab-to-window-next ✅
+- 04-tab-to-window-previous ✅
+- 05-tab-to-window-display ✅
 
 ## Button
 
-- manually check working
-- check works when changing window type
+- manually check working ✅
+- check works when changing window type ✅
 
 ## Context menu
 
-- createMenu
+- createMenu ✅
 - each tab action is working correctly
+  - COMMAND_NORMAL ✅
+  - COMMAND_POPUP ✅
+  - COMMAND_NEXT ❌
+  - COMMAND_PREVIOUS ❌
+  - COMMAND_DISPLAY ✅
 - each url action is working
-- switching type works
-- changing focus works
+  - MENU_LINK_TO_WINDOW_ID ✅
+  - MENU_LINK_TO_POPUP_ID ✅
+  - MENU_LINK_TO_NEXT_ID ✅
+  - MENU_LINK_TO_PREVIOUS_ID ✅
+  - MENU_LINK_TO_DISPLAY_ID ✅
+- switching type works ✅
+- changing focus works ✅
+
+## Bugs
+
+- Focus not working?
+- tab to previous window not working after first time ? after just moving ?
