@@ -57,7 +57,7 @@ export const createMenu = async () => {
     type: "normal",
     id: MENU_TYPE_PARENT_ID,
     title: "Window Type",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   chrome.contextMenus.create({
@@ -66,7 +66,7 @@ export const createMenu = async () => {
     parentId: MENU_TYPE_PARENT_ID,
     title: "Window",
     checked: options.get("menuButtonType") === "normal",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   chrome.contextMenus.create({
@@ -75,7 +75,7 @@ export const createMenu = async () => {
     parentId: MENU_TYPE_PARENT_ID,
     title: "Popup",
     checked: options.get("menuButtonType") === "popup",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   // Focus
@@ -83,7 +83,7 @@ export const createMenu = async () => {
     type: "normal",
     id: MENU_FOCUS_PARENT_ID,
     title: "Focus",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   chrome.contextMenus.create({
@@ -92,7 +92,7 @@ export const createMenu = async () => {
     parentId: MENU_FOCUS_PARENT_ID,
     title: "Original",
     checked: options.get("focus") === "original",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   chrome.contextMenus.create({
@@ -101,7 +101,7 @@ export const createMenu = async () => {
     parentId: MENU_FOCUS_PARENT_ID,
     title: "New",
     checked: options.get("focus") === "new",
-    contexts: ["action"],
+    contexts: ["action", "page"],
   });
 
   // links on page
