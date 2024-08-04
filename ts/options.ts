@@ -1,5 +1,5 @@
-import type { CloneMode, IOptions, WindowID, WindowType } from "./api";
-import { cloneModes, storedWindowBounds, windowIds, windowTypes } from "./api";
+import type { CloneMode, IOptions, WindowID, WindowType } from "./api.js";
+import { cloneModes, storedWindowBounds, windowIds, windowTypes } from "./api.js";
 
 export const kDefaultOptions: Readonly<IOptions> = {
   focus: "new",

@@ -1,4 +1,4 @@
-import type { WindowID, WindowProperty, StoredWindowProperty } from "./api";
+import type { WindowID, WindowProperty, StoredWindowProperty } from "./api.js";
 
 /**
  * retrieve the storage key for a particular window property
