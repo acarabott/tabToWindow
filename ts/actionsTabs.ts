@@ -14,9 +14,14 @@ export const tabToWindow = async (
   windowType: WindowType | undefined,
   moveToNextDisplay = false,
 ) => {
+  const tabs = await queryTabs({ currentWindow: true });
+  const activeTab = tabs.find((tab) => tab.active);
+  if (activeTab === undefined) {
+    return;
+  }
+
   const displays = await chrome.system.display.getInfo();
   const currentWindow = await chrome.windows.getCurrent();
-  const tabs = await queryTabs({ currentWindow: true });
 
   const shouldMoveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
@@ -64,9 +69,6 @@ export const tabToWindow = async (
       state: "normal",
     });
   }
-
-  // move and resize new window
-  const activeTab = tabs.find((tab) => tab.active)!;
 
   const getNextDisplay = () => {
     const currentIndex = displays.indexOf(currentDisplay);
