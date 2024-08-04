@@ -33,7 +33,7 @@ import {
   MENU_WINDOW_OPTION_ID,
 } from "./api.js";
 import { createMenu } from "./createMenu.js";
-import { createOptionsUpdateFromChanges, getOptions } from "./options-storage.js";
+import { createOptionsUpdateFromChanges, getOptions } from "./options.js";
 import { updateActionButton } from "./updateActionButton.js";
 
 // Installation

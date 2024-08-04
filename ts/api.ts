@@ -1,4 +1,4 @@
-import type { getOptions } from "./options-storage.js";
+import type { getOptions } from "./options.js";
 
 export const windowIds = ["original", "new"] as const;
 export type WindowID = (typeof windowIds)[number];

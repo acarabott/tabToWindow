@@ -6,7 +6,7 @@ import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { moveTabs } from "./moveTabs.js";
-import { getOptions } from "./options-storage.js";
+import { getOptions } from "./options.js";
 import { queryTabs } from "./queryTabs.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
 

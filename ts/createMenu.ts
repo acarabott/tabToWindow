@@ -21,7 +21,7 @@ import {
   MENU_TYPE_PARENT_ID,
   MENU_WINDOW_OPTION_ID,
 } from "./api.js";
-import { getOptions } from "./options-storage.js";
+import { getOptions } from "./options.js";
 
 export const createMenu = async () => {
   const options = await getOptions();
