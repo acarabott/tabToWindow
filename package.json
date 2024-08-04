@@ -3,13 +3,17 @@
   "version": "3.3.1",
   "description": "Chrome Extension to move tabs out of windows with a keyboard shortcut",
   "main": "index.html",
+  "type": "module",
   "directories": {
     "doc": "docs",
     "lib": "lib"
   },
   "scripts": {
     "build": "./build.sh",
-    "publish": "npm run build && zip -r build.zip \"./build\""
+    "watch": "./watch.sh",
+    "publish": "./publish.sh",
+    "lint": "eslint --fix",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -22,11 +26,16 @@
   },
   "homepage": "https://github.com/acarabott/tabToWindow#readme",
   "devDependencies": {
-    "@types/chrome": "^0.0.181",
+    "@eslint/js": "^9.8.0",
+    "@types/chrome": "^0.0.269",
+    "@types/eslint__js": "^8.42.3",
     "@types/jquery": "^3.5.14",
     "@types/jqueryui": "^1.12.16",
-    "eslint": "^8.14.0",
-    "prettier": "^2.6.2",
-    "typescript": "^4.6.3"
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0"
   }
 }

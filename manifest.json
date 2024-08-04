@@ -1,66 +1,75 @@
 {
-	"manifest_version": 2,
-	"name": "Tab to Window/Popup - Keyboard Shortcut",
-	"short_name": "Tab to Window",
-	"version": "3.3.1",
-	"author": "Arthur Carabott",
+  "manifest_version": 3,
+  "name": "Tab to Window/Popup - Keyboard Shortcut",
+  "short_name": "Tab to Window",
+  "version": "3.3.1",
+  "author": "Arthur Carabott",
 
-	"description": "Add a keyboard shortcut to move the current tab to a new window or popup.",
-	"minimum_chrome_version": "61",
+  "description": "Add a keyboard shortcut to move the current tab to a new window or popup.",
+  "minimum_chrome_version": "61",
 
-	"icons": {
-		"16": "icons/ttw16.png",
-		"48": "icons/ttw48.png",
-		"128": "icons/ttw128.png"
-	},
+  "icons": {
+    "16": "icons/ttw16.png",
+    "24": "icons/ttw16.png",
+    "32": "icons/ttw16.png",
+    "48": "icons/ttw48.png",
+    "128": "icons/ttw128.png"
+  },
 
-	"browser_action": {
-		"default_title": "Tab to window"
-	},
+  "action": {
+    "default_title": "Tab to window",
+    "default_icon": {
+      "16": "icons/ttw16.png",
+      "24": "icons/ttw16.png",
+      "32": "icons/ttw16.png",
+      "48": "icons/ttw48.png",
+      "128": "icons/ttw128.png"
+    }
+  },
 
-	"background": {
-		"page": "background.html",
-		"persistent": false
-	},
+  "background": {
+    "service_worker": "js/service-worker.js",
+    "type": "module"
+  },
 
-	"commands": {
-		"01-tab-to-window-normal": {
-			"suggested_key": {
-				"default": "Alt+X",
-				"linux": "Alt+Shift+X"
-			},
-			"description": "Window"
-		},
-		"02-tab-to-window-popup": {
-			"suggested_key": {
-				"default": "Alt+C",
-				"linux": "Alt+Shift+C"
-			},
-			"description": "Popup"
-		},
-		"03-tab-to-window-next": {
-			"suggested_key": {
-				"default": "Alt+Z",
-				"linux": "Alt+Shift+Z"
-			},
-			"description": "Next Window"
-        },
-        "04-tab-to-window-previous": {
-			"description": "Previous Window"
-		},
-		"05-tab-to-window-display": {
-			"suggested_key": {
-				"default": "Alt+D",
-				"linux": "Alt+Shift+D",
-				"windows": "Alt+Shift+D"
-			},
-			"description": "Next Display"
-		}
-	},
-	"permissions": ["storage", "system.display", "contextMenus"],
-	"options_page": "options.html",
-	"options_ui": {
-		"page": "options.html",
-		"chrome_style": true
-	}
+  "commands": {
+    "01-tab-to-window-normal": {
+      "suggested_key": {
+        "default": "Alt+X",
+        "linux": "Alt+Shift+X"
+      },
+      "description": "Window"
+    },
+    "02-tab-to-window-popup": {
+      "suggested_key": {
+        "default": "Alt+C",
+        "linux": "Alt+Shift+C"
+      },
+      "description": "Popup"
+    },
+    "03-tab-to-window-next": {
+      "suggested_key": {
+        "default": "Alt+Z",
+        "linux": "Alt+Shift+Z"
+      },
+      "description": "Next Window"
+    },
+    "04-tab-to-window-previous": {
+      "description": "Previous Window"
+    },
+    "05-tab-to-window-display": {
+      "suggested_key": {
+        "default": "Alt+D",
+        "linux": "Alt+Shift+D",
+        "windows": "Alt+Shift+D"
+      },
+      "description": "Next Display"
+    }
+  },
+  "permissions": ["storage", "system.display", "contextMenus"],
+  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "browser_style": true
+  }
 }

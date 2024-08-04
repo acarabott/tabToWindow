@@ -1,16 +1,17 @@
-import { IBounds, Options, windowProperties } from "./api.js";
+import type { IBounds, Options } from "./api.js";
+import { windowProperties } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 
-export const getNewWindowBounds = async (
+export const getNewWindowBounds = (
   options: Options,
   origWindow: chrome.windows.Window,
   displayBounds: IBounds,
 ) => {
   const newBounds = options.isCloneEnabled
     ? getCloneBounds(getWindowBounds(origWindow), displayBounds, options.get("cloneMode"))
-    : await getSizeAndPos(options, "new", displayBounds);
+    : getSizeAndPos(options, "new", displayBounds);
 
   // ensure all values are integers for Chrome APIs
   windowProperties.forEach((key) => {

@@ -1,12 +1,15 @@
-import { WindowType, IBounds } from "./api";
+import type { IBounds, WindowType } from "./api.js";
 
-export const createNewWindow = (
+export const createNewWindow = async (
   tab: chrome.tabs.Tab,
   windowType: WindowType,
   windowBounds: IBounds,
   isFullscreen: boolean,
   isFocused: boolean,
-): Promise<[chrome.windows.Window, chrome.tabs.Tab]> => {
+): Promise<[chrome.windows.Window, chrome.tabs.Tab] | undefined> => {
+  if (tab.id === undefined) {
+    return undefined;
+  }
   // new window options
   const opts: chrome.windows.CreateData = {
     tabId: tab.id,
@@ -16,17 +19,19 @@ export const createNewWindow = (
     ...windowBounds,
   };
 
-  return new Promise((resolve, reject) => {
-    chrome.windows.create(opts, (newWin) => {
-      if (newWin !== undefined) {
-        if (isFullscreen && newWin.id !== undefined) {
-          chrome.windows.update(newWin.id, { state: "fullscreen" }, () => resolve([newWin, tab]));
-        } else {
-          resolve([newWin, tab]);
-        }
-      } else {
-        reject("Could not create new window");
-      }
-    });
-  });
+  const newWin = await chrome.windows.create(opts);
+
+  if (newWin.id !== undefined) {
+    const updateOptions: chrome.windows.UpdateInfo = {
+      focused: isFocused,
+    };
+
+    if (isFullscreen) {
+      updateOptions.state = "fullscreen";
+    }
+
+    await chrome.windows.update(newWin.id, updateOptions);
+  }
+
+  return [newWin, tab];
 };

@@ -7,7 +7,6 @@
 
 @import url("widgets.css");
 
-
 /* Prevent CSS from overriding the hidden property. */
 [hidden] {
   display: none !important;
@@ -63,7 +62,7 @@ a:active {
 /* Elements that need to be LTR even in an RTL context, but should align
  * right. (Namely, URLs, search engine names, etc.)
  */
-html[dir='rtl'] .weakrtl {
+html[dir="rtl"] .weakrtl {
   direction: ltr;
   text-align: right;
 }
@@ -72,12 +71,12 @@ html[dir='rtl'] .weakrtl {
  * fields are generated for all cr.ListItem elements (and we only want weakrtl
  * on some), the class needs to be on the enclosing div.
  */
-html[dir='rtl'] div.weakrtl input {
+html[dir="rtl"] div.weakrtl input {
   direction: ltr;
   text-align: right;
 }
 
-html[dir='rtl'] .favicon-cell.weakrtl {
+html[dir="rtl"] .favicon-cell.weakrtl {
   -webkit-padding-end: 22px;
   -webkit-padding-start: 0;
 }
@@ -86,11 +85,11 @@ html[dir='rtl'] .favicon-cell.weakrtl {
  * Webkit does not honor the text-align attribute for the select element.
  * (See Webkit bug #40216)
  */
-html[dir='rtl'] select.weakrtl {
+html[dir="rtl"] select.weakrtl {
   direction: rtl;
 }
 
-html[dir='rtl'] select.weakrtl option {
+html[dir="rtl"] select.weakrtl option {
   direction: ltr;
 }
 
@@ -98,7 +97,7 @@ html[dir='rtl'] select.weakrtl option {
  * This CSS is a workaround. Please remove once WebKit bug is fixed.
  * https://bugs.webkit.org/show_bug.cgi?id=63367
  */
-html[dir='rtl'] input.weakrtl::-webkit-input-placeholder,
-html[dir='rtl'] .weakrtl input::-webkit-input-placeholder {
+html[dir="rtl"] input.weakrtl::-webkit-input-placeholder,
+html[dir="rtl"] .weakrtl input::-webkit-input-placeholder {
   direction: rtl;
 }

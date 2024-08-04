@@ -1,225 +1,182 @@
-import { WindowType } from "./api.js";
+import type { WindowType } from "./api.js";
 import { createNewWindow } from "./createNewWindow.js";
-import { doBackgroundAction } from "./doBackgroundAction.js";
+import { getHighlightedTabs } from "./getHighlightedTabs.js";
+import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
 import { getNewWindowBounds } from "./getNewWindowBounds.js";
 import { getSizeAndPos } from "./getSizeAndPos.js";
 import { getWindowBounds } from "./getWindowBounds.js";
 import { moveTabs } from "./moveTabs.js";
-import { getOptions } from "./options-storage.js";
-import { getNeighbouringWindowId } from "./getNeighbouringWindowId.js";
-import { getTabsToUnhighlight } from "./getTabsToUnhighlight.js";
+import { getOptions } from "./options.js";
+import { queryTabs } from "./queryTabs.js";
 import { unhighlightTabs } from "./unhighlightTabs.js";
 
 export const tabToWindow = async (
   windowType: WindowType | undefined,
   moveToNextDisplay = false,
 ) => {
-  doBackgroundAction(async () => {
-    const displaysPromise = new Promise<chrome.system.display.DisplayInfo[]>((resolve) => {
-      chrome.system.display.getInfo((displays) => resolve(displays));
-    });
+  const tabs = await queryTabs({ currentWindow: true });
+  const activeTab = tabs.find((tab) => tab.active);
+  if (activeTab === undefined) {
+    return;
+  }
 
-    const currentWindowPromise = new Promise<chrome.windows.Window>((resolve, reject) => {
-      chrome.windows.getCurrent({}, (win) => {
-        if (chrome.runtime.lastError === undefined) {
-          resolve(win);
-        } else {
-          reject(new Error(chrome.runtime.lastError.message));
-        }
-      });
-    });
+  const displays = await chrome.system.display.getInfo();
+  const currentWindow = await chrome.windows.getCurrent();
 
-    const tabsPromise = new Promise<chrome.tabs.Tab[]>((resolve) => {
-      chrome.tabs.query({ currentWindow: true }, (tabs) => {
-        if (tabs.length > 0) {
-          resolve(tabs);
-        }
-      });
-    });
+  const shouldMoveToNextDisplay = moveToNextDisplay && displays.length > 1;
 
-    const [displays, currentWindow, tabs] = await Promise.all([
-      displaysPromise,
-      currentWindowPromise,
-      tabsPromise,
-    ]);
+  const calcOverlapArea = (display: chrome.system.display.DisplayInfo) => {
+    const wl = currentWindow.left ?? 0;
+    const wt = currentWindow.top ?? 0;
+    const wr = wl + (currentWindow.width ?? screen.availWidth);
+    const wb = wt + (currentWindow.height ?? screen.availWidth);
 
-    moveToNextDisplay = moveToNextDisplay && displays.length > 1;
+    const dl = display.bounds.left;
+    const dt = display.bounds.top;
+    const dr = display.bounds.left + display.bounds.width;
+    const db = display.bounds.top + display.bounds.height;
 
-    const calcOverlapArea = (display: chrome.system.display.DisplayInfo) => {
-      const wl = currentWindow.left ?? 0;
-      const wt = currentWindow.top ?? 0;
-      const wr = wl + (currentWindow.width ?? screen.availWidth);
-      const wb = wt + (currentWindow.height ?? screen.availWidth);
-
-      const dl = display.bounds.left;
-      const dt = display.bounds.top;
-      const dr = display.bounds.left + display.bounds.width;
-      const db = display.bounds.top + display.bounds.height;
-
-      return (
-        Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
-        Math.max(0, Math.min(wb, db) - Math.max(wt, dt))
-      );
-    };
-
-    const currentDisplay = displays.reduce((accum, current) => {
-      const accumOverlap = calcOverlapArea(accum);
-      const curOverlap = calcOverlapArea(current);
-      return curOverlap > accumOverlap ? current : accum;
-    }, displays[0]);
-
-    const options = await getOptions();
-
-    const isFullscreen = options.get("copyFullscreen") && currentWindow.state === "fullscreen";
-    const isFocused = options.get("focus") === "new";
-
-    // (maybe) move and resize original window
-    let origWindow = currentWindow;
-    const destroyingOriginalWindow = tabs.length === 1;
-    if (
-      options.get("resizeOriginal") &&
-      !isFullscreen &&
-      !destroyingOriginalWindow &&
-      !moveToNextDisplay
-    ) {
-      const vals = await getSizeAndPos(options, "original", currentDisplay.workArea);
-      origWindow = await new Promise<chrome.windows.Window>((resolve) => {
-        if (origWindow.id !== undefined) {
-          chrome.windows.update(
-            origWindow.id,
-            {
-              width: vals.width,
-              height: vals.height,
-              left: vals.left,
-              top: vals.top,
-              state: "normal",
-            },
-            (win) => resolve(win),
-          );
-        }
-      });
-    }
-
-    // move and resize new window
-    const activeTab = tabs.find((tab) => tab.active)!;
-
-    const getNextDisplay = () => {
-      const currentIndex = displays.indexOf(currentDisplay);
-      const nextIndex = (currentIndex + 1) % displays.length;
-      return displays[nextIndex];
-    };
-
-    // if it's just one tab, the only use case is to convert it into a popup
-    // window, so just leave it where it was
-    const windowBounds = moveToNextDisplay
-      ? getNextDisplay().bounds
-      : tabs.length === 1
-      ? getWindowBounds(origWindow)
-      : await getNewWindowBounds(options, origWindow, currentDisplay.workArea);
-
-    const newWindowType =
-      windowType === undefined ? (currentWindow.type === "popup" ? "popup" : "normal") : windowType;
-
-    const [newWin, movedTab] = await createNewWindow(
-      activeTab,
-      newWindowType,
-      windowBounds,
-      isFullscreen,
-      isFocused,
+    return (
+      Math.max(0, Math.min(wr, dr) - Math.max(wl, dl)) *
+      Math.max(0, Math.min(wb, db) - Math.max(wt, dt))
     );
+  };
 
-    if (newWin.id !== undefined) {
-      // move other highlighted tabs
-      const otherTabs = tabs.filter((tab) => tab !== movedTab && tab.highlighted);
-      if (otherTabs.length > 0) {
-        if (newWindowType === "normal") {
+  const currentDisplay = displays.reduce((accum, current) => {
+    const accumOverlap = calcOverlapArea(accum);
+    const curOverlap = calcOverlapArea(current);
+    return curOverlap > accumOverlap ? current : accum;
+  }, displays[0]);
+
+  const options = await getOptions();
+
+  const isFullscreen = options.get("copyFullscreen") && currentWindow.state === "fullscreen";
+  const isFocused = options.get("focus") === "new";
+
+  // (maybe) move and resize original window
+  let origWindow = currentWindow;
+  const destroyingOriginalWindow = tabs.length === 1;
+  if (
+    origWindow.id !== undefined &&
+    options.get("resizeOriginal") &&
+    !isFullscreen &&
+    !destroyingOriginalWindow &&
+    !shouldMoveToNextDisplay
+  ) {
+    const bounds = getSizeAndPos(options, "original", currentDisplay.workArea);
+    origWindow = await chrome.windows.update(origWindow.id, {
+      ...bounds,
+      state: "normal",
+    });
+  }
+
+  const getNextDisplay = () => {
+    const currentIndex = displays.indexOf(currentDisplay);
+    const nextIndex = (currentIndex + 1) % displays.length;
+    return displays[nextIndex];
+  };
+
+  // if it's just one tab, the only use case is to convert it into a popup
+  // window, so just leave it where it was
+  const windowBounds = shouldMoveToNextDisplay
+    ? getNextDisplay().bounds
+    : tabs.length === 1
+      ? getWindowBounds(origWindow)
+      : getNewWindowBounds(options, origWindow, currentDisplay.workArea);
+
+  const newWindowType = windowType ?? (currentWindow.type === "popup" ? "popup" : "normal");
+
+  // move and resize new window
+  const newWindowResult = await createNewWindow(
+    activeTab,
+    newWindowType,
+    windowBounds,
+    isFullscreen,
+    isFocused,
+  );
+
+  if (newWindowResult === undefined) {
+    return;
+  }
+
+  const [newWin, movedTab] = newWindowResult;
+
+  if (newWin.id !== undefined) {
+    // move other highlighted tabs
+    const otherTabs = tabs.filter((tab) => tab !== movedTab && tab.highlighted);
+    if (otherTabs.length > 0) {
+      switch (newWindowType) {
+        case "normal": {
           // move all tabs at once
           const moveIndex = 1;
           const movedTabs = await moveTabs(otherTabs, newWin.id, moveIndex);
-  
+
           // highlight tabs in new window
-          const tabPromises = movedTabs.map((tab) => {
-            return new Promise<chrome.tabs.Tab>((resolve) => {
-              chrome.tabs.update(tab.id!, { highlighted: true }, () => resolve(tab));
-            });
-          });
-  
-          await Promise.all(tabPromises);
-        } else if (newWindowType === "popup") {
+          for (const tab of movedTabs) {
+            if (tab.id !== undefined) {
+              await chrome.tabs.update(tab.id, { highlighted: true });
+            }
+          }
+          break;
+        }
+        case "popup": {
           // can't move tabs to a popup window, so create individual ones
-          const tabPromises = otherTabs.map((tab) => {
-            return createNewWindow(
-              tab,
-              newWindowType,
-              getWindowBounds(newWin),
-              isFullscreen,
-              isFocused,
-            );
-          });
+          const tabPromises = otherTabs.map((tab) =>
+            createNewWindow(tab, newWindowType, getWindowBounds(newWin), isFullscreen, isFocused),
+          );
           await Promise.all(tabPromises);
+          break;
         }
       }
-      
     }
+  }
 
-    // focus on original window if specified, and it still exists
-    // (popping a single tab will destroy the original window)
-    const currentWindowId = currentWindow.id;
-    if (currentWindowId !== undefined) {
-      if (options.get("focus") === "original" && !destroyingOriginalWindow) {
-        chrome.windows.get(currentWindowId, {}, () => {
-          if (chrome.runtime.lastError === undefined) {
-            chrome.windows.update(currentWindowId, { focused: true });
-          } else {
-            throw new Error(chrome.runtime.lastError.message);
-          }
-        });
-      }
-    }
-  });
+  // focus on original window if specified, and it still exists
+  // (popping a single tab will destroy the original window)
+  if (
+    currentWindow.id !== undefined &&
+    options.get("focus") === "original" &&
+    !destroyingOriginalWindow
+  ) {
+    await chrome.windows.update(currentWindow.id, { focused: true });
+  }
 };
 
-export const tabToNeighbouringWindow = (windowDistance: number) => {
-  doBackgroundAction(async () => {
-    const tabsToMove = await new Promise<chrome.tabs.Tab[]>((resolve) =>
-      chrome.tabs.query({ currentWindow: true, highlighted: true }, (tabs) => resolve(tabs)),
-    );
+/**
+ * Move the tab to a neighbouring window.
+ * @param windowDistance Number of windows to move to. Positive numbers move to the right, negative to the left.
+ * @returns
+ */
+export const tabToNeighbouringWindow = async (windowDistance: number) => {
+  const tabsToMove = await queryTabs({ currentWindow: true, highlighted: true });
 
-    if (tabsToMove.length === 0) {
-      return;
+  if (tabsToMove.length === 0) {
+    return;
+  }
+
+  const nextWindowId = await getNeighbouringWindowId(tabsToMove[0].windowId, windowDistance);
+  if (nextWindowId === undefined) {
+    return;
+  }
+
+  // focus on next window
+  await chrome.windows.update(nextWindowId, { focused: true });
+
+  // store tabs to unhighlight
+  const tabsToUnhighlight = await getHighlightedTabs(nextWindowId);
+
+  // move and highlight selected tabs
+  const moveIndex = -1;
+  const movedTabs = await moveTabs(tabsToMove, nextWindowId, moveIndex);
+  for (const tab of movedTabs) {
+    if (tab.id !== undefined) {
+      const active = tab === movedTabs[moveTabs.length - 1];
+      await chrome.tabs.update(tab.id, { highlighted: true, active });
     }
+  }
 
-    const nextWindowId = await getNeighbouringWindowId(tabsToMove[0].windowId, windowDistance);
-    if (nextWindowId === undefined) {
-      return;
-    }
-
-    // focus on next window
-    await new Promise((resolve) => {
-      chrome.windows.update(nextWindowId, { focused: true }, (win) => resolve(win));
-    });
-
-    // store tabs to unhighlight
-    const tabsToUnhighlight = await getTabsToUnhighlight(nextWindowId);
-
-    // move and highlight selected tabs
-    const moveIndex = -1;
-    const movedTabs = await moveTabs(tabsToMove, nextWindowId, moveIndex);
-    await Promise.all(
-      movedTabs.map((tab, i) => {
-        return new Promise((tabResolve) => {
-          chrome.tabs.update(
-            tab.id!,
-            { highlighted: true, active: i === movedTabs.length - 1 },
-            (tab) => tabResolve(tab),
-          );
-        });
-      }),
-    );
-
-    // unlight old tabs
-    unhighlightTabs(tabsToUnhighlight);
-  });
+  // unlight old tabs
+  unhighlightTabs(tabsToUnhighlight);
 };
 
 export const tabToWindowNormal = () => tabToWindow("normal");

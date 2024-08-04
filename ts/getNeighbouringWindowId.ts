@@ -1,19 +1,17 @@
 export const getNeighbouringWindowId = async (currentWindowId: number, distance: number) => {
-  const windows = await new Promise<chrome.windows.Window[]>((resolve) => {
-    chrome.windows.getAll({ windowTypes: ["normal"] }, (windows) => resolve(windows));
-  });
-
+  const windows = await chrome.windows.getAll({ windowTypes: ["normal"] });
   const currentIndex = windows.findIndex((win) => win.id === currentWindowId);
-  if (currentIndex === -1) {
-    return;
+
+  let nextIndex: number;
+  // If the current window is a popup, it won't exist in the windows array.
+  // TODO make this based on window left position instead of index
+  if (currentIndex !== -1) {
+    const i = currentIndex + distance;
+    const max = windows.length;
+    nextIndex = ((i % max) + max) % max; // wrapping in either direction
+  } else {
+    nextIndex = 0;
   }
 
-  const i = currentIndex + distance;
-  const max = windows.length;
-  const nextIndex = ((i % max) + max) % max; // wrapping in either direction
-  if (nextIndex === currentIndex) {
-    return undefined;
-  }
-
-  return windows[nextIndex].id;
+  return windows[nextIndex]?.id;
 };
