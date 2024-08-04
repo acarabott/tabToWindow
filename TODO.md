@@ -16,6 +16,7 @@
 - options page reacts to changes in options
 - add support link to page menu / options screen
 - disable window menu items if only one window exists
+- make moving to prev/next window based on left position?
 
 ## Testing
 
@@ -62,5 +63,3 @@
 - changing focus works ✅
 
 ## Bugs
-
-- previous window from a popup window
