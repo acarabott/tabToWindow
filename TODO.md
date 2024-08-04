@@ -6,7 +6,7 @@
 
 ## Cleanup
 
-- options-page.ts filter for each
+- options-page filter for each
 - consolidate getHighlightedTabs and unhighlightTabs? check if windowIds always match
 
 ## Features
@@ -14,6 +14,8 @@
 - add options page link to context menu
 - action button menu sets options for clicking the button, and opening options page
 - options page reacts to changes in options
+- add support link to page menu / options screen
+- disable window menu items if only one window exists
 
 ## Testing
 
@@ -26,7 +28,7 @@
 
 - check creating options from changes properly ✅
 - check update working ✅
-- update actionbutton working ✅
+- update action button working ✅
 
 ## Commands
 
@@ -47,8 +49,8 @@
 - each tab action is working correctly
   - COMMAND_NORMAL ✅
   - COMMAND_POPUP ✅
-  - COMMAND_NEXT ❌
-  - COMMAND_PREVIOUS ❌
+  - COMMAND_NEXT ✅
+  - COMMAND_PREVIOUS ✅
   - COMMAND_DISPLAY ✅
 - each url action is working
   - MENU_LINK_TO_WINDOW_ID ✅
@@ -62,3 +64,5 @@
 ## Bugs
 
 - tab to previous window not working after first time ? after just moving ?
+- use of ! (!)
+- previous window from a popup window
