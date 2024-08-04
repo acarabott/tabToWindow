@@ -167,7 +167,7 @@ void getOptions().then((options) => {
 
             const shortcut = document.createElement("span");
             shortcut.classList.add("shortcut");
-            shortcut.textContent = cmd.shortcut!;
+            shortcut.textContent = cmd.shortcut ?? "";
 
             const li = document.createElement("li");
             [name, shortcut].forEach((el) => li.appendChild(el));
