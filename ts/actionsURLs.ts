@@ -10,7 +10,7 @@ export const urlToWindow = async (
   moveToNextDisplay = false,
 ) => {
   await chrome.tabs.create({ url, active: true });
-  tabToWindow(windowType, moveToNextDisplay);
+  void tabToWindow(windowType, moveToNextDisplay);
 };
 
 export const urlToNeighbouringWindow = async (url: string, windowDistance: number) => {

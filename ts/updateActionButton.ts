@@ -10,5 +10,5 @@ export const updateActionButton = async () => {
   const options = await getOptions();
   const type = options.get("menuButtonType");
   const label = kLookup[type];
-  chrome.action.setTitle({ title: `Tab to ${label}` });
+  void chrome.action.setTitle({ title: `Tab to ${label}` });
 };

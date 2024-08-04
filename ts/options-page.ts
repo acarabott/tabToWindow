@@ -21,7 +21,7 @@ const getFocusedName = (): WindowID => {
   return focused === undefined || focused.id === "focus-original" ? "original" : "new";
 };
 
-getOptions().then((options) => {
+void getOptions().then((options) => {
   // save current state
   const save = () => {
     const update: Partial<IOptions> = {
@@ -52,7 +52,7 @@ getOptions().then((options) => {
       });
     });
 
-    options.update(update);
+    void options.update(update);
   };
 
   // changing draggable/resizable windows, used when radio buttons override
@@ -141,7 +141,7 @@ getOptions().then((options) => {
     {
       // display shortcuts
       // -----------------------------------------------------------------------
-      chrome.commands.getAll().then((cmds) => {
+      void chrome.commands.getAll().then((cmds) => {
         if (cmds.length === 0) {
           return;
         }
@@ -258,7 +258,7 @@ getOptions().then((options) => {
       getFromClass("focus-option").forEach((el) => (el.onchange = updateFocus));
       getFromTag("input").forEach((el) => (el.onclick = save));
       getFromId("commandsUrl").onclick = (event) => {
-        chrome.tabs.create({ url: (event.target as HTMLAnchorElement).href });
+        void chrome.tabs.create({ url: (event.target as HTMLAnchorElement).href });
       };
       getFromClass("clone-mode-option").forEach((el) => {
         el.addEventListener(

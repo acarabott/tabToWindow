@@ -1,6 +1,3 @@
-// Installation
-// -----------------------------------------------------------------------------
-
 import {
   tabToNeighbouringWindow,
   tabToNextDisplay,
@@ -41,6 +38,9 @@ import { createMenu } from "./createMenu.js";
 import { getOptions } from "./options-storage.js";
 import { updateActionButton } from "./updateActionButton.js";
 
+// Installation
+// -----------------------------------------------------------------------------
+
 chrome.runtime.onInstalled.addListener((details) => {
   const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
   const showUpdate =
@@ -48,7 +48,7 @@ chrome.runtime.onInstalled.addListener((details) => {
 
   if (showUpdate) {
     const url = "https://acarabott.github.io/tabToWindow";
-    chrome.tabs.create({ url, active: true });
+    void chrome.tabs.create({ url, active: true });
   }
 });
 
@@ -66,7 +66,7 @@ chrome.storage.onChanged.addListener(async (changes) => {
   const options = await getOptions();
   options.update(update);
 
-  updateActionButton();
+  void updateActionButton();
 });
 
 // Commands
@@ -75,74 +75,74 @@ chrome.storage.onChanged.addListener(async (changes) => {
 chrome.commands.onCommand.addListener((command) => {
   switch (command) {
     case COMMAND_NORMAL:
-      tabToWindowNormal();
+      void tabToWindowNormal();
       break;
     case COMMAND_POPUP:
-      tabToWindowPopup();
+      void tabToWindowPopup();
       break;
     case COMMAND_NEXT:
-      tabToNeighbouringWindow(1);
+      void tabToNeighbouringWindow(1);
       break;
     case COMMAND_PREVIOUS:
-      tabToNeighbouringWindow(-1);
+      void tabToNeighbouringWindow(-1);
       break;
     case COMMAND_DISPLAY:
-      tabToNextDisplay();
+      void tabToNextDisplay();
       break;
     default:
-      console.assert(false);
       break;
   }
 });
 
 // Extension Button
 // -----------------------------------------------------------------------------
-chrome.action.onClicked.addListener(async () => {
-  const options = await getOptions();
-  const menuButtonType = options.get("menuButtonType");
-  tabToWindow(menuButtonType);
+chrome.action.onClicked.addListener(() => {
+  void getOptions().then((options) => {
+    const menuButtonType = options.get("menuButtonType");
+    void tabToWindow(menuButtonType);
+  });
 });
 
-updateActionButton();
+void updateActionButton();
 
 // Context Menu
 // -----------------------------------------------------------------------------
 
-createMenu();
+void createMenu();
 
-chrome.contextMenus.onClicked.addListener(async (info) => {
-  const options = await getOptions();
-
-  // prettier-ignore
-  switch (info.menuItemId) {
+chrome.contextMenus.onClicked.addListener((info) => {
+  void getOptions().then((options) => {
+    // prettier-ignore
+    switch (info.menuItemId) {
 
       // tab actions
-      case MENU_TAB_TO_WINDOW_ID:   tabToWindowNormal(); break;
-      case MENU_TAB_TO_POPUP_ID:    tabToWindowPopup(); break;
-      case MENU_TAB_TO_NEXT_ID:     tabToNeighbouringWindow(1); break;
-      case MENU_TAB_TO_PREVIOUS_ID: tabToNeighbouringWindow(-1); break;
-      case MENU_TAB_TO_DISPLAY_ID:  tabToNextDisplay(); break;
+      case MENU_TAB_TO_WINDOW_ID:   void tabToWindowNormal(); break;
+      case MENU_TAB_TO_POPUP_ID:    void tabToWindowPopup(); break;
+      case MENU_TAB_TO_NEXT_ID:     void tabToNeighbouringWindow(1); break;
+      case MENU_TAB_TO_PREVIOUS_ID: void tabToNeighbouringWindow(-1); break;
+      case MENU_TAB_TO_DISPLAY_ID:  void tabToNextDisplay(); break;
 
       // options
-      case MENU_WINDOW_OPTION_ID:         options.update({ menuButtonType: "normal" }); break;
-      case MENU_POPUP_OPTION_ID:          options.update({ menuButtonType: "popup" }); break;
-      case MENU_FOCUS_ORIGINAL_OPTION_ID: options.update({ focus: "original" }); break;
-      case MENU_FOCUS_NEW_OPTION_ID:      options.update({ focus: "new" }); break;
+      case MENU_WINDOW_OPTION_ID:         void options.update({ menuButtonType: "normal" }); break;
+      case MENU_POPUP_OPTION_ID:          void options.update({ menuButtonType: "popup" }); break;
+      case MENU_FOCUS_ORIGINAL_OPTION_ID: void options.update({ focus: "original" }); break;
+      case MENU_FOCUS_NEW_OPTION_ID:      void options.update({ focus: "new" }); break;
 
       default: break;
     }
 
-  // link actions
-  // prettier-ignore
-  if (info.linkUrl !== undefined) {
+    // link actions
+    // prettier-ignore
+    if (info.linkUrl !== undefined) {
       switch(info.menuItemId) {
-        case MENU_LINK_TO_WINDOW_ID:    urlToWindowNormal(info.linkUrl); break;
-        case MENU_LINK_TO_POPUP_ID:     urlToWindowPopup(info.linkUrl); break;
-        case MENU_LINK_TO_NEXT_ID:      urlToNeighbouringWindow(info.linkUrl, 1); break;
-        case MENU_LINK_TO_PREVIOUS_ID:  urlToNeighbouringWindow(info.linkUrl, -1); break;
-        case MENU_LINK_TO_DISPLAY_ID:   urlToNextDisplay(info.linkUrl); break;
+        case MENU_LINK_TO_WINDOW_ID:    void urlToWindowNormal(info.linkUrl); break;
+        case MENU_LINK_TO_POPUP_ID:     void urlToWindowPopup(info.linkUrl); break;
+        case MENU_LINK_TO_NEXT_ID:      void urlToNeighbouringWindow(info.linkUrl, 1); break;
+        case MENU_LINK_TO_PREVIOUS_ID:  void urlToNeighbouringWindow(info.linkUrl, -1); break;
+        case MENU_LINK_TO_DISPLAY_ID:   void urlToNextDisplay(info.linkUrl); break;
 
         default: break;
       }
     }
+  });
 });
