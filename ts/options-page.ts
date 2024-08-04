@@ -69,7 +69,11 @@ void getOptions().then((options) => {
     updateWindowHandling("resize-original", "original", true);
     const originalWin = getFromId("original");
     const isResizing = getFromId<HTMLInputElement>("resize-original").checked;
-    isResizing ? originalWin.classList.remove("disabled") : originalWin.classList.add("disabled");
+    if (isResizing) {
+      originalWin.classList.remove("disabled");
+    } else {
+      originalWin.classList.add("disabled");
+    }
   };
 
   const updateResizeNew = () => updateWindowHandling("clone-mode-no", "new", true);
@@ -106,13 +110,21 @@ void getOptions().then((options) => {
   const updateFocus = () => {
     getFromClass("window").forEach((win) => {
       const isBlurred = win.id !== getFocusedName();
-      isBlurred ? win.classList.add("blurred") : win.classList.remove("blurred");
+      if (isBlurred) {
+        win.classList.add("blurred");
+      } else {
+        win.classList.remove("blurred");
+      }
     });
   };
 
   const setWindowAsCurrent = (win: HTMLElement) => {
     getFromClass("window").forEach((_win) => {
-      _win === win ? _win.classList.add("current") : _win.classList.remove("current");
+      if (_win === win) {
+        _win.classList.add("current");
+      } else {
+        _win.classList.remove("current");
+      }
     });
   };
 
