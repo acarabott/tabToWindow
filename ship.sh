@@ -9,7 +9,7 @@ ZIP="tabToWindow-$HASH.zip"
 
 pushd .. &&
     echo "deleting existing zip" &&
-    rm -rf "./tabToWindow-*.zip"
+    rm -rf "./tabToWindow-"*
 
 # Check if the build directory exists in the parent folder
 if [ ! -d "$SRC" ]; then
