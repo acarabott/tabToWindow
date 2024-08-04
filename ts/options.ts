@@ -22,7 +22,7 @@ export const isCloneMode = (value: unknown): value is CloneMode =>
 
 export const isCopyFullscreen = (value: unknown): value is boolean => typeof value === "boolean";
 
-export const isFocus = (value: unknown): value is WindowID =>
+export const isWindowID = (value: unknown): value is WindowID =>
   typeof value === "string" && windowIds.includes(value as WindowID);
 
 export const isMenuButtonType = (value: unknown): value is WindowType =>
@@ -47,7 +47,7 @@ export const isIOptions = (obj: unknown): obj is IOptions =>
   typeof obj === "object" &&
   isCloneMode((obj as IOptions).cloneMode) &&
   isCopyFullscreen((obj as IOptions).copyFullscreen) &&
-  isFocus((obj as IOptions).focus) &&
+  isWindowID((obj as IOptions).focus) &&
   isMenuButtonType((obj as IOptions).menuButtonType) &&
   isNewHeight((obj as IOptions).newHeight) &&
   isNewLeft((obj as IOptions).newLeft) &&
@@ -82,7 +82,7 @@ export const createOptionsUpdateFromChanges = (changes: {
         break;
       }
       case "focus": {
-        if (isFocus(change.newValue)) {
+        if (isWindowID(change.newValue)) {
           update.focus = change.newValue;
         }
         break;

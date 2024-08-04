@@ -1,7 +1,7 @@
-import type { CloneMode, IOptions, WindowID, WindowProperty, WindowType } from "./api.js";
+import type { IOptions, WindowID, WindowProperty } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
 import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
-import { getOptions } from "./options.js";
+import { getOptions, isCloneMode, isMenuButtonType, isWindowID } from "./options.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -28,29 +28,59 @@ void getOptions().then((options) => {
       focus: getFocusedName(),
       resizeOriginal: getFromId<HTMLInputElement>("resize-original").checked,
       copyFullscreen: getFromId<HTMLInputElement>("copy-fullscreen").checked,
-      cloneMode: getFromClass<HTMLInputElement>("clone-mode-option").find((cp) => cp.checked)!
-        .id as CloneMode,
-      menuButtonType: getFromClass<HTMLInputElement>("menu-button-option")
-        .find((mb) => mb.checked)
-        ?.getAttribute("data-value") as WindowType,
     };
 
-    // dimensions
-    getFromClass("window").forEach((win) => {
-      (
-        [
-          ["offsetWidth", "offsetWidth", "width"],
-          ["offsetHeight", "offsetHeight", "height"],
-          ["offsetLeft", "offsetWidth", "left"],
-          ["offsetTop", "offsetHeight", "top"],
-        ] as const
-      ).forEach(([prop, dim, setProp]) => {
-        const windowDimension = win[prop];
-        const screenDimension = getFromId("screen")[dim];
-        const value = windowDimension / screenDimension;
-        update[getStorageWindowPropKey(win.id as WindowID, setProp)] = value;
-      });
-    });
+    const cloneModeEl = getFromClass<HTMLInputElement>("clone-mode-option").find(
+      (cp) => cp.checked,
+    );
+    if (isCloneMode(cloneModeEl?.id)) {
+      update.cloneMode = cloneModeEl.id;
+    }
+
+    const menuButtonEl = getFromClass<HTMLInputElement>("menu-button-option").find(
+      (mb) => mb.checked,
+    );
+    const menuButtonValue = menuButtonEl?.getAttribute("data-value");
+    if (isMenuButtonType(menuButtonValue)) {
+      update.menuButtonType = menuButtonValue;
+    }
+
+    // window dimensions
+    const screenEl = getFromId("screen");
+    const screenOffsetWidth = screenEl.offsetWidth;
+    const screenOffsetHeight = screenEl.offsetHeight;
+    const windowEls = getFromClass("window");
+    for (const windowEl of windowEls) {
+      const windowId = windowEl.id;
+      if (!isWindowID(windowId)) {
+        throw new TypeError("Window element does not have a WindowID as its ID");
+      }
+
+      const windowWidth = windowEl.offsetWidth;
+      const windowHeight = windowEl.offsetHeight;
+      
+      const left = windowEl.offsetLeft / screenOffsetWidth;
+      const top = windowEl.offsetTop / screenOffsetHeight;
+      const width = windowWidth / screenOffsetWidth;
+      const height = windowHeight / screenOffsetHeight;
+
+      switch (windowId) {
+        case "original": {
+          update.originalLeft = left;
+          update.originalTop = top;
+          update.originalWidth = width;
+          update.originalHeight = height;
+          break;
+        }
+        case "new": {
+          update.newLeft = left;
+          update.newTop = top;
+          update.newWidth = width;
+          update.newHeight = height;
+          break;
+        }
+      }
+    }
 
     void options.update(update);
   };
