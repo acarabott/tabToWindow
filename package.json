@@ -1,6 +1,6 @@
 {
   "name": "tabtowindow",
-  "version": "3.3.1",
+  "version": "3.3.3",
   "description": "Chrome Extension to move tabs out of windows with a keyboard shortcut",
   "main": "index.html",
   "type": "module",
