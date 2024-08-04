@@ -1,9 +1,5 @@
 # TODO
 
-## Manifest v3
-
-- Publish your extension: https://developer.chrome.com/docs/extensions/develop/migrate/publish-mv3
-
 ## Cleanup
 
 - options-page filter for each
