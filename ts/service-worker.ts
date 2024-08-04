@@ -11,8 +11,6 @@ import {
   urlToWindowNormal,
   urlToWindowPopup,
 } from "./actionsURLs.js";
-import type {
-  IOptions} from "./api.js";
 import {
   COMMAND_DISPLAY,
   COMMAND_NEXT,
@@ -35,7 +33,7 @@ import {
   MENU_WINDOW_OPTION_ID,
 } from "./api.js";
 import { createMenu } from "./createMenu.js";
-import { getOptions } from "./options-storage.js";
+import { createOptionsUpdateFromChanges, getOptions } from "./options-storage.js";
 import { updateActionButton } from "./updateActionButton.js";
 
 // Installation
@@ -44,7 +42,8 @@ import { updateActionButton } from "./updateActionButton.js";
 chrome.runtime.onInstalled.addListener((details) => {
   const previousMajorVersion = parseInt(details.previousVersion ?? "0", 10);
   const showUpdate =
-    details.reason === "install" || (details.reason === "update" && previousMajorVersion < 3);
+    details.reason === chrome.runtime.OnInstalledReason.INSTALL ||
+    (details.reason === chrome.runtime.OnInstalledReason.UPDATE && previousMajorVersion < 3);
 
   if (showUpdate) {
     const url = "https://acarabott.github.io/tabToWindow";
@@ -55,16 +54,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 // Storage
 // -----------------------------------------------------------------------------
 
-chrome.storage.onChanged.addListener(async (changes) => {
-  const update: Partial<IOptions> = {};
+chrome.storage.onChanged.addListener((changes) => {
+  const update = createOptionsUpdateFromChanges(changes);
 
-  const entries = Object.entries(changes) as [keyof IOptions, chrome.storage.StorageChange][];
-  for (const [key, change] of entries) {
-    update[key] = change.newValue;
-  }
-
-  const options = await getOptions();
-  options.update(update);
+  void getOptions().then((options) => options.update(update));
 
   void updateActionButton();
 });

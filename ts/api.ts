@@ -52,27 +52,6 @@ export interface IOptions {
   resizeOriginal: boolean;
 }
 
-export const isIOptions = (obj: any): obj is IOptions => {
-  const cast = obj as IOptions;
-  return (
-    cast !== undefined &&
-    obj &&
-    cloneModes.includes(cast.cloneMode) &&
-    typeof cast.copyFullscreen === "boolean" &&
-    windowIds.includes(cast.focus) &&
-    windowTypes.includes(cast.menuButtonType) &&
-    typeof cast.newHeight === "number" &&
-    typeof cast.newLeft === "number" &&
-    typeof cast.newTop === "number" &&
-    typeof cast.newWidth === "number" &&
-    typeof cast.originalHeight === "number" &&
-    typeof cast.originalLeft === "number" &&
-    typeof cast.originalTop === "number" &&
-    typeof cast.originalWidth === "number" &&
-    typeof cast.resizeOriginal === "boolean"
-  );
-};
-
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T;
 export type Options = ThenArg<ReturnType<typeof getOptions>>;
 
