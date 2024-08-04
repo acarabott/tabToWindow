@@ -1,13 +1,13 @@
 import type { getOptions } from "./options-storage.js";
 
 export const windowIds = ["original", "new"] as const;
-export type WindowID = (typeof windowIds)[any];
+export type WindowID = (typeof windowIds)[number];
 
 export const windowProperties = ["width", "height", "left", "top"] as const;
-export type WindowProperty = (typeof windowProperties)[any];
+export type WindowProperty = (typeof windowProperties)[number];
 
 export const windowTypes = ["normal", "popup"] as const;
-export type WindowType = (typeof windowTypes)[any];
+export type WindowType = (typeof windowTypes)[number];
 
 export const cloneModes = [
   "clone-mode-no",
@@ -15,7 +15,7 @@ export const cloneModes = [
   "clone-mode-horizontal",
   "clone-mode-vertical",
 ] as const;
-export type CloneMode = (typeof cloneModes)[any];
+export type CloneMode = (typeof cloneModes)[number];
 
 export const storedWindowBounds = [
   "originalWidth",
@@ -27,7 +27,7 @@ export const storedWindowBounds = [
   "newLeft",
   "newTop",
 ] as const;
-export type StoredWindowProperty = (typeof storedWindowBounds)[any];
+export type StoredWindowProperty = (typeof storedWindowBounds)[number];
 
 export interface IBounds {
   left: number;
