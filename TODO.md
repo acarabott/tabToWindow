@@ -63,6 +63,4 @@
 
 ## Bugs
 
-- tab to previous window not working after first time ? after just moving ?
-- use of ! (!)
 - previous window from a popup window
