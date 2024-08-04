@@ -1,7 +1,7 @@
-import type { CloneMode, IOptions, Options, WindowID, WindowProperty, WindowType } from "./api.js";
+import type { CloneMode, IOptions, WindowID, WindowProperty, WindowType } from "./api.js";
 import { getCloneBounds } from "./getCloneBounds.js";
-import { getOptions } from "./options-storage.js";
 import { getStorageWindowPropKey } from "./getStorageWindowPropKey.js";
+import { getOptions } from "./options-storage.js";
 
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -149,7 +149,7 @@ void getOptions().then((options) => {
   // as then it's more difficult to tell when / where they are being called
   // and if it's more than one
 
-  const main = (options: Options) => {
+  const main = () => {
     {
       // display shortcuts
       // -----------------------------------------------------------------------
@@ -302,5 +302,5 @@ void getOptions().then((options) => {
     }
   };
 
-  onReady(() => main(options));
+  onReady(() => main());
 });
