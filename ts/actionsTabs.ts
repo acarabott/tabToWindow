@@ -142,6 +142,11 @@ export const tabToWindow = async (
   }
 };
 
+/**
+ * Move the tab to a neighbouring window.
+ * @param windowDistance Number of windows to move to. Positive numbers move to the right, negative to the left.
+ * @returns
+ */
 export const tabToNeighbouringWindow = async (windowDistance: number) => {
   const tabsToMove = await queryTabs({ currentWindow: true, highlighted: true });
 
