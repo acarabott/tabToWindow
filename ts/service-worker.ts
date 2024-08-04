@@ -59,7 +59,9 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.storage.onChanged.addListener((changes) => {
   const update = createOptionsUpdateFromChanges(changes);
 
-  void getOptions().then((options) => options.update(update));
+  void getOptions().then(async (options) => {
+    await options.update(update);
+  });
 
   void updateActionButton();
 });
