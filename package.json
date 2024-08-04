@@ -11,7 +11,7 @@
   "scripts": {
     "build": "./build.sh",
     "watch": "./watch.sh",
-    "publish": "./publish.sh",
+    "ship": "./ship.sh",
     "lint": "eslint --fix",
     "format": "prettier --write ."
   },
