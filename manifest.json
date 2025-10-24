@@ -35,22 +35,19 @@
   "commands": {
     "01-tab-to-window-normal": {
       "suggested_key": {
-        "default": "Alt+X",
-        "linux": "Alt+Shift+X"
+        "default": "Alt+Shift+X"
       },
       "description": "Window"
     },
     "02-tab-to-window-popup": {
       "suggested_key": {
-        "default": "Alt+C",
-        "linux": "Alt+Shift+C"
+        "default": "Alt+Shift+C"
       },
       "description": "Popup"
     },
     "03-tab-to-window-next": {
       "suggested_key": {
-        "default": "Alt+Z",
-        "linux": "Alt+Shift+Z"
+        "default": "Alt+Shift+Z"
       },
       "description": "Next Window"
     },
@@ -59,9 +56,7 @@
     },
     "05-tab-to-window-display": {
       "suggested_key": {
-        "default": "Alt+D",
-        "linux": "Alt+Shift+D",
-        "windows": "Alt+Shift+D"
+        "default": "Alt+Shift+D"
       },
       "description": "Next Display"
     }
